@@ -7,13 +7,15 @@
     </div>
 
     <nav class="sidebar-nav">
-      <button (click)="cambiarSeccion('registro')" [class.active]="currentSection === 'registro'">
-         Registrar Usuarios
-      </button>
-      
+
       <button (click)="cambiarSeccion('tickets')" [class.active]="currentSection === 'tickets'">
         Enviar Tickets
       </button>
+
+      <button (click)="cambiarSeccion('registro')" [class.active]="currentSection === 'registro'">
+         Registrar Usuarios
+      </button>
+    
 
       <button (click)="logout()" class="btn-logout">
         Cerrar Sesión
@@ -28,41 +30,9 @@
         <button class="hamburger-btn" (click)="toggleSidebar()">☰</button>
         <h1>{{ currentSection === 'registro' ? 'Gestión de Usuarios' : 'Mesa de Ayuda' }}</h1>
       </div>
-      <div class="user-profile">Admin</div>
     </header>
 
     <main class="content">
-
-      <section *ngIf="currentSection === 'registro'" class="panel fade-in">
-        <div class="form-card">
-          <h3>Registrar Nuevo Empleado</h3>
-          <p class="subtitle">Da de alta nuevos accesos al sistema.</p>
-          
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Nombre Completo:</label>
-              <input type="text" [(ngModel)]="newUser.nombre" placeholder="Ej: Juan Pérez">
-            </div>
-            <div class="form-group">
-              <label>Email:</label>
-              <input type="email" [(ngModel)]="newUser.email" placeholder="juan@empresa.com">
-            </div>
-            <div class="form-group">
-              <label>Contraseña:</label>
-              <input type="password" [(ngModel)]="newUser.password" placeholder="******">
-            </div>
-            <div class="form-group">
-              <label>Rol:</label>
-              <select [(ngModel)]="newUser.rol">
-                <option value="personal">Personal</option>
-                <option value="supervisor">Supervisor</option>
-                <option value="admin">Administrador</option>
-              </select>
-             </div>
-          </div>
-          <button class="btn-save" (click)="registrarUsuario()">Guardar Usuario</button>
-        </div>
-      </section>
 
 
       <section *ngIf="currentSection === 'tickets'" class="panel fade-in">
@@ -95,6 +65,38 @@
           </div>
 
           <button class="btn-save btn-ticket" (click)="enviarTicket()">Enviar Ticket </button>
+        </div>
+      </section>
+
+
+      <section *ngIf="currentSection === 'registro'" class="panel fade-in">
+        <div class="form-card">
+          <h3>Registrar Nuevo Empleado</h3>
+          <p class="subtitle">Da de alta nuevos accesos al sistema.</p>
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nombre Completo:</label>
+              <input type="text" [(ngModel)]="newUser.nombre" placeholder="Ej: Juan Pérez">
+            </div>
+            <div class="form-group">
+              <label>Email:</label>
+              <input type="email" [(ngModel)]="newUser.email" placeholder="juan@empresa.com">
+            </div>
+            <div class="form-group">
+              <label>Contraseña:</label>
+              <input type="password" [(ngModel)]="newUser.password" placeholder="******">
+            </div>
+            <div class="form-group">
+              <label>Rol:</label>
+              <select [(ngModel)]="newUser.rol">
+                <option value="personal">Personal</option>
+                <option value="supervisor">Supervisor</option>
+                <option value="admin">Administrador</option>
+              </select>
+             </div>
+          </div>
+          <button class="btn-save" (click)="registrarUsuario()">Guardar Usuario</button>
         </div>
       </section>
 
