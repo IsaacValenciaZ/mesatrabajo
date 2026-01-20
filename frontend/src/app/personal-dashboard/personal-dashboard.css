@@ -15,14 +15,14 @@
   padding: 2rem 10%;
 }
 
-/* --- HEADER --- */
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid transparent; /* Espacio reservado */
+  border-bottom: 1px solid transparent; 
 }
 
 .header h1 {
@@ -60,7 +60,7 @@
 color: rgb(240, 3, 3);
   width: 8px;
   height: 8px;
-  background-color: var(--success-color); /* Verde para indicar Personal Activo */
+  background-color: var(--success-color); 
   border-radius: 50%;
 }
 

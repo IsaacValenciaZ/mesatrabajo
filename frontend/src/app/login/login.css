@@ -238,6 +238,23 @@ h2 {
   background-size: 100% auto;
 }
 
+@media (max-width: 1024px) {
+  .login-content {
+    gap: 30px;
+  }
+
+  .login-card-border {
+    padding: 30px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .login-card-border {
+    max-width: 1100px;
+  }
+}
+
+
 
 
 
