@@ -10,7 +10,7 @@ export class ApiService {
   private http = inject(HttpClient);
 
   
-  private baseUrl = 'http://localhost/backend'; 
+  private baseUrl = 'http://localhost/mesatrabajoBACKEND/backend'; 
 
   constructor() { }
 

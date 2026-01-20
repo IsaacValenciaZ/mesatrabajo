@@ -17,10 +17,10 @@ export class AdminDashboardComponent implements OnInit {
   http = inject(HttpClient); 
 
 
-  apiUrl = 'http://localhost/backend/get_users.php';
+  apiUrl = 'http://localhost/mesatrabajoBACKEND/backend/get_users.php';
   
 
-  apiUrlRegistro = 'http://localhost/backend/register.php';
+  apiUrlRegistro = 'http://localhost/mesatrabajoBACKEND/backend/register.php';
 
   isSidebarOpen: boolean = true; 
   currentSection: string = 'registro'; 
