@@ -1,0 +1,74 @@
+<div class="dashboard-container">
+  
+  <header class="header">
+    <div class="header-content">
+      <h1>Panel de Supervisión</h1>
+      <p>Resumen de usuarios registrados en el sistema.</p>
+    </div>
+    <button class="btn-logout" (click)="logout()">Cerrar Sesión</button>
+  </header>
+
+  <div class="stats-grid">
+    
+    <div class="card stat-card personal">
+      <span class="stat-label">Personal</span>
+      <span class="stat-number">{{ countPersonal }}</span>
+      <div class="indicator"></div>
+    </div>
+
+    <div class="card stat-card supervisor">
+      <span class="stat-label">Supervisores</span>
+      <span class="stat-number">{{ countSupervisor }}</span>
+      <div class="indicator"></div>
+    </div>
+
+    <div class="card stat-card admin">
+      <span class="stat-label">Administradores</span>
+      <span class="stat-number">{{ countAdmin }}</span>
+      <div class="indicator"></div>
+    </div>
+
+    <div class="card stat-card total">
+      <span class="stat-label">Total Usuarios</span>
+      <span class="stat-number">{{ totalUsers }}</span>
+    </div>
+  </div>
+
+  <div class="card table-card">
+    <div class="card-header">
+      <h2>Listado Completo</h2>
+    </div>
+    
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of usersList; track user.id) {
+            <tr>
+              <td class="name-cell">
+                <div class="avatar-circle">{{ user.nombre.charAt(0) }}</div>
+                {{ user.nombre }}
+              </td>
+              <td class="email-cell">{{ user.email }}</td>
+              <td>
+                <span class="badge" 
+                      [class.badge-personal]="user.rol === 'personal' || user.rol === 'Personal'"
+                      [class.badge-supervisor]="user.rol === 'supervisor' || user.rol === 'Supervisor'"
+                      [class.badge-admin]="user.rol === 'admin' || user.rol === 'Admin'">
+                  {{ user.rol }}
+                </span>
+              </td>
+             
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
