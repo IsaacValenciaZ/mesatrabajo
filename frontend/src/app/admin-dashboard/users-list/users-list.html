@@ -1,0 +1,34 @@
+<div class="table-card fade-in">
+  <div class="card-header">
+    <h3>Directorio de Personal</h3>
+    <span class="badge-count">{{ personalUsers.length }} Empleados</span>
+  </div>
+
+  <div class="table-responsive">
+    <table class="user-table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of personalUsers">
+          <td><strong>{{ user.nombre }}</strong></td>
+          <td>{{ user.email }}</td>
+          <td><span class="role-badge">{{ user.rol | uppercase }}</span></td>
+          <td>
+            <button class="btn-icon" (click)="irATickets(user.id)">
+              ✉️ Enviar Ticket
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="personalUsers.length === 0">
+          <td colspan="4" class="text-center">No hay personal registrado.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,30 @@
+
+.table-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  padding: 20px;
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #f4f6f9;
+  padding-bottom: 15px;
+}
+.badge-count {
+  background-color: #8b2136;
+  color: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+.user-table { width: 100%; border-collapse: collapse; }
+.user-table th { text-align: left; padding: 15px; background-color: #f8f9fa; color: #555; }
+.user-table td { padding: 15px; border-bottom: 1px solid #eee; }
+.role-badge { background-color: #e8f6f3; color: #27ae60; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+.btn-icon { cursor: pointer; border: 1px solid #ddd; background: white; padding: 5px 10px; border-radius: 4px; }
+.btn-icon:hover { background-color: #f0f0f0; }
+.fade-in { animation: fadeIn 0.3s ease-in; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

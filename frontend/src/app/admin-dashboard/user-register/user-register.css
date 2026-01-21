@@ -1,0 +1,15 @@
+.form-card {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  max-width: 800px;
+  margin: 0 auto;
+}
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: 500; color: #333; }
+input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+.btn-save { width: 100%; padding: 12px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; }
+.btn-save:hover { background-color: #2980b9; }
+.fade-in { animation: fadeIn 0.3s ease-in; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
