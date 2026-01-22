@@ -1,8 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core'; // Agrega OnInit
+import { Component, OnInit, inject } from '@angular/core'; 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from '../services/api';
+import Swal from 'sweetalert2'; 
 
 @Component({
   selector: 'app-login',
@@ -11,7 +12,7 @@ import { ApiService } from '../services/api';
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
-export class LoginComponent implements OnInit { // Implementa OnInit
+export class LoginComponent implements OnInit { 
 
   email = '';
   password = '';
@@ -19,7 +20,6 @@ export class LoginComponent implements OnInit { // Implementa OnInit
   private apiService = inject(ApiService);
   private router = inject(Router);
 
-  // 1. ESTO ES LO NUEVO: Revisar sesión al iniciar
   ngOnInit() {
     this.verificarSesionExistente();
   }
@@ -28,12 +28,10 @@ export class LoginComponent implements OnInit { // Implementa OnInit
     const usuarioGuardado = localStorage.getItem('usuario_actual');
     if (usuarioGuardado) {
       const usuario = JSON.parse(usuarioGuardado);
-      // Si ya existe, lo mandamos a su panel sin pedir login
       this.redirigirPorRol(usuario.rol);
     }
   }
 
-  // Sacamos la lógica de redirección a una función para reusarla
   redirigirPorRol(rol: string) {
     if (rol === 'admin') {
       this.router.navigate(['/admin']);
@@ -47,8 +45,14 @@ export class LoginComponent implements OnInit { // Implementa OnInit
   login() {
     console.log("Intentando loguear con:", this.email, this.password);
 
+    
     if (this.email === '' || this.password === '') {
-      alert('Por favor llena todos los campos');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos incompletos',
+        text: 'Por favor, ingresa tu correo y contraseña.',
+        confirmButtonColor: '#8b2136' 
+      });
       return;
     }
 
@@ -57,21 +61,38 @@ export class LoginComponent implements OnInit { // Implementa OnInit
         console.log("Respuesta:", response);
 
         if (response.status === true) {
-          // Guardamos sesión
           localStorage.setItem('usuario_actual', JSON.stringify(response.data));
           
-          alert('¡Bienvenido ' + response.data.nombre + '!');
-          
-          // Usamos la función auxiliar
-          this.redirigirPorRol(response.data.rol);
+         
+          Swal.fire({
+            icon: 'success',
+            title: `¡Bienvenido ${response.data.nombre}!`,
+            text: 'Ingresando al sistema...',
+            timer: 1500, 
+            showConfirmButton: false
+          }).then(() => {
+            
+            this.redirigirPorRol(response.data.rol);
+          });
           
         } else {
-          alert('Error: ' + response.message);
+          Swal.fire({
+            icon: 'error',
+            title: 'Acceso denegado',
+            text: response.message || 'Usuario o contraseña incorrectos',
+            confirmButtonColor: '#8b2136'
+          });
         }
       },
       error: (error: any) => {
         console.error("Error:", error);
-        alert('Error de conexión');
+        // 4. Error de conexión (Servidor caído o sin internet)
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de conexión',
+          text: 'No se pudo conectar con el servidor. Intenta más tarde.',
+          confirmButtonColor: '#2c3e50'
+        });
       }
     });
   }

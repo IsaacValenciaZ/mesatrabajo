@@ -2,26 +2,29 @@
   
   <aside class="sidebar" [class.closed]="!isSidebarOpen">
     <div class="sidebar-header">
-       <h2>AdminPanel</h2>
-       <button class="close-btn" (click)="toggleSidebar()">✕</button>
+       <div class="brand">
+         <h2>Panel Admin</h2>
+         <span class="role-badge">Administrador</span>
+       </div>
     </div>
 
     <nav class="sidebar-nav">
       <a routerLink="tickets" routerLinkActive="active" class="nav-btn">
-          Enviar Tickets
+       Enviar Tickets
       </a>
       <a routerLink="usuarios" routerLinkActive="active" class="nav-btn">
-        Personal Activo
+         Personal Activo
       </a>
       <a routerLink="registro" routerLinkActive="active" class="nav-btn">
         Registrar Usuario
       </a>
-            <a routerLink="tickets-list" routerLinkActive="active" class="nav-btn">
-        Historial de Tickets
+      <a routerLink="tickets-list" routerLinkActive="active" class="nav-btn">
+          Historial
       </a>
       
-      
-      <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
+      <div class="spacer"></div>
+
+      <button (click)="logout()" class="btn-logout"> Cerrar Sesión</button>
     </nav>
   </aside>
 
@@ -29,13 +32,15 @@
     <header class="top-bar">
       <div class="flex-start">
         <button class="hamburger-btn" (click)="toggleSidebar()">☰</button>
-        <h1>Panel de Administración</h1>
+
+        <div class="header-top logos-container">
+           <img src="icons/seiem_blanco.svg" class="logo-header" alt="Logo">
+        </div>
       </div>
     </header>
 
     <main class="content">
       <router-outlet></router-outlet>
-      
     </main>
   </div>
 </div>

@@ -1,8 +1,9 @@
-<div class="form-card ticket-card fade-in">
-  <h3> Registrar Nuevo Reporte</h3>
+<div class="form-card fade-in">
+ <div class="header-row">
+      <h3>Registrar Nuevo Reporte</h3>
+  </div>
   
   <div class="form-vertical">
-    
     <div class="form-grid-2">
         <div class="form-group">
             <label>Solicitante:</label>
@@ -56,12 +57,12 @@
 
 <div class="table-container fade-in">
   <div class="header-row">
-    <h3>Reportes de Hoy</h3>
+  <h3>Reportes de {{ fechaActual | date:'fullDate' | titlecase }}</h3>
     <span class="badge-date">{{ ticketsHoy.length }}</span>
   </div>
 
   <table class="simple-table">
-    <thead>
+        <thead>
       <tr>
         <th>ID</th>
         <th>Fecha</th>
@@ -73,7 +74,7 @@
         <th>Personal Asignado</th>
         <th>Notas</th>
       </tr>
-    </thead>
+     </thead>
     <tbody>
       <tr *ngFor="let t of ticketsHoy">
         
@@ -134,7 +135,7 @@
             </a>
         </div>
     </div>
-</td>
+        </td>
 
       </tr>
 

@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api'; 
 import Swal from 'sweetalert2';
 
+
+
 @Component({
   selector: 'app-tickets',
   standalone: true,
@@ -28,13 +30,15 @@ export class TicketsComponent implements OnInit {
     notas: ''           
   };
   
+  fechaActual = new Date();
+  
 verNotaCompleta(nota: string) {
   Swal.fire({
     title: 'Detalle de la Nota',
     text: nota,
     icon: 'info',
     confirmButtonText: 'Cerrar',
-    confirmButtonColor: '#2c3e50'
+    confirmButtonColor: '#c3b08f'
   })
 }
   ngOnInit() {

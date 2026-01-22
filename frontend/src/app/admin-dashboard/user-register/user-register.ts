@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api';
 import { Router } from '@angular/router';
-
+import Swal from 'sweetalert2'; 
 @Component({
   selector: 'app-user-register',
   standalone: true,
@@ -20,8 +20,14 @@ export class UserRegisterComponent {
   registrarUsuario() {
     this.apiService.register(this.newUser).subscribe({
       next: () => {
-        alert('Usuario registrado con éxito');
-        this.router.navigate(['/admin/usuarios']); // Redirigir a la lista
+        Swal.fire({
+  icon: 'success',
+  title: '¡Usuario Registrado!',
+  text: 'Los datos se han guardado correctamente en el sistema.',
+  confirmButtonText: 'Aceptar',
+  confirmButtonColor: '#000000' 
+});
+        this.router.navigate(['/admin/usuarios']); 
       },
       error: () => alert('Error al registrar')
     });

@@ -1,14 +1,13 @@
 <div class="history-container fade-in">
-  <div class="main-header">
+
+   <div class="header-row">
     <h2>Historial Completo de Tickets</h2>
-    <p>Visualiza todos los reportes organizados por fecha.</p>
   </div>
 
   <div *ngFor="let grupo of gruposDeTickets" class="date-block">
     
     <div class="date-header">
       <div class="date-title">
-        <span class="calendar-icon">📅</span>
         {{ grupo.fecha | date:'fullDate' | titlecase }}
       </div>
       <span class="badge-count">{{ grupo.tickets.length }} reportes</span>

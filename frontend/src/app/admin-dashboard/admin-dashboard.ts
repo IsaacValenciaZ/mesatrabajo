@@ -15,6 +15,7 @@ export class AdminDashboardComponent {
 
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
+    
   }
 
   logout() {

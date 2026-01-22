@@ -1,222 +1,222 @@
-.form-card {
+
+.form-card, .table-container {
   background: white;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  margin-bottom: 40px; 
+  padding: 35px; 
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  margin-bottom: 40px;
+  border: 1px solid rgba(0,0,0,0.02); 
+  transition: transform 0.3s ease;
 }
 
-.ticket-card { 
-    border-top: 4px solid #e67e22; 
+
+.form-card:hover {
+  transform: translateY(-2px);
 }
+
+.fade-in { 
+  animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
 .full-width {
-     width: 100%; 
-     margin-bottom: 15px; 
-    }
+  width: 100%; 
+  margin-bottom: 20px; 
+}
+
 label { 
-    display: block;
-     margin-bottom: 5px; 
-     font-weight: 500; 
-     color: #2c3e50; 
-    }
+  display: block;
+  margin-bottom: 8px; 
+  font-weight: 600; 
+  color: #34495e; 
+  font-size: 0.9rem;
+}
+
 input, select, textarea { 
-    width: 100%; 
-    padding: 10px;
-     border: 1px solid #ddd; 
-     border-radius: 5px; 
-     box-sizing: border-box; 
-    }
+  width: 100%; 
+  padding: 12px 15px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px; 
+  box-sizing: border-box; 
+  background-color: #f8fafc; 
+  transition: all 0.3s ease;
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+
+input:focus, select:focus, textarea:focus { 
+  background-color: #fff;
+  border-color: #e0b472;
+  box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.2); 
+  outline: none;
+}
+
 
 .btn-save { 
-    width: 100%; 
-    padding: 12px; 
-    border: none; 
-    border-radius: 5px; 
-    cursor: pointer; 
-    color: white; 
-    font-weight: bold; 
+  width: 100%; 
+  padding: 14px; 
+  border: none; 
+  border-radius: 8px; 
+  cursor: pointer; 
+  color: white; 
+  font-weight: 700; 
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 .btn-ticket {
-     background-color: #e67e22; 
-    }
-.btn-ticket:hover { 
-    background-color: #d35400;
- }
-
-.table-container {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  border: 1px solid #eee;
+  background: linear-gradient(135deg, #e0b472 0%, #d4a055 100%); 
 }
+
+.btn-ticket:hover { 
+  background: #ba9156;
+  transform: translateY(-2px); 
+  box-shadow: 0 7px 14px rgba(0,0,0,0.15);
+}
+
+.btn-ticket:active {
+  transform: translateY(0);
+}
+
 
 .header-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
+  justify-content: space-between; 
+  margin-bottom: 20px;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 15px;
 }
 
 .header-row h3 { 
-    margin: 0; 
-    font-size: 1.1rem; 
-    color: #2c3e50; 
+  margin: 0; 
+  font-size: 1.25rem; 
+  color: #2c3e50; 
+  font-weight: 700;
 }
+
 .badge-date {
   background-color: #2c3e50;
   color: white;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 0.8rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
+
 .simple-table { 
-    width: 100%; 
-    border-collapse: collapse; 
-    font-size: 0.95rem;
- }
-.simple-table th { 
-    text-align: left; 
-    padding: 10px; 
-    color: #7f8c8d; 
-    font-size: 0.85rem;
-    border-bottom: 1px solid #ddd; 
+  width: 100%; 
+  border-collapse: separate; 
+  border-spacing: 0; 
+  font-size: 0.95rem;
 }
+
+.simple-table thead tr {
+  background-color: #f8fafc;
+}
+
+.simple-table th { 
+  text-align: left; 
+  padding: 15px; 
+  color: #64748b; 
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase; 
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #e2e8f0; 
+}
+
 .simple-table td { 
-    padding: 12px 10px;
-     border-bottom: 1px solid #f4f4f4;
-      vertical-align: top; 
-    }
+  padding: 15px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle; 
+  color: #334155;
+}
+
+.simple-table tbody tr {
+  transition: background-color 0.2s;
+}
+.simple-table tbody tr:hover {
+  background-color: #fffbf0;
+}
 
 .time-col { 
-    color: #7f8c8d; 
-    font-family: monospace; 
-    white-space: nowrap; 
+  color: #64748b; 
+  font-family: 'Consolas', monospace; 
+  font-weight: 600;
 }
 
-.block-role {
-     display: block;
-      font-size: 0.75rem; 
-      color: #95a5a6; }
+.badge {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-align: center;
+  display: inline-block;
+  min-width: 90px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+}
+
+.status-espera { background-color: #f1c40f; color: #000; }
+.status-completo { background-color: #27ae60; color: white; }
+.status-incompleto { background-color: #c0392b; color: white; }
+
+.prio-alta { background-color: #e74c3c; color: white; }
+.prio-media { background-color: #f39c12; color: white; }
+.prio-baja { background-color: #2ecc71; color: white; }
+
+.cat-internet { background-color: #2980b9; color: white; }
+.cat-office { background-color: #d35400; color: white; }
+.cat-telefonia { background-color: #34495e; color: white; }
+.cat-tecnico { background-color: #16a085; color: white; }
 
 
 .msg-col {
-    max-width: 150px;       
-    font-size: 0.9rem;
-    color: #555;
-    vertical-align: top;    
+  max-width: 200px;       
+  font-size: 0.9rem;
+  color: #64748b;
+  line-height: 1.4;
 }
 
 .texto-truncado {
-    word-wrap: break-word;
-    word-break: break-all;
-    white-space: normal;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 
-.ver-mas-container {
-    margin-top: 4px;
-}
-
+.ver-mas-container { margin-top: 5px; }
 
 .link-ver-mas {
-    color: #3498db;         
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 0.8rem;
-    text-decoration: underline;
+  color: #d4a055; 
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-decoration: none;
+  border-bottom: 1px dotted #d4a055;
+  transition: all 0.2s;
 }
 
 .link-ver-mas:hover {
-    color: #1d6fa5;         
-}
-
-.note-scroll {
-  max-height: 50px;    
-  overflow-y: auto;  
-  font-size: 0.9rem;
-  color: #555;
-  background-color: #f9f9f9; 
-  padding: 4px;
-  border-radius: 4px;
-  border: 1px solid #eee;
+  color: #ba9156;
+  border-bottom: 1px solid #ba9156;
 }
 
 .empty-state { 
-    text-align: center; 
-    color: #bdc3c7;
-     padding: 20px;
-      font-style: italic; }
-
-.fade-in { 
-    animation: fadeIn 0.4s ease-in; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-
-.badge {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  font-weight: bold;
-  text-align: center;
-  display: inline-block;
-  min-width: 80px; 
+  text-align: center; 
+  color: #94a3b8;
+  padding: 40px;
+  font-style: italic;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  margin-top: 10px;
 }
 
-.status-espera {
-  background-color: #f1c40f;
-  color: #000000; 
-}
-.status-completo {
-  background-color: #27ae60; 
-  color: white;
-}
-.status-incompleto {
-  background-color: #c0392b; 
-  color: white;
-}
-
-
-.prio-alta {
-  background-color: #b41616; 
-  color: white;
-}
-.prio-media {
-  background-color: rgb(189, 192, 7); 
-  color: white;
-}
-.prio-baja {
-  background-color: #1bb416; 
-  color: white;
-}
-
-.cat-internet {
-  background-color: #2980b9; 
-  color: white;
-}
-.cat-office {
-  background-color: #d35400; 
-  color: white;
-}
-.cat-telefonia {
-  background-color: #2c3e50; 
-  color: white;
-}
-.cat-tecnico {
-  background-color: #16a085;
-  color: white;
-}
-
-.simple-table th:nth-child(3), 
-.simple-table td:nth-child(3) {
-  text-align: center;
-}
-.simple-table th:nth-child(4), 
-.simple-table td:nth-child(4) {
-  text-align: center;
-}
-.simple-table th:nth-child(8), 
-.simple-table td:nth-child(8) {
+.simple-table th:nth-child(1), .simple-table td:nth-child(1),
+.simple-table th:nth-child(6), .simple-table td:nth-child(6),
+.simple-table th:nth-child(7), .simple-table td:nth-child(7) {
   text-align: center;
 }
