@@ -3,15 +3,220 @@
   padding: 30px;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  max-width: 800px;
-  margin: 0 auto;
+  margin-bottom: 40px; 
 }
-.ticket-card { border-top: 4px solid #e67e22; }
-.full-width { width: 100%; margin-bottom: 15px; }
-.form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
-input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-.btn-save { width: 100%; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; color: white; }
-.btn-ticket { background-color: #e67e22; }
-.btn-ticket:hover { background-color: #d35400; }
-.fade-in { animation: fadeIn 0.3s ease-in; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.ticket-card { 
+    border-top: 4px solid #e67e22; 
+}
+.full-width {
+     width: 100%; 
+     margin-bottom: 15px; 
+    }
+label { 
+    display: block;
+     margin-bottom: 5px; 
+     font-weight: 500; 
+     color: #2c3e50; 
+    }
+input, select, textarea { 
+    width: 100%; 
+    padding: 10px;
+     border: 1px solid #ddd; 
+     border-radius: 5px; 
+     box-sizing: border-box; 
+    }
+
+.btn-save { 
+    width: 100%; 
+    padding: 12px; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    color: white; 
+    font-weight: bold; 
+}
+
+.btn-ticket {
+     background-color: #e67e22; 
+    }
+.btn-ticket:hover { 
+    background-color: #d35400;
+ }
+
+.table-container {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid #eee;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.header-row h3 { 
+    margin: 0; 
+    font-size: 1.1rem; 
+    color: #2c3e50; 
+}
+.badge-date {
+  background-color: #2c3e50;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+}
+.simple-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    font-size: 0.95rem;
+ }
+.simple-table th { 
+    text-align: left; 
+    padding: 10px; 
+    color: #7f8c8d; 
+    font-size: 0.85rem;
+    border-bottom: 1px solid #ddd; 
+}
+.simple-table td { 
+    padding: 12px 10px;
+     border-bottom: 1px solid #f4f4f4;
+      vertical-align: top; 
+    }
+
+.time-col { 
+    color: #7f8c8d; 
+    font-family: monospace; 
+    white-space: nowrap; 
+}
+
+.block-role {
+     display: block;
+      font-size: 0.75rem; 
+      color: #95a5a6; }
+
+
+.msg-col {
+    max-width: 150px;       
+    font-size: 0.9rem;
+    color: #555;
+    vertical-align: top;    
+}
+
+.texto-truncado {
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: normal;
+}
+
+.ver-mas-container {
+    margin-top: 4px;
+}
+
+
+.link-ver-mas {
+    color: #3498db;         
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.8rem;
+    text-decoration: underline;
+}
+
+.link-ver-mas:hover {
+    color: #1d6fa5;         
+}
+
+.note-scroll {
+  max-height: 50px;    
+  overflow-y: auto;  
+  font-size: 0.9rem;
+  color: #555;
+  background-color: #f9f9f9; 
+  padding: 4px;
+  border-radius: 4px;
+  border: 1px solid #eee;
+}
+
+.empty-state { 
+    text-align: center; 
+    color: #bdc3c7;
+     padding: 20px;
+      font-style: italic; }
+
+.fade-in { 
+    animation: fadeIn 0.4s ease-in; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-align: center;
+  display: inline-block;
+  min-width: 80px; 
+}
+
+.status-espera {
+  background-color: #f1c40f;
+  color: #000000; 
+}
+.status-completo {
+  background-color: #27ae60; 
+  color: white;
+}
+.status-incompleto {
+  background-color: #c0392b; 
+  color: white;
+}
+
+
+.prio-alta {
+  background-color: #b41616; 
+  color: white;
+}
+.prio-media {
+  background-color: rgb(189, 192, 7); 
+  color: white;
+}
+.prio-baja {
+  background-color: #1bb416; 
+  color: white;
+}
+
+.cat-internet {
+  background-color: #2980b9; 
+  color: white;
+}
+.cat-office {
+  background-color: #d35400; 
+  color: white;
+}
+.cat-telefonia {
+  background-color: #2c3e50; 
+  color: white;
+}
+.cat-tecnico {
+  background-color: #16a085;
+  color: white;
+}
+
+.simple-table th:nth-child(3), 
+.simple-table td:nth-child(3) {
+  text-align: center;
+}
+.simple-table th:nth-child(4), 
+.simple-table td:nth-child(4) {
+  text-align: center;
+}
+.simple-table th:nth-child(8), 
+.simple-table td:nth-child(8) {
+  text-align: center;
+}

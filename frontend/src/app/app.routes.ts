@@ -5,6 +5,7 @@ import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard';
 import { UsersListComponent } from './admin-dashboard/users-list/users-list';
 import { UserRegisterComponent } from './admin-dashboard/user-register/user-register';
 import { TicketsComponent } from './admin-dashboard/tickets/tickets';
+import { TicketsListComponent } from './admin-dashboard/tickets-list/tickets-list';
 
 import { SupervisorDashboardComponent } from './supervisor-dashboard/supervisor-dashboard';
 import { PersonalDashboardComponent } from './personal-dashboard/personal-dashboard';
@@ -20,10 +21,12 @@ export const routes: Routes = [
     component: AdminDashboardComponent,
     canActivate: [authGuard],
     children: [
-      { path: '', redirectTo: 'usuarios', pathMatch: 'full' }, 
+      { path: '', redirectTo: 'tickets', pathMatch: 'full' }, 
+       { path: 'tickets', component: TicketsComponent },
       { path: 'usuarios', component: UsersListComponent },
       { path: 'registro', component: UserRegisterComponent },
-      { path: 'tickets', component: TicketsComponent }
+      { path: 'tickets-list', component: TicketsListComponent },
+
     ]
   },
     { path: 'supervisor', component: SupervisorDashboardComponent },

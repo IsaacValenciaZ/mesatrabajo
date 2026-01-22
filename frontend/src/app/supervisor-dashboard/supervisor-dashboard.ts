@@ -66,6 +66,7 @@ cargarDatos() {
   }
 
   logout() {
+    localStorage.removeItem('usuario_actual');
     this.router.navigate(['/login']);
   }
 }

@@ -1,23 +1,146 @@
 <div class="form-card ticket-card fade-in">
-  <h3>Redactar Nuevo Ticket</h3>
+  <h3> Registrar Nuevo Reporte</h3>
+  
   <div class="form-vertical">
-    <div class="form-group full-width">
-      <label>Destinatario:</label>
-      <select [(ngModel)]="newTicket.destinatarioId" class="select-user">
-        <option value="" disabled selected>-- Selecciona --</option>
-        <option *ngFor="let u of usersList" [value]="u.id">
-          {{ u.nombre }} ({{ u.rol }})
-        </option> 
-      </select>
+    
+    <div class="form-grid-2">
+        <div class="form-group">
+            <label>Solicitante:</label>
+            <input type="text" [(ngModel)]="newTicket.nombre_usuario" placeholder="">
+        </div>
+        <div class="form-group">
+            <label>Departamento:</label>
+            <input type="text" [(ngModel)]="newTicket.departamento" placeholder="">
+        </div>
     </div>
-    <div class="form-group full-width">
-      <label>Asunto:</label>
-      <input type="text" [(ngModel)]="newTicket.asunto">
+
+    <div class="form-grid-2">
+        <div class="form-group">
+            <label>Técnico Asignado:</label>
+            <select [(ngModel)]="newTicket.personalId" class="select-user">
+                <option value="" disabled selected>-- Selecciona Técnico --</option>
+                <option *ngFor="let u of usersList" [value]="u.id">{{ u.nombre }}</option> 
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Tipo de Servicio (Categoría):</label>
+            <select [(ngModel)]="newTicket.descripcion">
+                <option value="" disabled selected>-- Selecciona --</option>
+                <option value="Internet">Internet</option>
+                <option value="Office">Office</option>
+                <option value="Telefonia">Telefonía</option>
+                <option value="Tecnico">Técnico</option>
+            </select>
+        </div>
     </div>
+
     <div class="form-group full-width">
-      <label>Mensaje:</label>
-      <textarea [(ngModel)]="newTicket.mensaje" rows="4"></textarea>
+        <label>Prioridad:</label>
+        <select [(ngModel)]="newTicket.prioridad">
+            <option value="" disabled selected>-- Selecciona --</option>
+            <option value="Alta">🔴 Alta</option>
+            <option value="Media">🟡 Media</option>
+            <option value="Baja">🟢 Baja</option>
+        </select>
     </div>
+
+    <div class="form-group full-width">
+      <label>Detalles del Problema (Notas):</label>
+      <textarea [(ngModel)]="newTicket.notas" rows="3" placeholder="Describe la falla..."></textarea>
+    </div>
+
   </div>
-  <button class="btn-save btn-ticket" (click)="enviarTicket()">Enviar Ticket</button>
+  <button class="btn-save btn-ticket" (click)="enviarTicket()">Guardar Ticket</button>
+</div>
+
+
+<div class="table-container fade-in">
+  <div class="header-row">
+    <h3>Reportes de Hoy</h3>
+    <span class="badge-date">{{ ticketsHoy.length }}</span>
+  </div>
+
+  <table class="simple-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Fecha</th>
+        <th>Nombre del Usuario</th>
+        <th>Departamento</th>
+        <th>Descripción</th>
+        <th>Estado</th>
+        <th>Prioridad</th>
+        <th>Personal Asignado</th>
+        <th>Notas</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let t of ticketsHoy">
+        
+        <td><strong>#{{ t.id }}</strong></td>
+
+        <td class="time-col">{{ t.fecha | date:'dd/MM/yyyy h:mm a' }}</td>
+
+        <td>{{ t.nombre_usuario }}</td>
+
+        <td>{{ t.departamento }}</td>
+
+        <td>
+          <span class="badge" [ngClass]="{
+            'cat-internet': t.descripcion === 'Internet',
+            'cat-office': t.descripcion === 'Office',
+            'cat-telefonia': t.descripcion === 'Telefonia',
+            'cat-tecnico': t.descripcion === 'Tecnico'
+          }">
+            {{ t.descripcion }}
+          </span>
+        </td>
+
+        <td>
+            <span class="badge" [ngClass]="{
+                'status-espera': t.estado === 'en espera',
+                'status-completo': t.estado === 'completo',
+                'status-incompleto': t.estado === 'incompleto'
+            }">
+                {{ t.estado | uppercase }}
+            </span>
+        </td>
+
+        <td>
+            <span class="badge" [ngClass]="{
+                'prio-alta': t.prioridad === 'Alta',
+                'prio-media': t.prioridad === 'Media',
+                'prio-baja': t.prioridad === 'Baja'
+            }">
+                {{ t.prioridad }}
+            </span>
+        </td>
+
+        <td><strong>{{ t.personal }}</strong></td>
+
+<td class="msg-col">
+    <span *ngIf="t.notas.length <= 50">
+        {{ t.notas }}
+    </span>
+
+    <div *ngIf="t.notas.length > 50">
+        <span class="texto-truncado">
+            {{ t.notas | slice:0:50 }}...
+        </span>
+        
+        <div class="ver-mas-container">
+            <a class="link-ver-mas" (click)="verNotaCompleta(t.notas)">
+                Ver más
+            </a>
+        </div>
+    </div>
+</td>
+
+      </tr>
+
+      <tr *ngIf="ticketsHoy.length === 0">
+        <td colspan="9" class="empty-state">No hay reportes hoy.</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
