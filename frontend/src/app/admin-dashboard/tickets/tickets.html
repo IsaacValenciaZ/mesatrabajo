@@ -9,10 +9,29 @@
             <label>Nombre del Usuario:</label>
             <input type="text" [(ngModel)]="newTicket.nombre_usuario" placeholder="">
         </div>
-        <div class="form-group">
-            <label>Departamento:</label>
-            <input type="text" [(ngModel)]="newTicket.departamento" placeholder="">
-        </div>
+       <div class="form-group" style="position: relative;">
+    <label>Departamento:</label>
+    
+    <input 
+      type="text" 
+      class="input-autocomplete"
+      placeholder="Escribe o selecciona..." 
+      [value]="newTicket.departamento"
+      (input)="filtrarDepartamentos($event)"
+      (focus)="mostrarListaDepartamentos = true"
+      (blur)="ocultarListaRetrasada()"
+    >
+
+    <ul class="autocomplete-list fade-in" *ngIf="mostrarListaDepartamentos && departamentosFiltrados.length > 0">
+        <li *ngFor="let dep of departamentosFiltrados" (click)="seleccionarDepartamento(dep)">
+            {{ dep }}
+        </li>
+    </ul>
+
+    <ul class="autocomplete-list fade-in" *ngIf="mostrarListaDepartamentos && departamentosFiltrados.length === 0">
+        <li class="no-results">No se encontraron coincidencias. Se guardará como nuevo.</li>
+    </ul>
+</div>
     </div>
 
     <div class="form-grid-2">

@@ -220,3 +220,72 @@ input:focus, select:focus, textarea:focus {
 .simple-table th:nth-child(7), .simple-table td:nth-child(7) {
   text-align: center;
 }
+
+.input-autocomplete {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #f8fafc;
+    color: #2c3e50;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.input-autocomplete:focus {
+    background-color: #fff;
+    border-color: #e0b472; 
+    box-shadow: 0 0 0 3px rgba(224, 180, 114, 0.2);
+    outline: none;
+}
+
+.autocomplete-list {
+    position: absolute;
+    top: 100%; 
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
+    border: 1px solid #e2e8f0;
+    max-height: 250px; 
+    overflow-y: auto;
+    z-index: 1000; 
+    list-style: none;
+    padding: 0;
+    margin: 5px 0 0 0;
+}
+
+.autocomplete-list li {
+    padding: 12px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.9rem;
+    color: #334155;
+    transition: background 0.2s;
+}
+
+.autocomplete-list li:hover {
+    background-color: #56212f; 
+    color: #c3b08f; 
+    font-weight: 600;
+}
+
+.no-results {
+    color: #94a3b8 !important;
+    font-style: italic;
+    cursor: default !important;
+}
+
+.no-results:hover {
+    background-color: white !important;
+    color: #94a3b8 !important;
+}
+
+.autocomplete-list::-webkit-scrollbar {
+    width: 6px;
+}
+.autocomplete-list::-webkit-scrollbar-thumb {
+    background-color: #c3b08f;
+    border-radius: 4px;
+}

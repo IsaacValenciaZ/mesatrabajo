@@ -1,0 +1,51 @@
+<div class="view-section fade-in">
+  <div class="section-header">
+    <div>
+      <h1>Mis Asignaciones</h1>
+      <p>Tickets Recibidos.</p>
+    </div>
+    <div class="big-counter">
+      <span class="number">{{ ticketsPendientes.length }}</span>
+      <span class="label">Pendientes</span>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-responsive">
+      <table class="simple-table">
+        <thead>
+          <tr>
+            <th>#ID</th>
+            <th>Fecha</th>
+            <th>Solicitante</th>
+            <th>Departamento</th>
+            <th>Problema</th>
+            <th>Prioridad</th>
+            <th class="text-center">Notas</th>
+            <th class="text-center">Estado</th>
+            <th class="text-center">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of ticketsPendientes">
+             <td><strong>#{{ t.id }}</strong></td>
+             <td class="time-col">{{ t.fecha | date:'dd/MM/yyyy' }}</td>
+             <td>{{ t.nombre_usuario }}</td>
+             <td class="depto-col">{{ t.departamento }}</td>
+             <td><span class="badge" [ngClass]="{'cat-internet': t.descripcion === 'Internet', 'cat-office': t.descripcion === 'Office', 'cat-telefonia': t.descripcion === 'Telefonia', 'cat-tecnico': t.descripcion === 'Tecnico'}">{{ t.descripcion }}</span></td>
+             <td><span class="badge" [ngClass]="{'prio-alta': t.prioridad === 'Alta', 'prio-media': t.prioridad === 'Media', 'prio-baja': t.prioridad === 'Baja'}">{{ t.prioridad }}</span></td>
+             <td class="text-center">
+                 <button *ngIf="t.notas" class="btn-icon-small" (click)="verNotaCompleta(t.notas)">Nota</button>
+                 <span *ngIf="!t.notas">-</span>
+             </td>
+             <td class="text-center">{{ t.estado }}</td>
+             <td class="text-center"><button class="btn-action" (click)="cambiarEstado(t)"> Actualizar</button></td>
+          </tr>
+          <tr *ngIf="ticketsPendientes.length === 0 && !cargando">
+            <td colspan="9" class="empty-state"> ¡Todo limpio!</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

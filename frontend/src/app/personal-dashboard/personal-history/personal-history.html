@@ -1,0 +1,61 @@
+<div class="view-section fade-in">
+  
+  <div class="section-header">
+    <div>
+      <h1>Historial de Reportes</h1>
+      <p>Consulta los tickets atendidos.</p>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-responsive">
+      <table class="simple-table history-table">
+        <thead>
+          <tr>
+            <th>#ID</th>
+            <th>Fecha</th> 
+            <th>Solicitante</th>
+             <th >Departamento</th>
+            <th>Problema</th>
+            <th class="text-center">Estado</th>
+            <th class="text-center">Acción</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of ticketsHistorial">
+            <td class="text-muted"><strong>#{{ t.id }}</strong></td>
+            <td class="time-col">{{ t.fecha | date:'dd/MM/yyyy' }}</td>
+
+            <td>{{ t.nombre_usuario }}</td>
+             <td>{{ t.departamento }}</td>
+             <td>
+              <span class="badge" [ngClass]="{
+                'cat-internet': t.descripcion === 'Internet',
+                'cat-office': t.descripcion === 'Office',
+                'cat-telefonia': t.descripcion === 'Telefonia',
+                'cat-tecnico': t.descripcion === 'Tecnico'
+              }">{{ t.descripcion }}</span>
+            </td>
+            
+            <td class="text-center">
+              <span class="badge-completed"> Completado</span>
+            </td>
+
+            <td class="text-center">
+               <button class="btn-text" (click)="cambiarEstado(t)" title="Regresar a pendientes">
+                 Corregir
+               </button>
+            </td>
+          </tr>
+
+          <tr *ngIf="ticketsHistorial.length === 0 && !cargando">
+            <td colspan="6" class="empty-state">
+              Aún no has completado ningún reporte.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

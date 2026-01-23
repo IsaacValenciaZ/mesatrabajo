@@ -1,77 +1,65 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { ApiService } from '../services/api';
-import Swal from 'sweetalert2';
+import { ApiService } from '../../services/api'; 
+import Swal from 'sweetalert2'; 
 
 @Component({
-  selector: 'app-personal-dashboard',
+  selector: 'app-personal-pending',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './personal-dashboard.html',
-  styleUrl: './personal-dashboard.css'
+  templateUrl: './personal-pending.html',
+  styleUrls: ['../personal-dashboard.css'] 
 })
-export class PersonalDashboardComponent implements OnInit {
+export class PersonalPendingComponent implements OnInit {
 
   private apiService = inject(ApiService);
-  private router = inject(Router);
+  private cd = inject(ChangeDetectorRef);
 
   user: any = {};
-  misTickets: any[] = [];
+  ticketsPendientes: any[] = []; 
   cargando = true;
 
   ngOnInit() {
-    this.verificarSesion();
-  }
-
-  verificarSesion() {
     const userStored = localStorage.getItem('usuario_actual');
     if (userStored) {
       this.user = JSON.parse(userStored);
-      
-      if(this.user.rol !== 'personal') {
-        this.router.navigate(['/login']);
-        return;
-      }
-
-      this.cargarMisTickets();
-
-    } else {
-      this.router.navigate(['/login']);
+      this.cargarTickets();
     }
   }
 
-  cargarMisTickets() {
+  cargarTickets() {
     this.cargando = true;
-    this.apiService.getMisTickets(this.user.nombre).subscribe({
+    const cacheBuster = new Date().getTime();
+    
+    this.apiService.getMisTickets(this.user.nombre + '&t=' + cacheBuster).subscribe({
       next: (data) => {
-        this.misTickets = data || [];
+        const todos = data || [];
+        this.ticketsPendientes = todos.filter((t: any) => t.estado !== 'Completo');
         this.cargando = false;
+        this.cd.detectChanges(); 
       },
       error: (err) => {
-        console.error(err);
         this.cargando = false;
       }
     });
   }
 
-  // === NUEVO MÉTODO PARA VER NOTAS ===
   verNotaCompleta(nota: string) {
     Swal.fire({
       title: 'Detalle de la Nota',
       text: nota ? nota : 'Sin información adicional.',
       icon: 'info',
       confirmButtonText: 'Cerrar',
-      confirmButtonColor: '#c3b08f', // Color Beige
+      confirmButtonColor: '#c3b08f',
       background: '#fff',
-      iconColor: '#977e5b' // Icono Bronce
+      iconColor: '#977e5b'
     });
   }
 
   cambiarEstado(ticket: any) {
     Swal.fire({
       title: 'Actualizar Estado',
-      text: `Reporte #${ticket.id} - ${ticket.descripcion}`,
+      text: `Reporte #${ticket.id}`,
       icon: 'question',
       input: 'select',
       inputOptions: {
@@ -82,7 +70,7 @@ export class PersonalDashboardComponent implements OnInit {
       inputValue: ticket.estado,
       showCancelButton: true,
       confirmButtonText: 'Guardar',
-      confirmButtonColor: '#56212f', // Color Vino
+      confirmButtonColor: '#56212f', 
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
@@ -95,7 +83,6 @@ export class PersonalDashboardComponent implements OnInit {
     this.apiService.actualizarEstadoTicket(id, nuevoEstado).subscribe({
       next: (res) => {
         if (res.status === true) {
-          
           const Toast = Swal.mixin({
             toast: true,
             position: 'top-end',
@@ -103,23 +90,12 @@ export class PersonalDashboardComponent implements OnInit {
             timer: 3000,
             timerProgressBar: true
           });
-          
-          Toast.fire({
-            icon: 'success',
-            title: 'Estado actualizado'
-          });
-
-          this.cargarMisTickets(); 
+          Toast.fire({ icon: 'success', title: 'Estado actualizado' });
+          this.cargarTickets(); 
         } else {
-          Swal.fire('Error', res.message || 'No se pudo actualizar', 'error');
+          Swal.fire('Error', 'No se pudo actualizar', 'error');
         }
-      },
-      error: () => Swal.fire('Error', 'Error de conexión', 'error')
+      }
     });
-  }
-
-  logout() {
-    localStorage.removeItem('usuario_actual');
-    this.router.navigate(['/login']);
   }
 }

@@ -45,4 +45,12 @@ export class ApiService {
   }
 
 
+  getMisTickets(nombrePersonal: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/get_tickets_personal.php?personal=${nombrePersonal}`);
+  }
+
+
+  actualizarEstadoTicket(id: number, nuevoEstado: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/update_tickets_personal.php`, { id, estado: nuevoEstado });
+  }
 }

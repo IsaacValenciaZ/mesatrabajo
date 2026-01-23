@@ -12,10 +12,10 @@ import { RouterModule, Router } from '@angular/router';
 export class AdminDashboardComponent {
   private router = inject(Router);
   isSidebarOpen = true;
+  user: any = {nombre: ''};
 
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
-    
   }
 
   logout() {
