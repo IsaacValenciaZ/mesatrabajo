@@ -3,7 +3,7 @@
   <aside class="sidebar" [class.closed]="!isSidebarOpen">
     <div class="sidebar-header">
        <div class="brand">
-         <h2>Bienvenido</h2>
+         <h2>Bienvenido {{ nombreUsuario }}</h2>
          <span class="role-badge">Administrador</span>
        </div>
     </div>
@@ -15,14 +15,18 @@
       <a routerLink="usuarios" routerLinkActive="active" class="nav-btn">
          Personal Activo
       </a>
-      <a routerLink="registro" routerLinkActive="active" class="nav-btn">
-        Registrar Personal
-      </a>
       <a routerLink="tickets-list" routerLinkActive="active" class="nav-btn">
           Historial de Tickets
       </a>
       
       <div class="spacer"></div>
+
+      <div class="user-info-sidebar profile-link" routerLink="perfil">
+        <div class="avatar-circle">{{ nombreUsuario.charAt(0) }}</div>
+        <div class="user-details">
+          <span class="user-name">{{ nombreUsuario }}</span>
+          <span class="user-role">Visualizar Perfil</span> </div>
+      </div>
 
       <button (click)="logout()" class="btn-logout"> Cerrar Sesión</button>
     </nav>

@@ -111,6 +111,7 @@
 
 .spacer { flex: 1; }
 
+
 .user-info-sidebar {
   display: flex;
   align-items: center;
@@ -139,6 +140,16 @@
 .user-details { display: flex; flex-direction: column; }
 .user-name { font-size: 0.9rem; font-weight: 600; color: #fff; }
 .user-role { font-size: 0.75rem; color: #977e5b; margin-top: 2px; }
+
+.profile-link {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.profile-link:hover {
+  background-color: rgba(255, 255, 255, 0.1); 
+  border-color: #977e5b;
+}
 
 .btn-logout {
   background: transparent;

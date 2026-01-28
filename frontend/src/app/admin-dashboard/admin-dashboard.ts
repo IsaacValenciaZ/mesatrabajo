@@ -23,5 +23,15 @@ export class AdminDashboardComponent {
     this.router.navigate(['/login']);
   }
 
+  nombreUsuario: string = '';
+
+  ngOnInit() {
+    const usuarioGuardado = localStorage.getItem('usuario_actual');
+    
+    if (usuarioGuardado) {
+      const usuario = JSON.parse(usuarioGuardado);
+      this.nombreUsuario = usuario.nombre; 
+    }
+  }
   
 }

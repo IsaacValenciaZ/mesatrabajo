@@ -3,7 +3,7 @@
   <aside class="sidebar" [class.closed]="!menuAbierto">
     <div class="sidebar-header">
       <div class="brand">
-        <h2>Mesa de Ayuda</h2>
+        <h2>Bienvenido {{ user.nombre }}</h2>
         <span class="role-badge">Panel Técnico</span>
       </div>
       <!--<button class="close-menu-btn" (click)="toggleMenu()">✕</button>  -->
@@ -15,17 +15,16 @@
 
       <a routerLink="historial" routerLinkActive="active" class="nav-item"> Historial</a>
 
-      <div class="spacer"></div>
+ <div class="spacer"></div>
 
-      <div class="user-info-sidebar">
+      <div class="user-info-sidebar profile-link" routerLink="perfil">
         <div class="avatar-circle">{{ user.nombre?.charAt(0) }}</div>
         <div class="user-details">
           <span class="user-name">{{ user.nombre }}</span>
-          <span class="user-role">Personal</span>
-        </div>
+          <span class="user-role">Visualizar Perfil</span> </div>
       </div>
 
-      <button class="btn-logout" (click)="logout()">Cerrar Sesión</button>
+      <button (click)="logout()" class="btn-logout"> Cerrar Sesión</button>
 
     </nav>
   </aside>

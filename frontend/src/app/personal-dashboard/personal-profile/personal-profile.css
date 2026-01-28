@@ -1,0 +1,72 @@
+.profile-card {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  max-width: 600px;
+  margin: 20px auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  }
+
+.header-profile {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.big-avatar {
+  width: 80px;
+  height: 80px;
+  background-color: #000000; 
+  color: #c3b08f; 
+  font-size: 2.5rem;
+  font-weight: bold;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px auto;
+}
+
+h2 { color: #56212f; margin-bottom: 5px; }
+p { color: #94a3b8; margin: 0; }
+
+.form-group { margin-bottom: 20px; }
+
+label {
+  display: block;
+  font-weight: 600;
+  color: #977e5b; 
+  margin-bottom: 8px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d6d1ca;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #fcfcfc;
+}
+
+input[readonly] {
+  background-color: #e2e8f0;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.btn-update {
+  width: 100%;
+  padding: 15px;
+  background-color: #000000;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-update:hover { background-color: #56212f; }
+
+.fade-in { animation: fadeIn 0.5s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
