@@ -2,13 +2,10 @@
 
   <header>
     <div class="header-top">
-
       <div class="logos-container">
-  <img src="icons/Educacion.svg" class="logo-header" alt="nada">
+        <img src="icons/Educacion.svg" class="logo-header" alt="Logo Educación">
       </div>
-
     </div>
-    
     <div class="color-bar-top"></div>
   </header>
 
@@ -17,19 +14,20 @@
     <div class="login-card-border">
       <div class="login-content">
 
-        
         <div class="empty-space">
           <div class="brand-showcase">
              <img src="icons/seiem.svg" alt="Logo Grande" class="hero-logo">
           </div>
-        
           <div class="blob blob-top"></div>
           <div class="blob blob-bottom"></div>
-        
         </div>
 
-<div class="form-section">
-          <h2>Inicio de sesión</h2>
+        <div class="form-section">
+          <h2>Recuperar Contraseña</h2>
+          
+          <p class="instruction-text">
+            Ingresa tu correo electrónico y te enviaremos instrucciones para restablecer tu acceso.
+          </p>
 
           <div class="group">
             <input required="" class="main-input" type="email" [(ngModel)]="email">
@@ -37,21 +35,14 @@
             <label class="lebal-email">Correo Electrónico</label>
           </div>
 
-          <div class="group">
-            <input required="" class="main-input" type="password" [(ngModel)]="password">
-            <span class="highlight-span"></span>
-            <label class="lebal-email">Contraseña</label>
-          </div>
-
-          <div class="forgot-pass-container">
-            <a routerLink="/recover-account" class="forgot-pass-link">
-              ¿Olvidaste tu contraseña?
-            </a>
-
-          </div>
           <div class="btn-container">
-            <button class="btn-primary" (click)="login()">Ingresar</button>
+            <button class="btn-primary" (click)="enviarCorreo()">Enviar Enlace</button>
           </div>
+
+          <div class="back-link-container">
+            <a routerLink="/login" class="link-back">← Regresar al inicio de sesión</a>
+          </div>
+
         </div>
 
       </div>
@@ -61,7 +52,6 @@
 
   <footer>
     <div class="fondo-pattern"></div>
-
   </footer>
 
 </div>

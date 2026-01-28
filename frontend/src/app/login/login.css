@@ -303,7 +303,24 @@ h2 {
 }
 
 
+.forgot-pass-container {
+  text-align: right;
+  margin-top: -25px; 
+  margin-bottom: 25px; 
+}
 
+.forgot-pass-link {
+  color: #8b2136;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.forgot-pass-link:hover {
+  color: #ba9156; 
+  text-decoration: underline;
+}
 
 
 

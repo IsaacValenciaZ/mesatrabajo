@@ -3,59 +3,63 @@
   <div class="section-header">
     <div>
       <h1>Historial de Reportes</h1>
-      <p>Consulta los tickets atendidos.</p>
+      <p>Consulta tu actividad organizada por días.</p>
     </div>
   </div>
 
-  <div class="table-card">
-    <div class="table-responsive">
-      <table class="simple-table history-table">
-        <thead>
-          <tr>
-            <th>#ID</th>
-            <th>Fecha</th> 
-            <th>Solicitante</th>
-             <th >Departamento</th>
-            <th>Problema</th>
-            <th class="text-center">Estado</th>
-            <th class="text-center">Acción</th>
-
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let t of ticketsHistorial">
-            <td class="text-muted"><strong>#{{ t.id }}</strong></td>
-            <td class="time-col">{{ t.fecha | date:'dd/MM/yyyy' }}</td>
-
-            <td>{{ t.nombre_usuario }}</td>
-             <td>{{ t.departamento }}</td>
-             <td>
-              <span class="badge" [ngClass]="{
-                'cat-internet': t.descripcion === 'Internet',
-                'cat-office': t.descripcion === 'Office',
-                'cat-telefonia': t.descripcion === 'Telefonia',
-                'cat-tecnico': t.descripcion === 'Tecnico'
-              }">{{ t.descripcion }}</span>
-            </td>
-            
-            <td class="text-center">
-              <span class="badge-completed"> Completado</span>
-            </td>
-
-            <td class="text-center">
-               <button class="btn-text" (click)="cambiarEstado(t)" title="Regresar a pendientes">
-                 Corregir
-               </button>
-            </td>
-          </tr>
-
-          <tr *ngIf="ticketsHistorial.length === 0 && !cargando">
-            <td colspan="6" class="empty-state">
-              Aún no has completado ningún reporte.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div *ngIf="gruposPorDia.length === 0 && !cargando" class="empty-general">
+      <div class="empty-state">Aún no tienes historial registrado.</div>
   </div>
+
+  <div *ngFor="let grupo of gruposPorDia" class="day-group fade-in">
+      
+      <div class="date-divider">
+          <div class="left-info">
+              <span class="date-text">{{ grupo.fecha | date:'fullDate' | titlecase }}</span>
+              <span class="count-badge">{{ grupo.tickets.length }} reportes</span>
+          </div>
+
+          <button class="btn-stats" (click)="verEstadisticasDia(grupo)">
+               Ver Rendimiento
+          </button>
+      </div>
+
+      <div class="table-card">
+        <div class="table-responsive">
+          <table class="simple-table history-table">
+            <thead>
+              <tr>
+                <th>#ID</th>
+                <th>Hora</th> 
+                <th>Finalizado</th> 
+                <th>Solicitante</th>
+                <th>Departamento</th>
+                <th>Problema</th>
+                <th class="text-center">Cumplimiento</th>
+                <th class="text-center">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let t of grupo.tickets">
+                <td class="text-muted"><strong>#{{ t.id }}</strong></td>
+                <td class="time-col">{{ t.fecha | date:'HH:mm' }}</td>
+                <td class="time-col" style="color: #555;">{{ t.fecha_fin ? (t.fecha_fin | date:'HH:mm') : '-' }}</td>
+                <td>{{ t.nombre_usuario }}</td>
+                <td>{{ t.departamento }}</td>
+                <td><span class="badge" [ngClass]="{'cat-internet': t.descripcion === 'Internet', 'cat-office': t.descripcion === 'Office', 'cat-telefonia': t.descripcion === 'Telefonia', 'cat-tecnico': t.descripcion === 'Tecnico'}">{{ t.descripcion }}</span></td>
+                <td class="text-center">
+                    <span *ngIf="t.fecha_fin && t.fecha_limite && t.fecha_fin <= t.fecha_limite" class="badge-status success">A tiempo</span>
+                    <span *ngIf="t.fecha_fin && t.fecha_limite && t.fecha_fin > t.fecha_limite" class="badge-status late"> Tarde</span>
+                    <span *ngIf="!t.fecha_limite" class="text-muted" style="font-size: 0.8rem;">-</span>
+                </td>
+                <td class="text-center">
+                   <button class="btn-text" (click)="cambiarEstado(t)" title="Reabrir">Corregir</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  </div>
+
 </div>

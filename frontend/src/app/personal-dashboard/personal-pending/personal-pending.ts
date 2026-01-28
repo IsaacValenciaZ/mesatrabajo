@@ -6,9 +6,9 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-personal-pending',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule], 
   templateUrl: './personal-pending.html',
-  styleUrls: ['../personal-dashboard.css'] 
+  styleUrls: ['./personal-pending.css'] 
 })
 export class PersonalPendingComponent implements OnInit {
 
@@ -18,6 +18,7 @@ export class PersonalPendingComponent implements OnInit {
   user: any = {};
   ticketsPendientes: any[] = []; 
   cargando = true;
+  fechaActual = new Date(); 
 
   ngOnInit() {
     const userStored = localStorage.getItem('usuario_actual');
@@ -35,6 +36,9 @@ export class PersonalPendingComponent implements OnInit {
       next: (data) => {
         const todos = data || [];
         this.ticketsPendientes = todos.filter((t: any) => t.estado !== 'Completo');
+        
+        this.fechaActual = new Date();
+        
         this.cargando = false;
         this.cd.detectChanges(); 
       },
@@ -42,6 +46,11 @@ export class PersonalPendingComponent implements OnInit {
         this.cargando = false;
       }
     });
+  }
+
+  esVencido(fechaLimite: string): boolean {
+    if (!fechaLimite) return false;
+    return new Date(fechaLimite) < this.fechaActual;
   }
 
   verNotaCompleta(nota: string) {

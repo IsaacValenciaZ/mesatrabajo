@@ -86,7 +86,7 @@ export class LoginComponent implements OnInit {
       },
       error: (error: any) => {
         console.error("Error:", error);
-        // 4. Error de conexión (Servidor caído o sin internet)
+        
         Swal.fire({
           icon: 'error',
           title: 'Error de conexión',

@@ -13,10 +13,10 @@ import Swal from 'sweetalert2';
 })
 export class PersonalProfileComponent implements OnInit {
 
-  http = inject(HttpClient);
-  apiUrl = 'http://localhost/mesatrabajoBACKEND/backend/update_profile.php'; 
+  private http = inject(HttpClient);
+  private apiUrl = 'http://localhost/mesatrabajoBACKEND/backend/update_profile.php'; 
 
-  user: any = {};
+  user: any = { nombre: '', email: '' }; 
   newPassword = '';
   confirmPassword = ''; 
 
@@ -27,18 +27,17 @@ export class PersonalProfileComponent implements OnInit {
     }
   }
 
-  actualizarPerfil() {
-    
+  actualizarPerfil() { 
     if (!this.user.nombre || !this.user.email) {
-      Swal.fire('Error', 'El nombre y correo no pueden estar vacíos', 'warning');
+      Swal.fire('Atención', 'El nombre y el correo son obligatorios', 'warning');
       return;
     }
 
     if (this.newPassword || this.confirmPassword) {
-        if (this.newPassword !== this.confirmPassword) {
-            Swal.fire('Error', 'Las contraseñas no coinciden', 'error');
-            return;
-        }
+      if (this.newPassword !== this.confirmPassword) {
+        Swal.fire('Error', 'Las contraseñas no coinciden', 'error');
+        return;
+      }
     }
 
     const payload = {
@@ -51,26 +50,30 @@ export class PersonalProfileComponent implements OnInit {
     this.http.post(this.apiUrl, payload).subscribe({
       next: (res: any) => {
         if (res.status) {
-
-          const updatedUser = { ...this.user }; 
-          localStorage.setItem('usuario_actual', JSON.stringify(updatedUser));
+          
+          const stored = localStorage.getItem('usuario_actual');
+          let fullUser = stored ? JSON.parse(stored) : {};
+          fullUser.nombre = this.user.nombre;
+          fullUser.email = this.user.email;
+          
+          localStorage.setItem('usuario_actual', JSON.stringify(fullUser));
 
           Swal.fire({
             icon: 'success',
-            title: '¡Datos Actualizados!',
+            title: '¡Perfil Actualizado!',
+            text: 'Tus datos se guardaron correctamente.',
             confirmButtonColor: '#56212f'
           }).then(() => {
              window.location.reload();
           });
-          
-          this.newPassword = ''; 
-          this.confirmPassword = '';
 
+          this.newPassword = '';
+          this.confirmPassword = '';
         } else {
           Swal.fire('Error', res.message || 'No se pudo actualizar', 'error');
         }
       },
-      error: () => Swal.fire('Error', 'Error de conexión', 'error')
+      error: () => Swal.fire('Error', 'Fallo de conexión con el servidor', 'error')
     });
   }
 }

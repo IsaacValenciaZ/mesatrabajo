@@ -1,72 +1,103 @@
+/* Tarjeta Principal */
 .profile-card {
   background: white;
   border-radius: 12px;
   padding: 40px;
   max-width: 600px;
-  margin: 20px auto;
+  margin: 30px auto; /* Centrado */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  }
+  border-top: 5px solid #56212f; /* Borde superior VINO */
+}
 
+/* Cabecera con Avatar */
 .header-profile {
   text-align: center;
   margin-bottom: 30px;
 }
 
 .big-avatar {
-  width: 80px;
-  height: 80px;
-  background-color: #000000; 
-  color: #c3b08f; 
-  font-size: 2.5rem;
-  font-weight: bold;
+  width: 90px;
+  height: 90px;
+  background-color: #56212f; /* Fondo VINO */
+  color: #c3b08f; /* Letra BEIGE */
+  font-size: 2.8rem;
+  font-weight: 700;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 15px auto;
+  box-shadow: 0 4px 10px rgba(86, 33, 47, 0.3);
 }
 
-h2 { color: #56212f; margin-bottom: 5px; }
-p { color: #94a3b8; margin: 0; }
+.header-profile h2 {
+  color: #56212f;
+  margin: 0 0 5px 0;
+  font-size: 1.5rem;
+}
 
-.form-group { margin-bottom: 20px; }
+.header-profile p {
+  color: #94a3b8;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* Formulario */
+.form-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
 
 label {
   display: block;
   font-weight: 600;
-  color: #977e5b; 
+  color: #977e5b; /* Texto BRONCE */
   margin-bottom: 8px;
+  font-size: 0.9rem;
 }
 
 input {
   width: 100%;
-  padding: 12px;
+  padding: 12px 15px;
   border: 1px solid #d6d1ca;
   border-radius: 8px;
   font-size: 1rem;
+  color: #333;
   background-color: #fcfcfc;
+  transition: all 0.3s;
+  box-sizing: border-box; 
 }
 
-input[readonly] {
-  background-color: #e2e8f0;
-  color: #64748b;
-  cursor: not-allowed;
+input:focus {
+  border-color: #56212f;
+  background-color: #fff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(86, 33, 47, 0.1);
 }
 
+/* Botón Actualizar */
 .btn-update {
   width: 100%;
   padding: 15px;
-  background-color: #000000;
+  background-color: #56212f; /* Fondo VINO */
   color: white;
   border: none;
   border-radius: 8px;
   font-size: 1rem;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
-  transition: 0.3s;
+  transition: transform 0.2s, background-color 0.2s;
+  margin-top: 10px;
 }
 
-.btn-update:hover { background-color: #56212f; }
+.btn-update:hover {
+  background-color: #3d1721;
+  transform: translateY(-2px);
+}
 
 .fade-in { animation: fadeIn 0.5s ease-out; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

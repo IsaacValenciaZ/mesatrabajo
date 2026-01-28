@@ -2,7 +2,7 @@
   <div class="section-header">
     <div>
       <h1>Mis Asignaciones</h1>
-      <p>Tickets Recibidos.</p>
+      <p>Tickets pendientes de atención.</p>
     </div>
     <div class="big-counter">
       <span class="number">{{ ticketsPendientes.length }}</span>
@@ -16,8 +16,8 @@
         <thead>
           <tr>
             <th>#ID</th>
-            <th>Fecha</th>
-            <th>Solicitante</th>
+            <th>Fecha Solicitud</th>
+            <th>Vencimiento (24h)</th> <th>Solicitante</th>
             <th>Departamento</th>
             <th>Problema</th>
             <th>Prioridad</th>
@@ -29,20 +29,45 @@
         <tbody>
           <tr *ngFor="let t of ticketsPendientes">
              <td><strong>#{{ t.id }}</strong></td>
+             
              <td class="time-col">{{ t.fecha | date:'dd/MM/yyyy' }}</td>
+
+             <td class="time-col">
+                <div style="font-size: 0.9rem; margin-bottom: 4px;">
+                   {{ t.fecha_limite ? (t.fecha_limite | date:'dd/MM HH:mm') : 'N/A' }}
+                </div>
+                
+                <span *ngIf="esVencido(t.fecha_limite)" class="badge-status late">
+                    Vencido
+                </span>
+                <span *ngIf="t.fecha_limite && !esVencido(t.fecha_limite)" class="badge-status pending">
+                    En curso
+                </span>
+             </td>
+
              <td>{{ t.nombre_usuario }}</td>
              <td class="depto-col">{{ t.departamento }}</td>
+             
              <td><span class="badge" [ngClass]="{'cat-internet': t.descripcion === 'Internet', 'cat-office': t.descripcion === 'Office', 'cat-telefonia': t.descripcion === 'Telefonia', 'cat-tecnico': t.descripcion === 'Tecnico'}">{{ t.descripcion }}</span></td>
+             
              <td><span class="badge" [ngClass]="{'prio-alta': t.prioridad === 'Alta', 'prio-media': t.prioridad === 'Media', 'prio-baja': t.prioridad === 'Baja'}">{{ t.prioridad }}</span></td>
+             
              <td class="text-center">
                  <button *ngIf="t.notas" class="btn-icon-small" (click)="verNotaCompleta(t.notas)">Nota</button>
                  <span *ngIf="!t.notas">-</span>
              </td>
-             <td class="text-center">{{ t.estado }}</td>
+             
+             <td class="text-center">
+               <span class="badge" [ngClass]="{
+                 'status-espera': t.estado === 'En espera',
+                 'status-incompleto': t.estado === 'Incompleto'
+               }">{{ t.estado }}</span>
+             </td>
+             
              <td class="text-center"><button class="btn-action" (click)="cambiarEstado(t)"> Actualizar</button></td>
           </tr>
           <tr *ngIf="ticketsPendientes.length === 0 && !cargando">
-            <td colspan="9" class="empty-state"> ¡Todo limpio!</td>
+            <td colspan="10" class="empty-state"> ¡Todo limpio! No tienes pendientes.</td>
           </tr>
         </tbody>
       </table>
