@@ -3,12 +3,27 @@
   <div class="section-header">
     <div>
       <h1>Historial de Reportes</h1>
-      <p>Consulta tu actividad organizada por días.</p>
+      <p>Consulta tus tickets organizados por mes.</p>
+    </div>
+    
+    <div class="filters-container">
+        <select class="month-select" [(ngModel)]="mesSeleccionado" (change)="aplicarFiltroMes()">
+            <option *ngFor="let m of mesesDisponibles" [value]="m">
+                {{ obtenerNombreMes(m) }}
+            </option>
+            <option *ngIf="mesesDisponibles.length === 0" value="" disabled>Sin registros</option>
+        </select>
+
+       <button class="btn-summary" (click)="verResumenMensual()" title="Ver Resumen Mensual">
+             <span class="material-symbols-outlined">bar_chart</span>
+        </button>
     </div>
   </div>
 
-  <div *ngIf="gruposPorDia.length === 0 && !cargando" class="empty-general">
-      <div class="empty-state">Aún no tienes historial registrado.</div>
+  <div *ngIf="ticketsFiltrados.length === 0 && !cargando" class="empty-general">
+      <div class="empty-state">
+          No hay reportes en el mes seleccionado.
+      </div>
   </div>
 
   <div *ngFor="let grupo of gruposPorDia" class="day-group fade-in">
@@ -18,10 +33,11 @@
               <span class="date-text">{{ grupo.fecha | date:'fullDate' | titlecase }}</span>
               <span class="count-badge">{{ grupo.tickets.length }} reportes</span>
           </div>
-
-          <button class="btn-stats" (click)="verEstadisticasDia(grupo)">
-               Ver Rendimiento
+          
+          <button class="btn-stats" (click)="verEstadisticasDia(grupo)" title="Ver Estadísticas Diarias">
+             <span class="material-symbols-outlined">donut_large</span>
           </button>
+
       </div>
 
       <div class="table-card">
@@ -33,8 +49,9 @@
                 <th>Hora</th> 
                 <th>Finalizado</th> 
                 <th>Solicitante</th>
-                <th>Departamento</th>
+                <th>Depto</th>
                 <th>Problema</th>
+                <th class="text-center">Estado Final</th>
                 <th class="text-center">Cumplimiento</th>
                 <th class="text-center">Acción</th>
               </tr>
@@ -46,14 +63,32 @@
                 <td class="time-col" style="color: #555;">{{ t.fecha_fin ? (t.fecha_fin | date:'HH:mm') : '-' }}</td>
                 <td>{{ t.nombre_usuario }}</td>
                 <td>{{ t.departamento }}</td>
-                <td><span class="badge" [ngClass]="{'cat-internet': t.descripcion === 'Internet', 'cat-office': t.descripcion === 'Office', 'cat-telefonia': t.descripcion === 'Telefonia', 'cat-tecnico': t.descripcion === 'Tecnico'}">{{ t.descripcion }}</span></td>
-                <td class="text-center">
-                    <span *ngIf="t.fecha_fin && t.fecha_limite && t.fecha_fin <= t.fecha_limite" class="badge-status success">A tiempo</span>
-                    <span *ngIf="t.fecha_fin && t.fecha_limite && t.fecha_fin > t.fecha_limite" class="badge-status late"> Tarde</span>
-                    <span *ngIf="!t.fecha_limite" class="text-muted" style="font-size: 0.8rem;">-</span>
+                <td>
+                    <span class="badge" [ngClass]="{
+                        'cat-internet': t.descripcion === 'Internet', 
+                        'cat-office': t.descripcion === 'Office', 
+                        'cat-telefonia': t.descripcion === 'Telefonia', 
+                        'cat-tecnico': t.descripcion === 'Tecnico'
+                    }">{{ t.descripcion }}</span>
                 </td>
+                
                 <td class="text-center">
-                   <button class="btn-text" (click)="cambiarEstado(t)" title="Reabrir">Corregir</button>
+                   <span *ngIf="t.estado === 'Completo'" class="badge-completed">Completado</span>
+                   <span *ngIf="t.estado === 'Incompleto'" class="badge-incomplete">Incompleto</span>
+                </td>
+
+                <td class="text-center">
+                    <div *ngIf="t.estado === 'Completo'">
+                        <span *ngIf="t.fecha_fin && t.fecha_limite && t.fecha_fin <= t.fecha_limite" class="badge-status success">A tiempo</span>
+                        <span *ngIf="t.fecha_fin && t.fecha_limite && t.fecha_fin > t.fecha_limite" class="badge-status late">Tarde</span>
+                    </div>
+                    <div *ngIf="t.estado === 'Incompleto'">
+                        <span class="text-muted" style="font-size: 0.8rem;">No aplica</span>
+                    </div>
+                </td>
+
+                <td class="text-center">
+                   <button class="btn-text" (click)="cambiarEstado(t)" title="Regresar a pendientes">Corregir</button>
                 </td>
               </tr>
             </tbody>
@@ -61,5 +96,4 @@
         </div>
       </div>
   </div>
-
 </div>

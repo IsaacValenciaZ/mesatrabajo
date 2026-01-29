@@ -1,39 +1,94 @@
+<div class="profile-page-container fade-in">
 
-<div class="profile-card fade-in">
-  
-  <div class="header-profile">
-    <div class="big-avatar">{{ user.nombre?.charAt(0) }}</div>
-    <h2>Mi Perfil</h2>
-    <p>Gestiona tu Información Personal</p>
+  <div class="profile-card">
+    <div class="profile-header-bg">
+      <div class="avatar-container">
+         <div class="big-avatar">{{ user.nombre?.charAt(0) }}</div>
+      </div>
+    </div>
+
+    <div class="profile-body">
+      <div class="header-text">
+          <h2>{{ user.nombre }}</h2>
+          <p class="role-badge">Personal Administrativo</p>
+      </div>
+
+      <div class="form-content">
+        <div class="form-row">
+            <div class="form-group">
+              <label>Nombre Completo</label>
+              <div class="input-wrapper">
+                  <span class="material-symbols-outlined icon">person</span>
+                  <input type="text" [(ngModel)]="user.nombre">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Correo Electrónico</label>
+              <div class="input-wrapper">
+                  <span class="material-symbols-outlined icon">mail</span>
+                  <input type="email" [(ngModel)]="user.email">
+              </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+        <p class="section-title">Seguridad</p>
+
+        <div class="form-row">
+            <div class="form-group">
+              <label>Nueva Contraseña</label>
+              <div class="input-wrapper">
+                  <span class="material-symbols-outlined icon">lock</span>
+                  <input type="password" [(ngModel)]="newPassword" placeholder="Solo si deseas cambiarla">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Confirmar</label>
+              <div class="input-wrapper">
+                  <span class="material-symbols-outlined icon">lock_reset</span>
+                  <input type="password" [(ngModel)]="confirmPassword" placeholder="Confirma nueva contraseña">
+              </div>
+            </div>
+        </div>
+
+        <button class="btn-update" (click)="actualizarPerfil()">
+          <span class="material-symbols-outlined">save</span> Guardar
+        </button>
+      </div>
+    </div>
   </div>
 
-  <div class="form-content">
-    
-    <div class="form-group">
-      <label>Nombre Completo:</label>
-      <input type="text" [(ngModel)]="user.nombre" placeholder="Tu nombre">
-    </div>
+  <div class="stats-grid">
+      
+      <div class="stats-card">
+          <div class="stats-header">
+              <h3>Rendimiento General del Mes de {{ tituloMesActual }}</h3>
+          </div>
+          <div class="stats-content">
+              <div class="chart-wrapper">
+                  <canvas id="profileChart"></canvas>
+                  <div class="chart-center-text">
+                      <span class="big-number">{{ totalTickets }}</span>
+                      <span class="label">Total</span>
+                  </div>
+              </div>
+              <div class="stats-legend">
+                  <div class="legend-item"><div class="dot green"></div> <span class="count">{{ completados }}</span> Completos</div>
+                  <div class="legend-item"><div class="dot red"></div> <span class="count">{{ incompletos }}</span> Pendientes</div>
+                  <div class="efficiency-box">Eficiencia: <strong>{{ eficiencia }}%</strong></div>
+              </div>
+          </div>
+      </div>
 
-    <div class="form-group">
-      <label>Correo Electrónico:</label>
-      <input type="email" [(ngModel)]="user.email" placeholder="tucorreo@ejemplo.com">
-    </div>
-
-    <hr style="border: 0; border-top: 1px solid #eee; margin: 25px 0;">
-
-    <div class="form-group">
-      <label>Nueva Contraseña (Opcional):</label>
-      <input type="password" [(ngModel)]="newPassword" placeholder="Escribe solo si deseas cambiarla...">
-    </div>
-
-    <div class="form-group">
-      <label>Confirmar Contraseña:</label>
-      <input type="password" [(ngModel)]="confirmPassword" placeholder="Repite la nueva contraseña...">
-    </div>
-
-    <button class="btn-update" (click)="actualizarPerfil()">
-      Guardar Cambios
-    </button>
+      <div class="stats-card evolution-card">
+          <div class="stats-header">
+              <h3>Evolución Mensual</h3>
+              <p>Tu efectividad en el año</p>
+          </div>
+          <div class="evolution-chart-wrapper">
+              <canvas id="monthlyChart"></canvas>
+          </div>
+      </div>
 
   </div>
 </div>

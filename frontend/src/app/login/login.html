@@ -29,34 +29,59 @@
         </div>
 
 <div class="form-section">
-          <h2>Inicio de sesión</h2>
+          
+          <div *ngIf="!vistaRecuperar" class="fade-in-section">
+            <h2>Inicio de sesión</h2>
 
-          <div class="group">
-            <input required="" class="main-input" type="email" [(ngModel)]="email">
-            <span class="highlight-span"></span>
-            <label class="lebal-email">Correo Electrónico</label>
+            <div class="group">
+              <input required="" class="main-input" type="email" [(ngModel)]="email">
+              <span class="highlight-span"></span>
+              <label class="lebal-email">Correo Electrónico</label>
+            </div>
+
+            <div class="group">
+              <input required="" class="main-input" type="password" [(ngModel)]="password">
+              <span class="highlight-span"></span>
+              <label class="lebal-email">Contraseña</label>
+            </div>
+
+            <div class="forgot-pass-container">
+              <a (click)="toggleVista()" class="forgot-pass-link" style="cursor: pointer;">
+                ¿Olvidaste tu contraseña?
+              </a>
+            </div>
+
+            <div class="btn-container">
+              <button class="btn-primary" (click)="login()">Ingresar</button>
+            </div>
           </div>
 
-          <div class="group">
-            <input required="" class="main-input" type="password" [(ngModel)]="password">
-            <span class="highlight-span"></span>
-            <label class="lebal-email">Contraseña</label>
+          <div *ngIf="vistaRecuperar" class="fade-in-section">
+            <h2>Recuperar Cuenta</h2>
+            
+            <p style="color: #666; font-size: 0.9rem; margin-bottom: 30px;">
+              Ingresa tu correo electrónico y te un codigo de recuperacion.
+            </p>
+
+            <div class="group">
+              <input required="" class="main-input" type="email" [(ngModel)]="email">
+              <span class="highlight-span"></span>
+              <label class="lebal-email">Correo Electrónico</label>
+            </div>
+
+            <div class="btn-container" style="justify-content: space-between; align-items: center;">
+              <a (click)="toggleVista()" style="color: #8b2136; cursor: pointer; font-weight: 600;">
+                ← Volver
+              </a>
+
+              <button class="btn-primary" (click)="enviarCorreoRecuperacion()">Enviar</button>
+            </div>
           </div>
 
-          <div class="forgot-pass-container">
-            <a routerLink="/recover-account" class="forgot-pass-link">
-              ¿Olvidaste tu contraseña?
-            </a>
-
-          </div>
-          <div class="btn-container">
-            <button class="btn-primary" (click)="login()">Ingresar</button>
-          </div>
         </div>
 
       </div>
     </div>
-
   </main>
 
   <footer>

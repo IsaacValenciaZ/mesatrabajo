@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './login/login';
-import { RecoverAccountComponent } from './login/recover-account/recover-account';
 
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard';
 import { UsersListComponent } from './admin-dashboard/users-list/users-list';
@@ -23,8 +22,6 @@ export const routes: Routes = [
 { path: '', redirectTo: '/login', pathMatch: 'full' },
     
     { path: 'login', component: LoginComponent },
-
-    { path: 'recover-account', component: RecoverAccountComponent },
      
     
      

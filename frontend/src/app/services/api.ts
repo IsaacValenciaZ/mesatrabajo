@@ -30,8 +30,6 @@ export class ApiService {
     return this.http.get<any[]>(`${this.baseUrl}/get_users.php`);
   }
 
-
-
   createTicket(ticketData: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/create_tickets.php`, ticketData);
   }

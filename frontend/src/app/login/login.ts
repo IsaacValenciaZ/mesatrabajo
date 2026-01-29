@@ -17,6 +17,8 @@ export class LoginComponent implements OnInit {
   email = '';
   password = '';
   
+vistaRecuperar = false;
+
   private apiService = inject(ApiService);
   private router = inject(Router);
 
@@ -40,6 +42,10 @@ export class LoginComponent implements OnInit {
     } else {
       this.router.navigate(['/personal']);
     }
+  }
+
+  toggleVista() {
+    this.vistaRecuperar = !this.vistaRecuperar;
   }
 
   login() {
@@ -94,6 +100,24 @@ export class LoginComponent implements OnInit {
           confirmButtonColor: '#2c3e50'
         });
       }
+    });
+  }
+
+
+  enviarCorreoRecuperacion() {
+    if (!this.email) {
+      Swal.fire('Atención', 'Por favor ingresa tu correo electrónico para continuar.', 'warning');
+      return;
+    }
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Solicitud Enviada',
+      text: 'Se envio un correo para confirmar.',
+      confirmButtonColor: '#8b2136'
+    }).then(() => {
+
+      this.toggleVista();
     });
   }
 }

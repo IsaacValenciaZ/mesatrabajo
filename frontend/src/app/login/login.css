@@ -318,7 +318,7 @@ h2 {
 }
 
 .forgot-pass-link:hover {
-  color: #ba9156; 
+  color: #ba9156; /* Color Dorado al pasar el mouse */
   text-decoration: underline;
 }
 
