@@ -32,7 +32,7 @@ export class PersonalPendingComponent implements OnInit {
     this.cargando = true;
     const cacheBuster = new Date().getTime();
     
-    this.apiService.getMisTickets(this.user.nombre + '&t=' + cacheBuster).subscribe({
+    this.apiService.getMisTickets(this.user.id).subscribe({
       next: (data) => {
         const todos = data || [];
         this.ticketsPendientes = todos.filter((t: any) => t.estado !== 'Completo');

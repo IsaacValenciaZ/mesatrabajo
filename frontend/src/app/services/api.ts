@@ -43,8 +43,8 @@ export class ApiService {
   }
 
 
-  getMisTickets(nombrePersonal: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/get_tickets_personal.php?personal=${nombrePersonal}`);
+  getMisTickets(idUsuario: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/get_tickets_personal.php?personal=${idUsuario}`);
   }
 
 

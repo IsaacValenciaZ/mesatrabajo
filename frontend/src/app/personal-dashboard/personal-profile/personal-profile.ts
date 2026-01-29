@@ -25,15 +25,14 @@ export class PersonalProfileComponent implements OnInit {
   newPassword = '';
   confirmPassword = ''; 
   
-  // Variables para la gráfica y el título
-  tituloMesActual = ''; // <--- NUEVA VARIABLE PARA EL TÍTULO
+  tituloMesActual = ''; 
   totalTickets = 0;
   completados = 0;
   incompletos = 0;
   eficiencia = 0;
 
   ngOnInit() {
-    this.generarTituloMes(); // <--- Generamos el título al iniciar
+    this.generarTituloMes(); 
     const stored = localStorage.getItem('usuario_actual');
     if (stored) {
       this.user = JSON.parse(stored);

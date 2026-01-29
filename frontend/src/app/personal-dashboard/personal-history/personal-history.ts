@@ -39,7 +39,7 @@ export class PersonalHistoryComponent implements OnInit {
     this.cargando = true;
     const cacheBuster = new Date().getTime();
     
-    this.apiService.getMisTickets(this.user.nombre + '&t=' + cacheBuster).subscribe({
+    this.apiService.getMisTickets(this.user.id).subscribe({
       next: (data) => {
         const rawData = data || [];
         this.ticketsTodos = rawData.filter((t: any) => 
