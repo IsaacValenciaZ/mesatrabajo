@@ -159,13 +159,22 @@ export class TicketsComponent implements OnInit {
 
     const tecnico = this.usersList.find(u => u.id == this.newTicket.personalId);
 
+    const adminActual = localStorage.getItem('usuario_actual');
+    let idAdmin = null;
+    if (adminActual) {
+        const adminObj = JSON.parse(adminActual);
+        idAdmin = adminObj.id;
+    }
+
+
     const ticketParaBD = {
       nombre_usuario: this.newTicket.nombre_usuario,
       departamento: this.newTicket.departamento,
       descripcion: this.newTicket.descripcion, 
       prioridad: this.newTicket.prioridad,
       personal: tecnico ? tecnico.nombre : 'Desconocido',
-      notas: this.newTicket.notas
+      notas: this.newTicket.notas,
+      admin_id: idAdmin 
     };
 
     this.apiService.createTicket(ticketParaBD).subscribe({
