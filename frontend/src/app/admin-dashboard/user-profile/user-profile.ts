@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -19,6 +19,7 @@ export class UserProfileComponent implements OnInit {
 
   private http = inject(HttpClient);
   private apiService = inject(ApiService);
+  private cd = inject(ChangeDetectorRef);
   private apiUrl = 'http://localhost/mesatrabajoBACKEND/backend/update_profile.php'; 
 
   user: any = { nombre: '', email: '' }; 
@@ -31,15 +32,18 @@ export class UserProfileComponent implements OnInit {
   ngOnInit() {
     this.generarTituloMes(); 
     const stored = localStorage.getItem('usuario_actual');
+    
     if (stored) {
       this.user = JSON.parse(stored);
       
-     if (this.user.nombre) {
+      if (this.user.nombre) {
           this.cargarEstadisticasAsignadas(this.user.nombre); 
       }
 
       if (this.user.id) {
-          this.cargarEstadisticasCreadas(this.user.id);
+          setTimeout(() => {
+              this.cargarEstadisticasCreadas(this.user.id);
+          }, 100);
       }
     }
   }
@@ -51,14 +55,13 @@ export class UserProfileComponent implements OnInit {
     this.tituloMesActual = `${mes.charAt(0).toUpperCase() + mes.slice(1)}/${anio}`;
   }
 
-  // --- 1. ASIGNADOS (Recibe STRING) ---
   cargarEstadisticasAsignadas(nombre: string) {
     this.apiService.getMisTickets(nombre).subscribe({
       next: (data: any[]) => {
         const todos = data || [];
         this.procesarEficienciaMensual(todos);
       },
-      error: (e) => console.error("Error asignados:", e)
+      error: (e) => console.error(e)
     });
   }
 
@@ -111,24 +114,26 @@ export class UserProfileComponent implements OnInit {
       }
   }
 
-  // --- 2. CREADOS (Recibe NUMBER) ---
   cargarEstadisticasCreadas(id: number) {
       this.apiService.getTicketsCreadosPorAdmin(id).subscribe({
           next: (data: any[]) => {
               this.ticketsCreadosData = data || [];
               
-              // Mes Actual
               const fechaHoy = new Date();
               const mesStr = String(fechaHoy.getMonth() + 1).padStart(2, '0');
               const prefijoMes = `${fechaHoy.getFullYear()}-${mesStr}`;
               const ticketsEsteMes = this.ticketsCreadosData.filter(t => t.fecha && t.fecha.startsWith(prefijoMes));
               this.creadosMesActual = ticketsEsteMes.length;
-              this.renderChartCreadosMes();
 
-              // Anual
               this.procesarRitmoAnual();
+              
+              setTimeout(() => {
+                  this.renderChartCreadosMes();
+                  this.renderChartRitmoAnual();
+                  this.cd.detectChanges();
+              }, 0);
           },
-          error: (err) => console.error("Error creados:", err)
+          error: (err) => console.error("Error admin stats:", err)
       });
   }
 
@@ -137,7 +142,7 @@ export class UserProfileComponent implements OnInit {
       if (ctx) {
           const existingChart = Chart.getChart(ctx);
           if (existingChart) existingChart.destroy();
-          // Lógica visual: si es 0 ponemos gris, si hay datos azul
+          
           const hayDatos = this.creadosMesActual > 0;
           new Chart(ctx, {
               type: 'doughnut',
@@ -157,31 +162,43 @@ export class UserProfileComponent implements OnInit {
       }
   }
 
+  datosAnualesLabels: string[] = [];
+  datosAnualesValores: number[] = [];
+
   procesarRitmoAnual() {
       const anioActual = new Date().getFullYear();
-      const mesesLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-      const datosPorMes = new Array(12).fill(0); 
+      this.datosAnualesLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+      this.datosAnualesValores = new Array(12).fill(0); 
 
       this.ticketsCreadosData.forEach(t => {
           if (!t.fecha) return;
-          const fechaT = new Date(t.fecha);
-          if (fechaT.getFullYear() === anioActual) {
+          
+   
+          const fechaString = t.fecha.replace(' ', 'T'); 
+          const fechaT = new Date(fechaString);
+          
+          if (!isNaN(fechaT.getTime()) && fechaT.getFullYear() === anioActual) {
               const mesIndex = fechaT.getMonth(); 
-              datosPorMes[mesIndex]++;
+              this.datosAnualesValores[mesIndex]++;
           }
       });
+      
+      console.log("Datos Anuales Calculados:", this.datosAnualesValores); 
+  }
 
+  renderChartRitmoAnual() {
       const ctx = document.getElementById('createdHistoryChart') as HTMLCanvasElement;
       if (ctx) {
           const existingChart = Chart.getChart(ctx);
           if (existingChart) existingChart.destroy();
+          
           new Chart(ctx, {
               type: 'bar',
               data: {
-                  labels: mesesLabels,
+                  labels: this.datosAnualesLabels,
                   datasets: [{
                       label: 'Tickets Creados',
-                      data: datosPorMes,
+                      data: this.datosAnualesValores,
                       backgroundColor: '#3b82f6',
                       borderRadius: 4,
                       barPercentage: 0.6
