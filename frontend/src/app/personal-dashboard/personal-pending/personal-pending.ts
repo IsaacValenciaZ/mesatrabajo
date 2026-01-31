@@ -32,12 +32,31 @@ export class PersonalPendingComponent implements OnInit {
     this.cargando = true;
     const cacheBuster = new Date().getTime();
     
-    this.apiService.getMisTickets(this.user.id).subscribe({
+    // Usamos 'nombre' o 'id' según como haya quedado tu servicio (aquí respeto tu código actual)
+    this.apiService.getMisTickets(this.user.nombre).subscribe({
       next: (data) => {
         const todos = data || [];
-        this.ticketsPendientes = todos.filter((t: any) => t.estado !== 'Completo');
-        
         this.fechaActual = new Date();
+
+        // 1. BARRIDO AUTOMÁTICO DE VENCIDOS
+        todos.forEach((t: any) => {
+            // Solo analizamos los que están activos (ni completos, ni incompletos)
+            if (t.estado !== 'Completo' && t.estado !== 'Incompleto') {
+                if (t.fecha_limite && new Date(t.fecha_limite) < this.fechaActual) {
+                    
+                    // ¡VENCIDO! Lo marcamos como Incompleto silenciosamente
+                    this.marcarComoVencido(t.id);
+                    
+                    // Lo marcamos localmente para que el filtro de abajo lo oculte ya
+                    t.estado = 'Incompleto'; 
+                }
+            }
+        });
+
+        // 2. FILTRO: Mostrar solo lo que NO está completo NI incompleto
+        this.ticketsPendientes = todos.filter((t: any) => 
+            t.estado !== 'Completo' && t.estado !== 'Incompleto'
+        );
         
         this.cargando = false;
         this.cd.detectChanges(); 
@@ -46,6 +65,14 @@ export class PersonalPendingComponent implements OnInit {
         this.cargando = false;
       }
     });
+  }
+
+  // Función auxiliar silenciosa (sin alertas)
+  marcarComoVencido(id: number) {
+      this.apiService.actualizarEstadoTicket(id, 'Incompleto').subscribe({
+          next: () => console.log(`Ticket ${id} movido a historial por vencimiento.`),
+          error: (e) => console.error(e)
+      });
   }
 
   esVencido(fechaLimite: string): boolean {
@@ -73,7 +100,7 @@ export class PersonalPendingComponent implements OnInit {
       input: 'select',
       inputOptions: {
         'En espera': '🟡 En espera',
-        'Incompleto': '🔴 Incompleto',
+        'Incompleto': '🔴 Incompleto', // Opción manual
         'Completo': '🟢 Completo'
       },
       inputValue: ticket.estado,
@@ -93,11 +120,7 @@ export class PersonalPendingComponent implements OnInit {
       next: (res) => {
         if (res.status === true) {
           const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true
+            toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true
           });
           Toast.fire({ icon: 'success', title: 'Estado actualizado' });
           this.cargarTickets(); 

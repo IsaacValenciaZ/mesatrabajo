@@ -38,10 +38,10 @@ export class PersonalHistoryComponent implements OnInit {
   cargarTickets() {
     this.cargando = true;
     const cacheBuster = new Date().getTime();
-    
-    this.apiService.getMisTickets(this.user.id).subscribe({
+    this.apiService.getMisTickets(this.user.nombre).subscribe({
       next: (data) => {
         const rawData = data || [];
+        // Filtramos completos e incompletos (que ahora son los vencidos)
         this.ticketsTodos = rawData.filter((t: any) => 
             t.estado === 'Completo' || t.estado === 'Incompleto'
         );
@@ -232,7 +232,7 @@ export class PersonalHistoryComponent implements OnInit {
   calcularEstadisticas(listaTickets: any[]) {
       let total = listaTickets.length;
       let completos = 0;
-      let incompletos = 0;
+      let vencidos = 0; // NUEVA VARIABLE PARA VENCIDOS (Antes Incompletos)
       let aTiempo = 0;
       let tarde = 0;
       let sumaMinutos = 0;
@@ -247,7 +247,7 @@ export class PersonalHistoryComponent implements OnInit {
             completos++;
             if (t.fecha_fin && t.fecha_limite) {
                if (t.fecha_fin <= t.fecha_limite) aTiempo++;
-               else tarde++;
+               else tarde++; // Completado pero tarde
             } else {
                tarde++; 
             }
@@ -259,18 +259,22 @@ export class PersonalHistoryComponent implements OnInit {
                
                if (diff > 0) {
                   const minutos = diff / (1000 * 60);
-                  const horas = minutos / 60;
-
+                  // Usamos minutos directos para mejor precisión
                   sumaMinutos += minutos;
                   conteoConTiempo++;
 
-                  if (horas < 1) rapido++;
-                  else if (horas <= 24) normal++;
-                  else lento++;
+                  if (minutos < 60) { 
+                      rapido++; 
+                  } else if (minutos <= 1440) { // 24 horas
+                      normal++; 
+                  } else { 
+                      lento++; 
+                  }
                }
             }
          } else if (t.estado === 'Incompleto') {
-            incompletos++;
+            // CORRECCIÓN: Aquí es donde contamos los vencidos
+            vencidos++;
          }
       });
 
@@ -282,7 +286,8 @@ export class PersonalHistoryComponent implements OnInit {
          tiempoPromedio = `${hrs}h ${mins}m`;
       }
 
-      return { total, completos, incompletos, aTiempo, tarde, tiempoPromedio, rapido, normal, lento };
+      // Devolvemos 'vencidos' para usarlo en las gráficas
+      return { total, completos, vencidos, aTiempo, tarde, tiempoPromedio, rapido, normal, lento };
   }
 
   renderizarGraficas(idEstatus: string, idPuntualidad: string, idTiempos: string, stats: any) {
@@ -291,10 +296,10 @@ export class PersonalHistoryComponent implements OnInit {
           new Chart(ctx1, {
             type: 'doughnut',
             data: {
-                labels: ['Completos', 'Incompletos'],
+                labels: ['Completos', 'Vencidos'], 
                 datasets: [{
-                    data: [stats.completos, stats.incompletos],
-                    backgroundColor: ['#22c55e', '#ef4444'],
+                    data: [stats.completos, stats.vencidos],
+                    backgroundColor: ['#22c55e', '#000000'], 
                     hoverOffset: 4
                 }]
             },
@@ -307,10 +312,10 @@ export class PersonalHistoryComponent implements OnInit {
           new Chart(ctx2, {
             type: 'pie',
             data: {
-                labels: ['A tiempo', 'Tarde'],
+                labels: ['A tiempo', 'Tarde', 'Vencido'],
                 datasets: [{
-                    data: [stats.aTiempo, stats.tarde],
-                    backgroundColor: ['#166534', '#ef4444'],
+                    data: [stats.aTiempo, stats.tarde, stats.vencidos],
+                    backgroundColor: ['#166534', '#ef4444', '#000000'], 
                     hoverOffset: 4
                 }]
             },
@@ -318,6 +323,7 @@ export class PersonalHistoryComponent implements OnInit {
           });
       }
 
+      // Gráfica 3: Tiempos
       const ctx3 = document.getElementById(idTiempos) as HTMLCanvasElement;
       if(ctx3) {
           new Chart(ctx3, {

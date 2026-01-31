@@ -53,7 +53,7 @@
              <td><span class="badge" [ngClass]="{'prio-alta': t.prioridad === 'Alta', 'prio-media': t.prioridad === 'Media', 'prio-baja': t.prioridad === 'Baja'}">{{ t.prioridad }}</span></td>
              
              <td class="text-center">
-                 <button *ngIf="t.notas" class="btn-icon-small" (click)="verNotaCompleta(t.notas)">Nota</button>
+                 <button *ngIf="t.notas" class="btn-icon-small" (click)="verNotaCompleta(t.notas)"><span class="material-symbols-outlined icon">read_more</span></button>
                  <span *ngIf="!t.notas">-</span>
              </td>
              

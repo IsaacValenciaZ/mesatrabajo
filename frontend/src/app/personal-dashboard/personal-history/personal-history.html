@@ -78,14 +78,14 @@
                 </td>
 
                 <td class="text-center">
-                    <div *ngIf="t.estado === 'Completo'">
-                        <span *ngIf="t.fecha_fin && t.fecha_limite && t.fecha_fin <= t.fecha_limite" class="badge-status success">A tiempo</span>
-                        <span *ngIf="t.fecha_fin && t.fecha_limite && t.fecha_fin > t.fecha_limite" class="badge-status late">Tarde</span>
-                    </div>
-                    <div *ngIf="t.estado === 'Incompleto'">
-                        <span class="text-muted" style="font-size: 0.8rem;">No aplica</span>
-                    </div>
-                </td>
+                <div *ngIf="t.estado === 'Completo'">
+                    <span *ngIf="t.fecha_fin && t.fecha_limite && t.fecha_fin <= t.fecha_limite" class="badge-status success">A tiempo</span>
+                    <span *ngIf="t.fecha_fin && t.fecha_limite && t.fecha_fin > t.fecha_limite" class="badge-status late">Tarde</span>
+                </div>
+                <div *ngIf="t.estado === 'Incompleto'">
+                      <span class="badge-status late" style="background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca;"> Vencido</span>
+                   </div>
+              </td>
 
                 <td class="text-center">
                    <button class="btn-text" (click)="cambiarEstado(t)" title="Regresar a pendientes">Corregir</button>

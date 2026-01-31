@@ -9,22 +9,18 @@ export class ApiService {
   
   private http = inject(HttpClient);
   
- 
   private baseUrl = 'http://localhost/mesatrabajoBACKEND/backend'; 
 
   constructor() { }
-
 
   login(email: string, password: string): Observable<any> {
     const body = { email: email, password: password };
     return this.http.post(`${this.baseUrl}/login.php`, body);
   }
 
-
   register(usuario: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/register.php`, usuario);
   }
-
 
   getUsers(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/get_users.php`);
@@ -43,10 +39,9 @@ export class ApiService {
   }
 
 
-  getMisTickets(idUsuario: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/get_tickets_personal.php?personal=${idUsuario}`);
-  }
-
+getMisTickets(nombreUsuario: string): Observable<any[]> {
+  return this.http.get<any[]>(`${this.baseUrl}/get_tickets_personal.php?personal=${nombreUsuario}`);
+}
 
   actualizarEstadoTicket(id: number, nuevoEstado: string): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/update_tickets_personal.php`, { id, estado: nuevoEstado });

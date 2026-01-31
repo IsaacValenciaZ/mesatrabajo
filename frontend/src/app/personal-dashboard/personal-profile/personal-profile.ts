@@ -52,7 +52,7 @@ export class PersonalProfileComponent implements OnInit {
 
   cargarEstadisticas() {
     const cacheBuster = new Date().getTime();
-    this.apiService.getMisTickets(this.user.id).subscribe({
+    this.apiService.getMisTickets(this.user.nombre).subscribe({
       next: (data: any[]) => {
         const todos = data || [];
         

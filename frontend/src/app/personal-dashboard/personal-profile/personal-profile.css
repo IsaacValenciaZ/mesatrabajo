@@ -1,23 +1,21 @@
-/* Tarjeta Principal */
+
 .profile-card {
   background: white;
   border-radius: 20px;
-  max-width: 700px; /* Un poco más ancha */
+  max-width: 700px; 
   margin: 40px auto; 
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-  overflow: hidden; /* Para que el header no se salga */
+  overflow: hidden; 
   position: relative;
 }
 
-/* Cabecera Decorativa (Fondo Vino) */
 .profile-header-bg {
   height: 140px;
   background: linear-gradient(135deg, #56212f 0%, #3d1721 100%);
   position: relative;
-  margin-bottom: 60px; /* Espacio para que el avatar baje */
+  margin-bottom: 60px; 
 }
 
-/* Contenedor del Avatar para centrarlo y superponerlo */
 .avatar-container {
   position: absolute;
   bottom: -45px;
@@ -28,7 +26,7 @@
 .big-avatar {
   width: 100px;
   height: 100px;
-  background-color: white; /* Borde blanco falso */
+  background-color: white;
   color: #56212f; 
   font-size: 3rem;
   font-weight: 800;
@@ -37,10 +35,8 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  border: 5px solid white; /* El borde real */
+  border: 5px solid white; 
 }
-
-/* Cuerpo de la tarjeta */
 .profile-body {
   padding: 0 40px 40px 40px;
 }
@@ -102,7 +98,7 @@ label {
 
 input {
   width: 100%;
-  padding: 12px 15px 12px 40px; /* Padding izquierdo extra para el icono */
+  padding: 12px 15px 12px 40px;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   font-size: 0.95rem;
@@ -135,7 +131,6 @@ input:focus {
   margin-bottom: 15px;
 }
 
-/* Botón Guardar */
 .btn-update {
   width: 100%;
   padding: 14px;
@@ -163,14 +158,12 @@ input:focus {
 .fade-in { animation: fadeIn 0.5s ease-out; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Responsivo */
 @media (max-width: 600px) {
   .form-row {
-    grid-template-columns: 1fr; /* Una sola columna en celular */
+    grid-template-columns: 1fr; 
   }
 }
 
-/* === NUEVA TARJETA DE ESTADÍSTICAS === */
 .stats-card {
   background: white;
   border-radius: 20px;
@@ -203,12 +196,11 @@ input:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 50px; /* Separación entre gráfica y texto */
+  gap: 50px; 
   width: 100%;
   flex-wrap: wrap;
 }
 
-/* Contenedor de la gráfica */
 .chart-wrapper {
   position: relative;
   width: 180px;
@@ -221,7 +213,7 @@ input:focus {
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  pointer-events: none; /* Para no bloquear el hover de la gráfica */
+  pointer-events: none;
 }
 
 .chart-center-text .big-number {
@@ -238,7 +230,6 @@ input:focus {
   text-transform: uppercase;
 }
 
-/* Leyenda lateral */
 .stats-legend {
   display: flex;
   flex-direction: column;
@@ -296,6 +287,6 @@ input:focus {
 }
 .stats-grid {
     display: grid;
-    grid-template-columns: 1fr; /* Por defecto una columna */
+    grid-template-columns: 1fr; 
     gap: 20px;
 }
