@@ -1,0 +1,71 @@
+.edit-container {
+  background: rgb(252, 249, 249);
+  padding: 20px;
+  border-radius: 40px;
+  width: 100%;
+  max-width: 350px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.edit-header {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.btn-close-x {
+  position: absolute;
+  right: 0;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.input-group {
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+  color: #55212e; 
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.edit-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+
+.btn-cancel {
+  background: none;
+  border: none;
+  color: #55212e;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+
+.btn-save {
+  background: none;
+  border: none;
+  color: #55212e; 
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
