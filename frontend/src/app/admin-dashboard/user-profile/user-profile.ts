@@ -26,8 +26,14 @@ export class UserProfileComponent implements OnInit {
   newPassword = '';
   confirmPassword = ''; 
   tituloMesActual = ''; 
+  
   creadosMesActual = 0;
   ticketsCreadosData: any[] = [];
+  
+  chartsReady = false; 
+
+  datosAnualesLabels: string[] = [];
+  datosAnualesValores: number[] = [];
 
   ngOnInit() {
     this.generarTituloMes(); 
@@ -35,15 +41,8 @@ export class UserProfileComponent implements OnInit {
     
     if (stored) {
       this.user = JSON.parse(stored);
-      
-      if (this.user.nombre) {
-          this.cargarEstadisticasAsignadas(this.user.nombre); 
-      }
-
       if (this.user.id) {
-          setTimeout(() => {
-              this.cargarEstadisticasCreadas(this.user.id);
-          }, 100);
+          this.cargarEstadisticasCreadas(this.user.id);
       }
     }
   }
@@ -55,115 +54,185 @@ export class UserProfileComponent implements OnInit {
     this.tituloMesActual = `${mes.charAt(0).toUpperCase() + mes.slice(1)}/${anio}`;
   }
 
-  cargarEstadisticasAsignadas(nombre: string) {
-    this.apiService.getMisTickets(nombre).subscribe({
-      next: (data: any[]) => {
-        const todos = data || [];
-        this.procesarEficienciaMensual(todos);
-      },
-      error: (e) => console.error(e)
-    });
+  cargarEstadisticasCreadas(id: number) {
+      this.apiService.getTicketsCreadosPorAdmin(id).subscribe({
+          next: (data: any[]) => {
+              this.ticketsCreadosData = data || [];
+              
+              if(this.ticketsCreadosData.length > 0) {
+                  console.log("EJEMPLO DE TICKET:", this.ticketsCreadosData[0]);
+              }
+
+              const hoy = new Date();
+              const mesActual = hoy.getMonth(); 
+              const anioActual = hoy.getFullYear();
+              
+              const ticketsEsteMes = this.ticketsCreadosData.filter(t => {
+                  if (!t.fecha) return false;
+                  const fechaTicket = new Date(t.fecha.replace(' ', 'T'));
+                  return fechaTicket.getMonth() === mesActual && 
+                         fechaTicket.getFullYear() === anioActual;
+              });
+
+              this.creadosMesActual = ticketsEsteMes.length;
+              this.procesarRitmoAnual();
+              this.chartsReady = true; 
+              this.cd.detectChanges(); 
+
+              setTimeout(() => {
+                  this.renderChartCreadosMes(); 
+                  this.renderMonthlyChart(this.datosAnualesLabels, this.datosAnualesValores);
+                  this.renderAssignmentsChart();
+              }, 100);
+          },
+          error: (err) => console.error("Error cargando stats:", err)
+      });
   }
 
-  procesarEficienciaMensual(tickets: any[]) {
-      const grupos: any = {};
-      tickets.forEach(t => {
-          if (!t.fecha) return;
-          const mes = t.fecha.substring(0, 7);
-          if (!grupos[mes]) grupos[mes] = { total: 0, completados: 0 };
-          grupos[mes].total++;
-          if (t.estado === 'Completo') grupos[mes].completados++;
-      });
-
-      const etiquetas: string[] = [];
-      const datos: number[] = [];
-      Object.keys(grupos).sort().forEach(mesKey => {
-          const fechaObj = new Date(mesKey + '-02');
-          const nombreMes = new Intl.DateTimeFormat('es-ES', { month: 'short', year: '2-digit' }).format(fechaObj);
-          etiquetas.push(nombreMes);
-          const total = grupos[mesKey].total;
-          const comp = grupos[mesKey].completados;
-          const ef = total > 0 ? Math.round((comp / total) * 100) : 0;
-          datos.push(ef);
-      });
-      this.dibujarLineaEficiencia(etiquetas, datos);
-  }
-
-  dibujarLineaEficiencia(labels: string[], data: number[]) {
+  renderMonthlyChart(labels: string[], data: number[]) {
       const ctx = document.getElementById('monthlyChart') as HTMLCanvasElement;
       if (ctx) {
           const existingChart = Chart.getChart(ctx);
           if (existingChart) existingChart.destroy();
+
           new Chart(ctx, {
-              type: 'line',
+              type: 'line', 
               data: {
                   labels: labels,
                   datasets: [{
-                      label: 'Eficiencia (%)',
+                      label: 'Efectividad (%)',
                       data: data,
-                      borderColor: '#56212f', backgroundColor: 'rgba(86, 33, 47, 0.1)',
-                      borderWidth: 3, pointBackgroundColor: '#fff', pointBorderColor: '#56212f', fill: true, tension: 0.4
+                      borderColor: '#56212f', 
+                      backgroundColor: 'rgba(86, 33, 47, 0.1)', 
+                      borderWidth: 3,
+                      pointBackgroundColor: '#fff',
+                      pointBorderColor: '#56212f',
+                      fill: true, 
+                      tension: 0.4 
                   }]
               },
               options: {
-                  responsive: true, maintainAspectRatio: false,
-                  scales: { y: { beginAtZero: true, max: 100 }, x: { grid: { display: false } } },
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  scales: {
+                      y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                      x: { grid: { display: false } }
+                  },
                   plugins: { legend: { display: false } }
               }
           });
       }
   }
 
-  cargarEstadisticasCreadas(id: number) {
-      this.apiService.getTicketsCreadosPorAdmin(id).subscribe({
-          next: (data: any[]) => {
-              this.ticketsCreadosData = data || [];
-              
-              const fechaHoy = new Date();
-              const mesStr = String(fechaHoy.getMonth() + 1).padStart(2, '0');
-              const prefijoMes = `${fechaHoy.getFullYear()}-${mesStr}`;
-              const ticketsEsteMes = this.ticketsCreadosData.filter(t => t.fecha && t.fecha.startsWith(prefijoMes));
-              this.creadosMesActual = ticketsEsteMes.length;
-
-              this.procesarRitmoAnual();
-              
-              setTimeout(() => {
-                  this.renderChartCreadosMes();
-                  this.renderChartRitmoAnual();
-                  this.cd.detectChanges();
-              }, 0);
-          },
-          error: (err) => console.error("Error admin stats:", err)
-      });
-  }
-
   renderChartCreadosMes() {
       const ctx = document.getElementById('createdTotalChart') as HTMLCanvasElement;
-      if (ctx) {
-          const existingChart = Chart.getChart(ctx);
-          if (existingChart) existingChart.destroy();
-          
-          const hayDatos = this.creadosMesActual > 0;
-          new Chart(ctx, {
-              type: 'doughnut',
-              data: {
-                  labels: ['Este Mes'],
-                  datasets: [{
-                      data: hayDatos ? [this.creadosMesActual] : [1],
-                      backgroundColor: hayDatos ? ['#3b82f6'] : ['#e2e8f0'],
-                      borderWidth: 0
-                  }]
-              },
-              options: {
-                  responsive: true, cutout: '75%',
-                  plugins: { legend: { display: false }, tooltip: { enabled: hayDatos } }
-              }
-          });
-      }
+      if (!ctx) return;
+      const existingChart = Chart.getChart(ctx);
+      if (existingChart) existingChart.destroy();
+      const hayDatos = this.creadosMesActual > 0;
+      new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+              labels: ['Mis Tickets'],
+              datasets: [{
+                  data: hayDatos ? [this.creadosMesActual] : [1],
+                  backgroundColor: hayDatos ? ['#3b82f6'] : ['#e2e8f0'],
+                  borderWidth: 0
+              }]
+          },
+          options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            cutout: '75%', 
+            layout: {
+                padding: 0 
+            },
+            plugins: { legend: { display: false }, tooltip: { enabled: hayDatos } } 
+          }
+      });
   }
+renderAssignmentsChart() {
+      const ctx = document.getElementById('createdHistoryChart') as HTMLCanvasElement;
+      if (!ctx) return;
 
-  datosAnualesLabels: string[] = [];
-  datosAnualesValores: number[] = [];
+      const existingChart = Chart.getChart(ctx);
+      if (existingChart) existingChart.destroy();
+
+      const conteoPorPersona: { [key: string]: number } = {};
+      const anioActual = new Date().getFullYear();
+
+      if (this.ticketsCreadosData.length > 0) {
+          console.log("Campos del ticket:", Object.keys(this.ticketsCreadosData[0]));
+      }
+
+      this.ticketsCreadosData.forEach(t => {
+          if (!t.fecha) return;
+          const fechaT = new Date(t.fecha.replace(' ', 'T'));
+          
+          if (!isNaN(fechaT.getTime()) && fechaT.getFullYear() === anioActual) {
+              
+
+              let nombrePersona = t.personal || 
+                                  t.asignado_a || 
+                                  t.nombre_asignado || 
+                                  'Sin Asignar';
+
+              if (!isNaN(Number(nombrePersona)) && nombrePersona !== 'Sin Asignar') {
+                 nombrePersona = `Usuario ID: ${nombrePersona}`; 
+              }
+
+              conteoPorPersona[nombrePersona] = (conteoPorPersona[nombrePersona] || 0) + 1;
+          }
+      });
+
+      let asignacionesOrdenadas = Object.entries(conteoPorPersona);
+      asignacionesOrdenadas.sort((a, b) => b[1] - a[1]);
+
+      const nombres = asignacionesOrdenadas.map(item => item[0]);
+      const valores = asignacionesOrdenadas.map(item => item[1]);
+      const colores = nombres.map((_, i) => this.obtenerColor(i));
+
+      new Chart(ctx, {
+          type: 'bar',
+          data: {
+              labels: nombres, 
+              datasets: [{
+                  label: 'Tickets',
+                  data: valores,   
+                  backgroundColor: colores,
+                  borderColor: colores,
+                  borderWidth: 1,
+                  borderRadius: 4,
+                  barPercentage: 0.6,
+              }]
+          },
+          options: {
+              indexAxis: 'y', 
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                  legend: { display: false }, 
+                  tooltip: {
+                      callbacks: { label: (context) => `Tickets: ${context.raw}` }
+                  }
+              },
+              scales: {
+                  x: {
+                      beginAtZero: true,
+                      ticks: { stepSize: 1 }, 
+                      grid: { color: '#f1f5f9' }
+                  },
+                  y: {
+                      grid: { display: false },
+                      ticks: { 
+                          font: { weight: 'bold' },
+                          autoSkip: false
+                      }
+                  }
+              }
+          }
+      });
+  }
 
   procesarRitmoAnual() {
       const anioActual = new Date().getFullYear();
@@ -172,45 +241,17 @@ export class UserProfileComponent implements OnInit {
 
       this.ticketsCreadosData.forEach(t => {
           if (!t.fecha) return;
-          
-   
-          const fechaString = t.fecha.replace(' ', 'T'); 
-          const fechaT = new Date(fechaString);
-          
+          const fechaT = new Date(t.fecha.replace(' ', 'T'));
           if (!isNaN(fechaT.getTime()) && fechaT.getFullYear() === anioActual) {
               const mesIndex = fechaT.getMonth(); 
               this.datosAnualesValores[mesIndex]++;
           }
       });
-      
-      console.log("Datos Anuales Calculados:", this.datosAnualesValores); 
   }
 
-  renderChartRitmoAnual() {
-      const ctx = document.getElementById('createdHistoryChart') as HTMLCanvasElement;
-      if (ctx) {
-          const existingChart = Chart.getChart(ctx);
-          if (existingChart) existingChart.destroy();
-          
-          new Chart(ctx, {
-              type: 'bar',
-              data: {
-                  labels: this.datosAnualesLabels,
-                  datasets: [{
-                      label: 'Tickets Creados',
-                      data: this.datosAnualesValores,
-                      backgroundColor: '#3b82f6',
-                      borderRadius: 4,
-                      barPercentage: 0.6
-                  }]
-              },
-              options: {
-                  responsive: true, maintainAspectRatio: false,
-                  plugins: { legend: { display: false } },
-                  scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } }, x: { grid: { display: false } } }
-              }
-          });
-      }
+  obtenerColor(index: number): string {
+      const colores = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6'];
+      return colores[index % colores.length];
   }
 
   actualizarPerfil() { 
@@ -228,8 +269,7 @@ export class UserProfileComponent implements OnInit {
                      usuarioGuardado.email = this.user.email;
                      localStorage.setItem('usuario_actual', JSON.stringify(usuarioGuardado));
                  }
-                 Swal.fire({ icon: 'success', title: '¡Éxito!', text: 'Perfil actualizado', confirmButtonColor: '#56212f' })
-                 .then(() => window.location.reload());
+                 Swal.fire({ icon: 'success', title: '¡Éxito!', text: 'Perfil actualizado', confirmButtonColor: '#56212f' }).then(() => window.location.reload());
              } else { Swal.fire('Error', res.message, 'error'); }
          }
      });

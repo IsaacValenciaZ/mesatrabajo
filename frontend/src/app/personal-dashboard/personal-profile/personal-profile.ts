@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core'; 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -19,6 +19,7 @@ export class PersonalProfileComponent implements OnInit {
 
   private http = inject(HttpClient);
   private apiService = inject(ApiService);
+  private cd = inject(ChangeDetectorRef); 
   private apiUrl = 'http://localhost/mesatrabajoBACKEND/backend/update_profile.php'; 
 
   user: any = { nombre: '', email: '' }; 
@@ -39,7 +40,6 @@ export class PersonalProfileComponent implements OnInit {
       this.cargarEstadisticas();
     }
   }
-
   
   generarTituloMes() {
     const fecha = new Date();
@@ -51,7 +51,6 @@ export class PersonalProfileComponent implements OnInit {
   }
 
   cargarEstadisticas() {
-    const cacheBuster = new Date().getTime();
     this.apiService.getMisTickets(this.user.nombre).subscribe({
       next: (data: any[]) => {
         const todos = data || [];
@@ -69,6 +68,8 @@ export class PersonalProfileComponent implements OnInit {
         if (this.totalTickets > 0) {
             this.eficiencia = Math.round((this.completados / this.totalTickets) * 100);
         }
+
+        this.cd.detectChanges(); 
 
         this.renderChart(); 
         this.procesarDatosMensuales(todos); 
@@ -183,20 +184,13 @@ export class PersonalProfileComponent implements OnInit {
     this.http.post(this.apiUrl, payload).subscribe({
         next: (res: any) => {
             if(res.status) {
-                
-                
                 const stored = localStorage.getItem('usuario_actual');
                 if (stored) {
                     let usuarioGuardado = JSON.parse(stored);
-                    
-                  
                     usuarioGuardado.nombre = this.user.nombre;
                     usuarioGuardado.email = this.user.email;
-                    
-                    
                     localStorage.setItem('usuario_actual', JSON.stringify(usuarioGuardado));
                 }
-              
 
                 Swal.fire({
                     icon: 'success',
@@ -213,5 +207,5 @@ export class PersonalProfileComponent implements OnInit {
         },
         error: () => Swal.fire('Error', 'Fallo de conexión', 'error')
     });
-}
+  }
 }

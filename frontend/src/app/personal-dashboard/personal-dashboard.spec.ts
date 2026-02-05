@@ -55,14 +55,13 @@ export class PersonalDashboardComponent implements OnInit {
     });
   }
 
-  // === NUEVO MÉTODO PARA VER NOTAS ===
   verNotaCompleta(nota: string) {
     Swal.fire({
       title: 'Detalle de la Nota',
       text: nota ? nota : 'Sin información adicional.',
       icon: 'info',
       confirmButtonText: 'Cerrar',
-      confirmButtonColor: '#c3b08f', // Color Beige
+      confirmButtonColor: '#c3b08f', 
       background: '#fff',
       iconColor: '#977e5b' // Icono Bronce
     });

@@ -11,6 +11,7 @@
             <h2>{{ user.nombre }}</h2>
             <p class="role-badge">Perfil de Administrador</p>
         </div>
+        
         <div class="form-content">
             <div class="form-row">
                 <div class="form-group">
@@ -52,6 +53,7 @@
   </div>
 
   <h3 class="section-divider">Mis Asignaciones</h3>
+  
   <div class="stats-grid">
       <div class="stats-card evolution-card" style="grid-column: span 2;">
           <div class="stats-header">
@@ -65,6 +67,7 @@
   </div>
 
   <h3 class="section-divider" style="margin-top: 40px;">Gestión Administrativa</h3>
+  
   <div class="stats-grid">
       
       <div class="stats-card">
@@ -73,24 +76,26 @@
               <p>Solamente Mes Actual ({{ tituloMesActual }})</p>
           </div>
           <div class="stats-content">
-              <div class="chart-wrapper">
+              <div class="chart-wrapper" *ngIf="chartsReady">
                   <canvas id="createdTotalChart"></canvas> 
                   <div class="chart-center-text">
                       <span class="big-number" style="color: #3b82f6;">{{ creadosMesActual }}</span>
                       <span class="label">Este Mes</span>
                   </div>
               </div>
+              <div *ngIf="!chartsReady" style="color: #888;">Cargando...</div>
           </div>
       </div>
 
-      <div class="stats-card evolution-card">
+      <div class="stats-card">
           <div class="stats-header">
-              <h3>Ritmo de Creación</h3>
-              <p>Reportes generados (Enero - Diciembre)</p>
+              <h3>Ritmo de Asignaciones</h3>
+              <p>Tickets asignados por personal (Anual)</p>
           </div>
-          <div class="evolution-chart-wrapper">
+          <div class="evolution-chart-wrapper" *ngIf="chartsReady">
               <canvas id="createdHistoryChart"></canvas> 
           </div>
+          <div *ngIf="!chartsReady" style="text-align: center; padding: 20px; color: #888;">Cargando datos...</div>
       </div>
 
   </div>
