@@ -50,4 +50,18 @@ export class ApiService {
 getTicketsCreadosPorAdmin(idAdmin: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/get_admin_tickets.php?id=${idAdmin}`);
   }
+
+
+
+enviarTokenRecuperacion(email: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/recover_password.php`, { email });
+  }
+
+  verificarToken(email: string, token: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/verify_token.php`, { email, token });
+  }
+
+  cambiarPassword(email: string, newPass: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/reset_password.php`, { email, newPass });
+  }
 }
