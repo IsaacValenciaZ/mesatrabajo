@@ -100,13 +100,21 @@
                 <td class="time-col" style="color: #555;">{{ t.fecha_fin ? (t.fecha_fin | date:'HH:mm') : '-' }}</td>
                 <td>{{ t.nombre_usuario }}</td>
                 <td>{{ t.departamento }}</td>
+                
                 <td>
                     <span class="badge" [ngClass]="{
                         'cat-internet': t.descripcion === 'Internet', 
                         'cat-office': t.descripcion === 'Office', 
                         'cat-telefonia': t.descripcion === 'Telefonia', 
-                        'cat-tecnico': t.descripcion === 'Tecnico'
-                    }">{{ t.descripcion }}</span>
+                        'cat-tecnico': t.descripcion === 'Tecnico',
+                        'cat-dictaminar': t.descripcion === 'Dictaminar'
+                    }">
+                        {{ t.descripcion }}
+                    </span>
+
+                    <span *ngIf="t.descripcion === 'Dictaminar' && t.cantidad" class="qty-badge">
+                        EQ: {{ t.cantidad }}
+                    </span>
                 </td>
                 
                 <td class="text-center">
