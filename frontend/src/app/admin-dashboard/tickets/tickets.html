@@ -1,82 +1,89 @@
 <div class="profile-page-container fade-in">
 
   <div class="central-form-card">
-      <h2 class="form-title">Registrar Nuevo Reporte</h2>
+    <h2 class="form-title">Registrar Nuevo Reporte</h2>
 
-      <div class="form-content">
-          
-          <div class="form-group">
-              <label>Nombre del Usuario:</label>
-              <input type="text" [(ngModel)]="newTicket.nombre_usuario" placeholder="">
-          </div>
-
-          <div class="form-group" style="position: relative;">
-              <label>Departamento:</label>
-              <input 
-                type="text" 
-                class="simple-input"
-                placeholder="Escribe o selecciona..." 
-                [value]="newTicket.departamento"
-                (input)="filtrarDepartamentos($event)"
-                (focus)="mostrarListaDepartamentos = true"
-                (blur)="ocultarListaRetrasada()"
-              >
-              <ul class="autocomplete-list" *ngIf="mostrarListaDepartamentos && departamentosFiltrados.length > 0">
-                  <li *ngFor="let dep of departamentosFiltrados" (click)="seleccionarDepartamento(dep)">
-                      {{ dep }}
-                  </li>
-              </ul>
-              <ul class="autocomplete-list" *ngIf="mostrarListaDepartamentos && departamentosFiltrados.length === 0">
-                  <li class="no-results">Se guardará como nuevo departamento.</li>
-              </ul>
-          </div>
-
-          <div class="form-group">
-              <label>Técnico Asignado:</label>
-              <select [(ngModel)]="newTicket.personalId">
-                  <option value="" disabled selected>-- Selecciona Técnico --</option>
-                  <option *ngFor="let u of usersList" [value]="u.id">{{ u.nombre }}</option> 
-              </select>
-          </div>
-
-          <div class="form-group">
-              <label>Tipo de Servicio:</label>
-              <select [(ngModel)]="newTicket.descripcion">
-                  <option value="" disabled selected>-- Selecciona --</option>
-                  <option value="Internet">Internet</option>
-                  <option value="Office">Office</option>
-                  <option value="Telefonia">Telefonía</option>
-                  <option value="Tecnico">Técnico</option>
-              </select>
-          </div>
-
-          <div class="form-group">
-              <label>Prioridad:</label>
-              <select [(ngModel)]="newTicket.prioridad">
-                  <option value="" disabled selected>-- Selecciona --</option>
-                  <option value="Alta">Alta</option>
-                  <option value="Media">Media</option>
-                  <option value="Baja">Baja</option>
-              </select>
-          </div>
-
-          <div class="form-group">
-              <label>Detalles del Problema (Notas):</label>
-              <textarea [(ngModel)]="newTicket.notas" rows="4" placeholder="Describe la falla..."></textarea>
-          </div>
-
-          <button class="btn-gold" (click)="enviarTicket()">
-              GUARDAR TICKET
-          </button>
-
+    <div class="form-content">
+      
+      <div class="form-group">
+        <label>Nombre del Usuario:</label>
+        <input type="text" [(ngModel)]="newTicket.nombre_usuario" class="simple-input" placeholder="Nombre completo">
       </div>
+
+      <div class="form-group" style="position: relative;">
+        <label>Departamento:</label>
+        <input 
+          type="text" 
+          class="simple-input"
+          placeholder="Escribe o selecciona..." 
+          [value]="newTicket.departamento"
+          (input)="filtrarDepartamentos($event)"
+          (focus)="mostrarListaDepartamentos = true"
+          (blur)="ocultarListaRetrasada()"
+        >
+        
+        <ul class="autocomplete-list" *ngIf="mostrarListaDepartamentos && departamentosFiltrados.length > 0">
+          <li *ngFor="let dep of departamentosFiltrados" (click)="seleccionarDepartamento(dep)">
+            {{ dep }}
+          </li>
+        </ul>
+        <ul class="autocomplete-list" *ngIf="mostrarListaDepartamentos && departamentosFiltrados.length === 0">
+          <li class="no-results">Se guardará como nuevo departamento.</li>
+        </ul>
+      </div>
+
+      <div class="form-group">
+        <label>Técnico Asignado:</label>
+        <select [(ngModel)]="newTicket.personalId" class="simple-input">
+          <option value="" disabled selected>-- Selecciona Técnico --</option>
+          <option *ngFor="let u of usersList" [value]="u.id">{{ u.nombre }}</option> 
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Tipo de Problema:</label>
+        <select [(ngModel)]="newTicket.descripcion" name="descripcion" class="simple-input" required>
+          <option value="" disabled selected>Selecciona un servicio</option>
+          <option value="Internet">Internet</option>
+          <option value="Office">Office</option>
+          <option value="Telefonia">Telefonía</option>
+          <option value="Tecnico">Soporte Técnico</option>
+          <option value="Dictaminar">Dictaminar</option> 
+        </select>
+      </div>
+
+      <div class="form-group fade-in" *ngIf="newTicket.descripcion === 'Dictaminar'">
+        <label>¿Cuántos equipos se dictaminarán?</label>
+        <input type="number" [(ngModel)]="newTicket.cantidad" name="cantidad" min="1" placeholder="Ej: 5" class="simple-input">
+      </div>
+
+      <div class="form-group">
+        <label>Prioridad:</label>
+        <select [(ngModel)]="newTicket.prioridad" class="simple-input">
+          <option value="" disabled selected>-- Selecciona --</option>
+          <option value="Alta">Alta</option>
+          <option value="Media">Media</option>
+          <option value="Baja">Baja</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Detalles del Problema (Notas):</label>
+        <textarea [(ngModel)]="newTicket.notas" rows="4" placeholder="Describe la falla..." class="simple-input"></textarea>
+      </div>
+
+      <button class="btn-gold" (click)="enviarTicket()">
+        GUARDAR TICKET
+      </button>
+
+    </div>
   </div>
 
   <div class="report-card fade-in">
     
     <div class="card-header-red">
       <h3>Reportes de {{ fechaActual | date:'fullDate' | titlecase }}</h3>
-      <div class="counter-badge">{{ ticketsHoy.length }} reportes</div>
+      <div class="counter-badge">{{ ticketsHoy ? ticketsHoy.length : 0 }} reportes</div>
     </div>
 
     <div class="table-responsive">
@@ -90,24 +97,30 @@
             <th>CATEGORÍA</th>
             <th>PRIORIDAD</th>
             <th>TÉCNICO</th>
-            <th>ESTADO</th>
             <th>NOTAS</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let t of ticketsHoy">
             <td class="id-col">#{{ t.id }}</td>
-            <td class="time-col">{{ t.fecha | date:'HH:mm' }}</td>
+           <td class="time-col">{{ t.fecha | date:'hh:mm a' }}</td>
             <td class="user-col">{{ t.nombre_usuario }}</td>
             <td class="depto-col">{{ t.departamento }}</td>
+            
             <td>
-              <span class="badge-solid" [ngClass]="{
-                'bg-internet': t.descripcion === 'Internet',
-                'bg-office': t.descripcion === 'Office',
-                'bg-telefonia': t.descripcion === 'Telefonia',
-                'bg-tecnico': t.descripcion === 'Tecnico'
-              }">{{ t.descripcion }}</span>
+                <span class="badge-solid" [ngClass]="{
+                  'bg-internet': t.descripcion === 'Internet',
+                  'bg-office': t.descripcion === 'Office',
+                  'bg-telefonia': t.descripcion === 'Telefonia',
+                  'bg-tecnico': t.descripcion === 'Tecnico',
+                  'bg-dictaminar': t.descripcion === 'Dictaminar'
+                }">{{ t.descripcion }}</span>
+
+                <span *ngIf="t.descripcion === 'Dictaminar' && t.cantidad" class="qty-badge">
+                    EQ: {{ t.cantidad }}
+                </span>
             </td>
+
             <td>
               <span class="badge-solid" [ngClass]="{
                 'bg-alta': t.prioridad === 'Alta',
@@ -115,23 +128,22 @@
                 'bg-baja': t.prioridad === 'Baja'
               }">{{ t.prioridad }}</span>
             </td>
+            
             <td class="tech-col">{{ t.personal || 'Sin asignar' }}</td>
-            <td>
-              <span class="status-text" [ngClass]="{
-                'st-espera': t.estado === 'en espera' || t.estado === 'En espera',
-                'st-completo': t.estado === 'completo' || t.estado === 'Completo',
-                'st-incompleto': t.estado === 'incompleto' || t.estado === 'Incompleto'
-              }">{{ t.estado | uppercase }}</span>
-            </td>
+            
+
+            
             <td class="notes-col">
-              <span *ngIf="t.notas.length <= 30">{{ t.notas }}</span>
-              <div *ngIf="t.notas.length > 30">
+              <span *ngIf="t.notas && t.notas.length <= 30">{{ t.notas }}</span>
+              <div *ngIf="t.notas && t.notas.length > 30">
                   <span>{{ t.notas | slice:0:30 }}...</span>
                   <a class="link-ver-mas" (click)="verNotaCompleta(t.notas)">Ver más</a>
               </div>
+              <span *ngIf="!t.notas" style="color: #ccc;">-</span>
             </td>
           </tr>
-          <tr *ngIf="ticketsHoy.length === 0">
+          
+          <tr *ngIf="!ticketsHoy || ticketsHoy.length === 0">
             <td colspan="9" class="empty-row">No hay reportes registrados hoy.</td>
           </tr>
         </tbody>

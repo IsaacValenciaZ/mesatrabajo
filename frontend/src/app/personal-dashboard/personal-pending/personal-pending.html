@@ -17,7 +17,8 @@
           <tr>
             <th>#ID</th>
             <th>Fecha Solicitud</th>
-            <th>Vencimiento (24h)</th> <th>Solicitante</th>
+            <th>Vencimiento</th> 
+            <th>Solicitante</th>
             <th>Departamento</th>
             <th>Problema</th>
             <th>Prioridad</th>
@@ -46,10 +47,25 @@
              </td>
 
              <td>{{ t.nombre_usuario }}</td>
+             
              <td class="depto-col">{{ t.departamento }}</td>
              
-             <td><span class="badge" [ngClass]="{'cat-internet': t.descripcion === 'Internet', 'cat-office': t.descripcion === 'Office', 'cat-telefonia': t.descripcion === 'Telefonia', 'cat-tecnico': t.descripcion === 'Tecnico'}">{{ t.descripcion }}</span></td>
-             
+             <td>
+                  <span class="badge" [ngClass]="{
+                      'cat-internet': t.descripcion === 'Internet', 
+                      'cat-office': t.descripcion === 'Office', 
+                      'cat-telefonia': t.descripcion === 'Telefonia', 
+                      'cat-tecnico': t.descripcion === 'Tecnico',
+                      'cat-dictaminar': t.descripcion === 'Dictaminar'
+                  }">
+                      {{ t.descripcion }}
+                  </span>
+
+                  <span *ngIf="t.descripcion === 'Dictaminar' && t.cantidad" class="qty-badge">
+                      EQ: {{ t.cantidad }}
+                  </span>
+              </td>
+
              <td><span class="badge" [ngClass]="{'prio-alta': t.prioridad === 'Alta', 'prio-media': t.prioridad === 'Media', 'prio-baja': t.prioridad === 'Baja'}">{{ t.prioridad }}</span></td>
              
              <td class="text-center">

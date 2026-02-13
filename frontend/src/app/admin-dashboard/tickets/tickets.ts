@@ -69,13 +69,14 @@ export class TicketsComponent implements OnInit {
 
   departamentosFiltrados: string[] = [...this.departamentosOriginales];
 
-  newTicket = { 
+  newTicket: any = { 
     nombre_usuario: '', 
     departamento: '',
     personalId: '',     
     descripcion: '',    
     prioridad: '',
-    notas: ''           
+    notas: '' ,
+    cantidad: null
   };
 
   ngOnInit() {
@@ -114,14 +115,19 @@ export class TicketsComponent implements OnInit {
         const todos = data || [];
         this.usersList = todos.filter((u: any) => u.rol === 'personal');
         this.cd.detectChanges();
-      }
+      },
+      error: (e) => console.error("Error usuarios:", e)
     });
   }
 
   cargarTicketsDelDia() {
     this.apiService.getTicketsHoy().subscribe({
-      next: (data) => {
-        this.ticketsHoy = data || [];
+      next: (data: any[]) => {
+        this.ticketsHoy = Array.isArray(data) ? data : [];
+        this.cd.detectChanges();
+      },
+      error: (err) => {
+        this.ticketsHoy = []; 
         this.cd.detectChanges();
       }
     });
@@ -130,10 +136,12 @@ export class TicketsComponent implements OnInit {
   verNotaCompleta(nota: string) {
     Swal.fire({
       title: 'Detalle de la Nota',
-      text: nota,
+      text: nota ? nota : 'Sin información adicional.',
       icon: 'info',
       confirmButtonText: 'Cerrar',
-      confirmButtonColor: '#c3b08f' 
+      confirmButtonColor: '#000000',
+      background: '#fff',
+      iconColor: '#977e5b'
     });
   }
 
@@ -157,24 +165,18 @@ export class TicketsComponent implements OnInit {
       return; 
     }
 
-    const tecnico = this.usersList.find(u => u.id == this.newTicket.personalId);
-
-    const adminActual = localStorage.getItem('usuario_actual');
-    let idAdmin = null;
-    if (adminActual) {
-        const adminObj = JSON.parse(adminActual);
-        idAdmin = adminObj.id;
-    }
-
+    const tecnicoAsignado = this.usersList.find(u => u.id == this.newTicket.personalId);
+    const adminActual = JSON.parse(localStorage.getItem('usuario_actual') || '{}');
 
     const ticketParaBD = {
+      admin_id: adminActual.id, 
       nombre_usuario: this.newTicket.nombre_usuario,
       departamento: this.newTicket.departamento,
       descripcion: this.newTicket.descripcion, 
       prioridad: this.newTicket.prioridad,
-      personal: tecnico ? tecnico.nombre : 'Desconocido',
-      notas: this.newTicket.notas,
-      admin_id: idAdmin 
+      notas: this.newTicket.notas || '',
+      cantidad: this.newTicket.cantidad, 
+      personal: tecnicoAsignado ? tecnicoAsignado.nombre : 'Sin asignar' 
     };
 
     this.apiService.createTicket(ticketParaBD).subscribe({
@@ -186,11 +188,7 @@ export class TicketsComponent implements OnInit {
             position: 'top-end',
             showConfirmButton: false,
             timer: 3000,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-              toast.onmouseenter = Swal.stopTimer;
-              toast.onmouseleave = Swal.resumeTimer;
-            }
+            timerProgressBar: true
           });
           
           Toast.fire({
@@ -200,20 +198,21 @@ export class TicketsComponent implements OnInit {
 
           this.newTicket = { 
             nombre_usuario: '', departamento: '', personalId: '', 
-            descripcion: '', prioridad: '', notas: '' 
+            descripcion: '', prioridad: '', notas: '' , cantidad: null
           };
+          
           this.cargarTicketsDelDia();
 
         } else {
           Swal.fire({
             icon: 'error',
             title: 'Error al guardar',
-            text: res.error || res.message,
+            text: res.error || res.message, 
             confirmButtonColor: '#56212f'
           });
         }
       },
-      error: () => {
+      error: (err) => {
         Swal.fire({
           icon: 'error',
           title: 'Error de conexión',
