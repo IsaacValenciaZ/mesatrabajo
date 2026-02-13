@@ -42,7 +42,7 @@ export class SupervisorDashboardComponent implements OnInit {
   countAdmin: number = 0;
   countSupervisor: number = 0;
 
-  // Variables para Modales
+  
   showView: boolean = false;
   showEdit: boolean = false;
   showDelete: boolean = false;

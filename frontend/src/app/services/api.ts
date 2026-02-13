@@ -21,6 +21,13 @@ export class ApiService {
   register(usuario: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/register.php`, usuario);
   }
+  deleteUser(id: number): Observable<any> {
+  return this.http.post(`${this.baseUrl}/delete_user.php`, { id });
+}
+
+updateUser(user: any): Observable<any> {
+  return this.http.post(`${this.baseUrl}/update_user.php`, user);
+}
 
   getUsers(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/get_users.php`);
@@ -50,8 +57,6 @@ export class ApiService {
 getTicketsCreadosPorAdmin(idAdmin: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/get_admin_tickets.php?id=${idAdmin}`);
   }
-
-
 
 enviarTokenRecuperacion(email: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/recover_password.php`, { email });

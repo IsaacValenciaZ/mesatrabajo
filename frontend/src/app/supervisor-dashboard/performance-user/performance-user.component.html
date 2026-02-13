@@ -1,43 +1,69 @@
 <div class="modal-overlay">
   <div class="performance-card">
     <div class="performance-header">
-      <h3>Informe: {{ user.nombre }}</h3>
+      <h3>Informe de Desempeño</h3>
       <button class="close-x" (click)="close.emit()">&times;</button>
     </div>
 
     <div class="performance-body">
+      <div class="user-info-section">
+        <div class="avatar-large">{{ user.nombre.charAt(0) }}</div>
+        <h4>{{ user.nombre }}</h4>
+        <p>{{ user.email }}</p>
+      </div>
+
       <div *ngIf="loading" class="status-msg">
+        <div class="spinner"></div>
         <p>Consultando base de datos...</p>
-        
-    </div>
+      </div>
+
       <div [class.hidden]="loading || total === 0">
         <div class="stats-summary">
           <div class="stat-item">
-            <span class="stat-val success">{{ completados }}</span>
             <small>Completados</small>
+            <span class="stat-val success">{{ completados }}</span>
           </div>
+          <div class="stat-item separator"></div>
           <div class="stat-item">
+            <small>Pendientes</small>
             <span class="stat-val danger">{{ incompletos }}</span>
-            <small>Incompletos</small>
           </div>
+          <div class="stat-item separator"></div>
           <div class="stat-item">
+            <small>Total Tickets</small>
             <span class="stat-val total">{{ total }}</span>
-            <small>Total</small>
           </div>
         </div>
 
-        <div class="chart-wrapper">
-          <canvas #myChart></canvas>
+        <div class="chart-container">
+          <div class="chart-wrapper">
+            <canvas #myChart></canvas>
+            <div class="chart-center-text">
+              <span class="pct">{{ total > 0 ? ((completados/total)*100 | number:'1.0-0') : 0 }}%</span>
+              <small>Efectividad</small>
+            </div>
+          </div>
+          
+          <div class="custom-legend">
+            <div class="legend-item">
+              <span class="dot success"></span> 
+              <span>Completados ({{ completados }})</span>
+            </div>
+            <div class="legend-item">
+              <span class="dot danger"></span> 
+              <span>Incompletos ({{ incompletos }})</span>
+            </div>
+          </div>
         </div>
       </div>
 
       <div *ngIf="!loading && total === 0" class="empty-msg">
-        <p>⚠️ No se encontraron tickets para <strong>{{ user.nombre }}</strong>.</p>
+        <p>⚠️ No se encontraron registros de tickets para este usuario.</p>
       </div>
     </div>
 
     <div class="performance-footer">
-      <button class="btn-close-modal" (click)="close.emit()">Cerrar Informe</button>
+      <button class="btn-close-modal" (click)="close.emit()">Regresar al Panel</button>
     </div>
   </div>
 </div>

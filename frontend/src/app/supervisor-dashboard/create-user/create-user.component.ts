@@ -12,10 +12,7 @@ import Swal from 'sweetalert2';
   styleUrls: ['./create-user.component.css']
 })
 export class CreateUserComponent {
-
-
   private apiService = inject(ApiService);
-
 
   newUser = {
     nombre: '',
@@ -28,36 +25,43 @@ export class CreateUserComponent {
   @Output() create = new EventEmitter<any>();
 
   crear() {
-
     if (this.newUser.nombre && this.newUser.email) {
-
       this.apiService.register(this.newUser).subscribe({
         next: (res) => {
-      
-          Swal.fire({
-            icon: 'success',
-            title: '¡Usuario Registrado!',
-            text: `El usuario ${this.newUser.nombre} se guardó correctamente.`,
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#56212f' 
-          });
+         
+          if (res && res.status) {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Usuario Registrado!',
+              text: `El usuario ${this.newUser.nombre} se guardó correctamente.`,
+              confirmButtonText: 'Aceptar',
+              confirmButtonColor: '#56212f' 
+            });
 
-          this.create.emit(this.newUser);
-      
-          this.close.emit();
+           
+            this.create.emit(res);
+            this.close.emit();
+          } else {
+          
+            Swal.fire({
+              icon: 'error',
+              title: 'No se pudo registrar',
+              text: res.message || 'El correo electrónico ya está en uso.',
+              confirmButtonColor: '#56212f'
+            });
+           
+          }
         },
         error: (err) => {
           Swal.fire({
             icon: 'error',
-            title: 'Error',
-            text: 'No se pudo conectar con la base de datos o el correo ya existe.',
+            title: 'Error de Conexión',
+            text: 'No se pudo comunicar con el servidor.',
             confirmButtonColor: '#56212f'
           });
         }
       });
-
     } else {
-      
       Swal.fire({
         icon: 'warning',
         title: 'Campos incompletos',
@@ -66,4 +70,4 @@ export class CreateUserComponent {
       });
     }
   }
-}
+} 

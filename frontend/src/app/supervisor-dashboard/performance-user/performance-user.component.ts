@@ -21,22 +21,22 @@ export class PerformanceUserComponent implements OnInit, OnDestroy, OnChanges {
   private cdr = inject(ChangeDetectorRef);
   private chartInstance: Chart | null = null;
 
-  loading = true;
+  loading: boolean = true;
   completados: number = 0; 
   incompletos: number = 0;
   total: number = 0;
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes['user'] && !changes['user'].firstChange) {
       this.obtenerEstadisticas();
     }
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.obtenerEstadisticas();
   }
 
-  obtenerEstadisticas() {
+  obtenerEstadisticas(): void {
     if (!this.user || !this.user.nombre) return;
     
     this.loading = true;
@@ -46,27 +46,27 @@ export class PerformanceUserComponent implements OnInit, OnDestroy, OnChanges {
     this.http.get<any[]>(url).subscribe({
       next: (res) => {
         if (res && res.length > 0) {
-          
           this.total = res.length;
-          
-          this.completados = res.filter(t => t.estado.toLowerCase() === 'completo').length;
-          this.incompletos = res.filter(t => t.estado.toLowerCase() === 'incompleto').length;
+          this.completados = res.filter(t => t.estado && t.estado.toLowerCase() === 'completo').length;
+          this.incompletos = res.filter(t => t.estado && t.estado.toLowerCase() === 'incompleto').length;
           
           this.loading = false;
-
           this.cdr.detectChanges(); 
           
-          
+          // Retardo para asegurar que el canvas sea visible en el DOM
           setTimeout(() => this.renderChart(), 100);
         } else {
           this.resetCounts();
         }
       },
-      error: () => this.resetCounts()
+      error: (err) => {
+        console.error('Error al conectar con el backend:', err);
+        this.resetCounts();
+      }
     });
   }
 
-  resetCounts() {
+  resetCounts(): void {
     this.total = 0;
     this.completados = 0;
     this.incompletos = 0;
@@ -74,30 +74,43 @@ export class PerformanceUserComponent implements OnInit, OnDestroy, OnChanges {
     this.cdr.detectChanges();
   }
 
-  renderChart() {
+  renderChart(): void {
     if (!this.canvas) return;
     const ctx = this.canvas.nativeElement.getContext('2d');
     if (!ctx) return;
 
-    if (this.chartInstance) { this.chartInstance.destroy(); }
+    if (this.chartInstance) { 
+      this.chartInstance.destroy(); 
+    }
 
-    this.chartInstance = new Chart(ctx, {
+    // Usamos 'any' en la configuración para que TypeScript acepte 'cutout' sin errores
+    const config: any = {
       type: 'doughnut',
       data: {
         labels: ['Completados', 'Incompletos'],
         datasets: [{
-          data: [this.completados, this.incompletos], 
+          data: [this.completados, this.incompletos],
           backgroundColor: ['#28a745', '#dc3545'],
-          borderWidth: 2
+          hoverBackgroundColor: ['#218838', '#c82333'],
+          borderWidth: 0,
+          cutout: '80%' // Propiedad que causaba el error de tipado
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } }
+        plugins: {
+          legend: { display: false }
+        }
       }
-    });
+    };
+
+    this.chartInstance = new Chart(ctx, config);
   }
 
-  ngOnDestroy() { if (this.chartInstance) this.chartInstance.destroy(); }
+  ngOnDestroy(): void { 
+    if (this.chartInstance) {
+      this.chartInstance.destroy(); 
+    }
+  }
 }

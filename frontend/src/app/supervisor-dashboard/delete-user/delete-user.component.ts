@@ -1,5 +1,7 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ApiService } from '../../services/api';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-delete-user',
@@ -9,11 +11,31 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./delete-user.component.css']
 })
 export class DeleteUserComponent {
-  @Input() user: any;
-  @Output() close = new EventEmitter<void>();
-  @Output() confirmDelete = new EventEmitter<number>();
+  private apiService = inject(ApiService);
 
+  @Input() user: any; 
+  @Output() close = new EventEmitter<void>();
+  @Output() delete = new EventEmitter<void>();
+
+  
   confirmar() {
-    this.confirmDelete.emit(this.user.id);
+    if (this.user && this.user.id) {
+      this.apiService.deleteUser(this.user.id).subscribe({
+        next: (res) => {
+          Swal.fire({
+            icon: 'success',
+            title: '¡Usuario Eliminado!',
+            text: `El registro de ${this.user.nombre} ha sido borrado.`,
+            confirmButtonColor: '#56212f'
+          });
+
+          this.delete.emit(); 
+          this.close.emit();
+        },
+        error: () => {
+          Swal.fire('Error', 'No se pudo eliminar el usuario.', 'error');
+        }
+      });
+    }
   }
 }
