@@ -1,13 +1,23 @@
-<div class="modal-card border-danger">
-  <div class="modal-header">
-    <h3 class="text-danger">⚠️ Confirmar Eliminación</h3>
-  </div>
-  <div class="modal-body">
-    <p>¿Estás seguro de que deseas eliminar a <strong>{{ user?.nombre }}</strong>?</p>
-    <p class="warning-msg">Esta acción es permanente.</p>
-  </div>
-  <div class="modal-footer">
-    <button class="btn-secondary" (click)="close.emit()">Cancelar</button>
-    <button class="btn-danger" (click)="confirmar()">Eliminar Usuario</button>
+<div class="delete-overlay">
+  <div class="delete-modal-card">
+    <div class="delete-header">
+      <div class="warning-icon">!</div>
+      <h2>Confirmar Eliminación</h2>
+    </div>
+
+    <div class="delete-body">
+      <p>¿Estás seguro de que deseas eliminar a:</p>
+      <div class="user-to-delete">{{ user?.nombre }}</div>
+      <p class="warning-text">Esta acción es permanente y no se puede deshacer.</p>
+    </div>
+
+    <div class="delete-footer">
+      <button class="btn-cancel" (click)="close.emit()">
+        Cancelar
+      </button>
+      <button class="btn-confirm-delete" (click)="confirmar()">
+        Eliminar Usuario
+      </button>
+    </div>
   </div>
 </div>

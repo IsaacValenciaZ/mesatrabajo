@@ -280,12 +280,32 @@ tbody td { padding: 15px 25px; border-bottom: 1px solid #f0f0f0; }
     transform: translateY(-7px);
 }
 
+.btn-action.performance {
+    background-color: #84cd91; 
+    color: #045c21;           
+}
+.btn-action.btn-action.btn-action.performance:hover {
+    filter: brightness(0.9);
+    transform: translateY(-7px);
+}
 .header-actions {
   display: flex;
   gap: 20px; 
   align-items: center;
 }
-
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; 
+  backdrop-filter: blur(2px); 
+}
 
 
 

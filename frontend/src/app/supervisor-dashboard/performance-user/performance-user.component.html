@@ -1,0 +1,43 @@
+<div class="modal-overlay">
+  <div class="performance-card">
+    <div class="performance-header">
+      <h3>Informe: {{ user.nombre }}</h3>
+      <button class="close-x" (click)="close.emit()">&times;</button>
+    </div>
+
+    <div class="performance-body">
+      <div *ngIf="loading" class="status-msg">
+        <p>Consultando base de datos...</p>
+        
+    </div>
+      <div [class.hidden]="loading || total === 0">
+        <div class="stats-summary">
+          <div class="stat-item">
+            <span class="stat-val success">{{ completados }}</span>
+            <small>Completados</small>
+          </div>
+          <div class="stat-item">
+            <span class="stat-val danger">{{ incompletos }}</span>
+            <small>Incompletos</small>
+          </div>
+          <div class="stat-item">
+            <span class="stat-val total">{{ total }}</span>
+            <small>Total</small>
+          </div>
+        </div>
+
+        <div class="chart-wrapper">
+          <canvas #myChart></canvas>
+        </div>
+      </div>
+
+      <div *ngIf="!loading && total === 0" class="empty-msg">
+        <p>⚠️ No se encontraron tickets para <strong>{{ user.nombre }}</strong>.</p>
+      </div>
+    </div>
+
+    <div class="performance-footer">
+      <button class="btn-close-modal" (click)="close.emit()">Cerrar Informe</button>
+    </div>
+  </div>
+</div>

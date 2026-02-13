@@ -7,12 +7,20 @@
   box-shadow: 0 15px 35px rgba(0,0,0,0.3);
   animation: slideIn 0.3s ease-out;
 }
+.btn-secondary {
+  background: none;
+  border: none;
+  color: #55212e;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid #56212f; /* Guinda Institucional */
+  border-bottom: 2px solid #56212f;
   padding-bottom: 10px;
   margin-bottom: 20px;
 }
@@ -29,7 +37,7 @@
 
 .info-group label {
   display: block;
-  color: #977e5b; /* Dorado/Bronce */
+  color: #977e5b; 
   font-weight: 700;
   font-size: 0.8rem;
   text-transform: uppercase;

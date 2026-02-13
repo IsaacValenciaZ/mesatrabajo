@@ -12,37 +12,39 @@
       <p>Resumen de usuarios registrados en el sistema.</p>
     </div>
     <div class="header-actions">
-
       <button class="btn-create" (click)="openCreateModal()">+ Crear Usuario</button>
-      @if (showCreate) {
-      <div class="modal-overlay">
-        <app-create-user (close)="closeModals()" (create)="handleCreateUser($event)"></app-create-user>
-      </div>
-      }
       <button class="btn-logout" (click)="logout()">Cerrar Sesión</button>
     </div>
   </header>
 
   <div class="stats-grid">
-    <div class="card stat-card personal">
+    <div class="card stat-card personal" 
+         (click)="applyFilter('personal')" 
+         [class.active-card]="currentFilter === 'personal'">
       <span class="stat-label">PERSONAL</span>
       <span class="stat-number">{{ countPersonal }}</span>
       <div class="indicator"></div>
     </div>
 
-    <div class="card stat-card supervisor">
+    <div class="card stat-card supervisor" 
+         (click)="applyFilter('supervisor')" 
+         [class.active-card]="currentFilter === 'supervisor'">
       <span class="stat-label">SUPERVISORES</span>
       <span class="stat-number">{{ countSupervisor }}</span>
       <div class="indicator"></div>
     </div>
 
-    <div class="card stat-card admin">
+    <div class="card stat-card admin" 
+         (click)="applyFilter('admin')" 
+         [class.active-card]="currentFilter === 'admin'">
       <span class="stat-label">ADMINISTRADORES</span>
       <span class="stat-number">{{ countAdmin }}</span>
       <div class="indicator"></div>
     </div>
 
-    <div class="card stat-card total">
+    <div class="card stat-card total" 
+         (click)="applyFilter('all')" 
+         [class.active-card]="currentFilter === 'all'">
       <span class="stat-label">USUARIOS TOTALES</span>
       <span class="stat-number">{{ totalUsers }}</span>
     </div>
@@ -50,7 +52,7 @@
 
   <div class="card table-card">
     <div class="card-header">
-      <h2>Listado Completo</h2>
+      <h2>{{ filterTitle }}</h2>
     </div>
 
     <div class="table-responsive">
@@ -60,56 +62,78 @@
             <th>NOMBRE</th>
             <th>CORREO ELECTRONICO</th>
             <th>ROL</th>
-            <th>CAMBIOS</th>
+            <th style="text-align: center;">CAMBIOS</th>
           </tr>
         </thead>
         <tbody>
-          @for (user of usersList; track user.id) {
+          @for (user of filteredList; track user.id) {
           <tr>
             <td class="name-cell">
               <div class="avatar-circle">{{ user.nombre.charAt(0) }}</div>
               {{ user.nombre }}
             </td>
+            
             <td class="email-cell">{{ user.email }}</td>
+            
             <td>
-              <span class="badge" [class.badge-personal]="user.rol === 'personal' || user.rol === 'Personal'"
-                [class.badge-supervisor]="user.rol === 'supervisor' || user.rol === 'Supervisor'"
-                [class.badge-admin]="user.rol === 'admin' || user.rol === 'Admin'">
+              <span class="badge" 
+                    [class.badge-personal]="user.rol.toLowerCase() === 'personal'"
+                    [class.badge-supervisor]="user.rol.toLowerCase() === 'supervisor'"
+                    [class.badge-admin]="user.rol.toLowerCase() === 'admin' || user.rol.toLowerCase() === 'administrador'">
                 {{ user.rol }}
-
               </span>
-
             </td>
 
             <td class="actions-cell">
               <div class="actions-buttons">
-
                 <button class="btn-action view" (click)="openViewModal(user)">Ver</button>
-                @if (showView) {
-                <div class="modal-overlay">
-                  <app-view-user [user]="selectedUser" (close)="closeModals()"></app-view-user>
-                </div>
-                }
-
                 <button class="btn-action edit" (click)="openEditModal(user)">Editar</button>
-                @if (showEdit) {
-                <div class="modal-overlay">
-                  <app-edit-user [user]="selectedUser" (close)="closeModals()"></app-edit-user>
-                </div>
-                }
-
                 <button class="btn-action delete" (click)="openDeleteModal(user)">Eliminar</button>
-                @if (showDelete) {
-                <div class="modal-overlay">
-                  <app-delete-user [user]="selectedUser" (close)="closeModals()"></app-delete-user>
-                </div>
-                }
+                <button class="btn-action performance" (click)="openPerformanceModal(user)">Desempeño</button>
               </div>
             </td>
           </tr>
+          }
+          @if (filteredList.length === 0) {
+            <tr>
+              <td colspan="4" style="text-align: center; padding: 20px; color: #666;">
+                No se encontraron usuarios en esta categoría.
+              </td>
+            </tr>
           }
         </tbody>
       </table>
     </div>
   </div>
-</div>
+
+</div> 
+
+@if (showCreate) {
+  <div class="modal-overlay">
+    <app-create-user (close)="closeModals()" (create)="handleCreateUser($event)"></app-create-user>
+  </div>
+}
+
+@if (showView) {
+  <div class="modal-overlay">
+    <app-view-user [user]="selectedUser" (close)="closeModals()"></app-view-user>
+  </div>
+}
+
+@if (showEdit) {
+  <div class="modal-overlay">
+    <app-edit-user [user]="selectedUser" (close)="closeModals()"></app-edit-user>
+  </div>
+}
+
+@if (showDelete) {
+  <div class="modal-overlay">
+    <app-delete-user [user]="selectedUser" (close)="closeModals()"></app-delete-user>
+  </div>
+}
+
+@if (showPerformance) {
+  <div class="modal-overlay">
+    <app-performance-user [user]="selectedUser" (close)="closeModals()"></app-performance-user>
+  </div>
+}
