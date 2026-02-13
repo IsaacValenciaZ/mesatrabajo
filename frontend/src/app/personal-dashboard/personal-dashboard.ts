@@ -14,11 +14,15 @@ export class PersonalDashboardComponent implements OnInit {
   router = inject(Router);
   user: any = {};
   menuAbierto: boolean = true; 
-
+  isSidebarOpen = true;
   ngOnInit() {
     this.verificarSesion();
   }
 
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
+  
   verificarSesion() {
     const userStored = localStorage.getItem('usuario_actual');
     if (userStored) {
@@ -31,9 +35,6 @@ export class PersonalDashboardComponent implements OnInit {
     }
   }
 
-  toggleMenu() {
-    this.menuAbierto = !this.menuAbierto;
-  }
 
   logout() {
     localStorage.removeItem('usuario_actual');

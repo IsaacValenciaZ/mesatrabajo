@@ -63,7 +63,7 @@ export class PersonalDashboardComponent implements OnInit {
       confirmButtonText: 'Cerrar',
       confirmButtonColor: '#c3b08f', 
       background: '#fff',
-      iconColor: '#977e5b' // Icono Bronce
+      iconColor: '#977e5b' 
     });
   }
 
@@ -81,7 +81,7 @@ export class PersonalDashboardComponent implements OnInit {
       inputValue: ticket.estado,
       showCancelButton: true,
       confirmButtonText: 'Guardar',
-      confirmButtonColor: '#56212f', // Color Vino
+      confirmButtonColor: '#56212f', 
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {

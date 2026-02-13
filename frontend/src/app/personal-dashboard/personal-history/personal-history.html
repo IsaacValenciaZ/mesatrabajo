@@ -6,7 +6,8 @@
       <p>Consulta tus tickets organizados por mes.</p>
     </div>
     
-    <div class="filters-container">
+    <div class="filters-container" style="position: relative;"> 
+       
         <select class="month-select" [(ngModel)]="mesSeleccionado" (change)="aplicarFiltroMes()">
             <option *ngFor="let m of mesesDisponibles" [value]="m">
                 {{ obtenerNombreMes(m) }}
@@ -14,15 +15,52 @@
             <option *ngIf="mesesDisponibles.length === 0" value="" disabled>Sin registros</option>
         </select>
 
-       <button class="btn-summary" (click)="verResumenMensual()" title="Ver Resumen Mensual">
+        <button class="btn-summary" (click)="toggleCalendario()" title="Seleccionar Día">
+            <span class="material-symbols-outlined">calendar_month</span>
+        </button>
+
+        <button class="btn-summary" (click)="verResumenMensual()" title="Ver Resumen Mensual">
              <span class="material-symbols-outlined">bar_chart</span>
         </button>
+
+        <div class="calendar-popup fade-in" *ngIf="mostrarCalendario && diasCalendario.length > 0">
+            <div class="calendar-wrapper">
+                <div class="calendar-header">
+                    <span>Dom</span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span>
+                </div>
+                <div class="calendar-grid">
+                    <div *ngFor="let d of diasCalendario" 
+                         class="calendar-day" 
+                         [ngClass]="{ 
+                            'empty': !d.dia, 
+                            'has-tickets': d.tieneTickets,
+                            'selected': d.dia === diaSeleccionado,
+                            'no-tickets': d.dia && !d.tieneTickets 
+                         }"
+                         (click)="seleccionarDia(d)">
+                         
+                         <span *ngIf="d.dia">{{ d.dia }}</span>
+                         
+                         <div *ngIf="d.tieneTickets" class="dot-indicator"></div>
+
+                         <div *ngIf="d.dia && !d.tieneTickets" class="empty-mark">-</div>
+                    </div>
+                </div>
+                <div class="calendar-legend">
+                    <small *ngIf="diaSeleccionado" (click)="seleccionarDia({dia: diaSeleccionado})" style="cursor: pointer; color: #56212f; font-weight: bold; text-decoration: underline;">
+                       Mostrar todo el mes
+                    </small>
+                    <small *ngIf="!diaSeleccionado">Selecciona un día</small>
+                </div>
+            </div>
+        </div>
+
     </div>
   </div>
 
-  <div *ngIf="ticketsFiltrados.length === 0 && !cargando" class="empty-general">
+  <div *ngIf="gruposPorDia.length === 0 && !cargando" class="empty-general">
       <div class="empty-state">
-          No hay reportes en el mes seleccionado.
+          No hay reportes para el período seleccionado.
       </div>
   </div>
 
@@ -37,7 +75,6 @@
           <button class="btn-stats" (click)="verEstadisticasDia(grupo)" title="Ver Estadísticas Diarias">
              <span class="material-symbols-outlined">donut_large</span>
           </button>
-
       </div>
 
       <div class="table-card">
@@ -73,19 +110,19 @@
                 </td>
                 
                 <td class="text-center">
-                   <span *ngIf="t.estado === 'Completo'" class="badge-completed">Completado</span>
+                   <span *ngIf="t.estado === 'Completo' || t.estado === 'Completado'" class="badge-completed">Completado</span>
                    <span *ngIf="t.estado === 'Incompleto'" class="badge-incomplete">Incompleto</span>
                 </td>
 
                 <td class="text-center">
-                <div *ngIf="t.estado === 'Completo'">
-                    <span *ngIf="t.fecha_fin && t.fecha_limite && t.fecha_fin <= t.fecha_limite" class="badge-status success">A tiempo</span>
-                    <span *ngIf="t.fecha_fin && t.fecha_limite && t.fecha_fin > t.fecha_limite" class="badge-status late">Tarde</span>
-                </div>
-                <div *ngIf="t.estado === 'Incompleto'">
-                      <span class="badge-status late" style="background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca;"> Vencido</span>
-                   </div>
-              </td>
+                    <div *ngIf="t.estado === 'Completo' || t.estado === 'Completado'">
+                        <span *ngIf="t.fecha_fin && t.fecha_limite && t.fecha_fin <= t.fecha_limite" class="badge-status success">A tiempo</span>
+                        <span *ngIf="t.fecha_fin && t.fecha_limite && t.fecha_fin > t.fecha_limite" class="badge-status lateT">Tarde</span>
+                    </div>
+                    <div *ngIf="t.estado === 'Incompleto'">
+                          <span class="badge-status late" style="background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca;"> Vencido</span>
+                    </div>
+                </td>
 
                 <td class="text-center">
                    <button class="btn-text" (click)="cambiarEstado(t)" title="Regresar a pendientes">Corregir</button>

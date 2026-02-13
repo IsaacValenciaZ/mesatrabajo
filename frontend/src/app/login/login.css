@@ -92,8 +92,8 @@
 .blob-top {
   top: -60px;   
   left: -60px;
-  width: 200px;
-  height: 180px;
+  width: 180px;
+  height: 160px;
   background: linear-gradient(45deg, #8b2136, #b03a55);
   border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
   
