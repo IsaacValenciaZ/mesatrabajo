@@ -49,7 +49,7 @@ export class LoginComponent implements OnInit {
 
   redirigirPorRol(rol: string) {
     this.ngZone.run(() => {
-        if (rol === 'admin') this.router.navigate(['/admin']);
+        if (rol === 'secretaria') this.router.navigate(['/secretaria']);
         else if (rol === 'supervisor') this.router.navigate(['/supervisor']);
         else this.router.navigate(['/personal']);
     });

@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 
 import { ViewUserComponent } from './view-user/view-user.component';
@@ -9,6 +9,8 @@ import { EditUserComponent } from './edit-user/edit-user.component';
 import { DeleteUserComponent } from './delete-user/delete-user.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { PerformanceUserComponent } from './performance-user/performance-user.component';
+
+
 
 @Component({
   selector: 'app-supervisor-dashboard',
@@ -19,7 +21,8 @@ import { PerformanceUserComponent } from './performance-user/performance-user.co
     EditUserComponent,
     DeleteUserComponent,
     CreateUserComponent,
-    PerformanceUserComponent, 
+    PerformanceUserComponent,
+    RouterModule, 
   ],
   templateUrl: './supervisor-dashboard.html',
   styleUrl: './supervisor-dashboard.css'
@@ -29,7 +32,6 @@ export class SupervisorDashboardComponent implements OnInit {
   http = inject(HttpClient);
   router = inject(Router);
   cdr = inject(ChangeDetectorRef);
-
   apiUrl = 'http://localhost/mesatrabajoBACKEND/backend/get_users.php';
   usersList: any[] = [];      
   filteredList: any[] = [];   
@@ -39,7 +41,7 @@ export class SupervisorDashboardComponent implements OnInit {
 
   totalUsers: number = 0;
   countPersonal: number = 0;
-  countAdmin: number = 0;
+  countSecretaria: number = 0;
   countSupervisor: number = 0;
 
   
@@ -49,10 +51,15 @@ export class SupervisorDashboardComponent implements OnInit {
   showCreate: boolean = false;
   showPerformance: boolean = false; 
   selectedUser: any = false;
+  isControlPersonalOpen: boolean = false;
 
   ngOnInit() {
     this.cargarDatos();
   }
+  toggleControlPersonal() {
+    this.isControlPersonalOpen = !this.isControlPersonalOpen;
+  }
+  
 
   cargarDatos() {
     this.http.get<any[]>(this.apiUrl).subscribe({
@@ -81,7 +88,7 @@ export class SupervisorDashboardComponent implements OnInit {
   
       if(category === 'personal') this.filterTitle = 'Listado de Personal';
       if(category === 'supervisor') this.filterTitle = 'Listado de Supervisores';
-      if(category === 'admin') this.filterTitle = 'Listado de Administradores';
+      if(category === 'secretaria') this.filterTitle = 'Listado de Secretarias';
     }
   }
 
@@ -93,8 +100,8 @@ export class SupervisorDashboardComponent implements OnInit {
       u.rol && u.rol.trim().toLowerCase() === 'personal'
     ).length;
 
-    this.countAdmin = this.usersList.filter(u =>
-      u.rol && (u.rol.trim().toLowerCase() === 'admin' || u.rol.trim().toLowerCase() === 'administrador')
+    this.countSecretaria = this.usersList.filter(u =>
+      u.rol && (u.rol.trim().toLowerCase() === 'secretaria' || u.rol.trim().toLowerCase() === 'secretario')
     ).length;
 
     this.countSupervisor = this.usersList.filter(u =>
@@ -150,5 +157,6 @@ export class SupervisorDashboardComponent implements OnInit {
   logout() {
     localStorage.removeItem('usuario_actual');
     this.router.navigate(['/login']);
+    
   }
 }

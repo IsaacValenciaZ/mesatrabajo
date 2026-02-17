@@ -225,7 +225,7 @@ tbody td { padding: 15px 25px; border-bottom: 1px solid #f0f0f0; }
     text-align: center;
     min-width: 90px; 
 }
-.badge-admin { background: #e0f2fe; color: #0369a1; }
+.badge-secretaria { background: #e0f2fe; color: #0369a1; }
 .badge-supervisor { background: #fef3c7; color: #b45309; }
 .badge-personal { background: #dcfce7; color: #15803d; }
 
@@ -239,18 +239,32 @@ tbody td { padding: 15px 25px; border-bottom: 1px solid #f0f0f0; }
 
 .actions-cell {
   text-align: center;
-  padding: 10px !important;
+  vertical-align: middle;
+  padding: 12px !important;
+}
+.actions-buttons {
+  display: flex !important;
+  gap: 20px !important;        
+  justify-content: center;     
+  align-items: center;         
+  flex-wrap: nowrap;          
 }
 
 .btn-action {
-    padding: 6px 16px;
-    border-radius: 8px;
+    padding: 8px 16px;    
+    border-radius: 10px;   
     font-weight: 700;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
-    min-width: 75px; 
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+    
+  
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;      
 }
 
 .btn-action.view {
@@ -306,7 +320,6 @@ tbody td { padding: 15px 25px; border-bottom: 1px solid #f0f0f0; }
   z-index: 1000; 
   backdrop-filter: blur(2px); 
 }
-
 
 
 

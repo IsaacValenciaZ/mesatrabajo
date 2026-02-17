@@ -8,7 +8,7 @@
 
   <header class="header">
     <div class="header-content">
-      <h1>PANEL DE SUPERVISIÓN</h1>
+      <h1>PANEL DE ADMINISTRACIÓN</h1>
       <p>Resumen de usuarios registrados en el sistema.</p>
     </div>
     <div class="header-actions">
@@ -29,16 +29,16 @@
     <div class="card stat-card supervisor" 
          (click)="applyFilter('supervisor')" 
          [class.active-card]="currentFilter === 'supervisor'">
-      <span class="stat-label">SUPERVISORES</span>
+      <span class="stat-label">SECRETARIAS</span>
       <span class="stat-number">{{ countSupervisor }}</span>
       <div class="indicator"></div>
     </div>
 
-    <div class="card stat-card admin" 
-         (click)="applyFilter('admin')" 
-         [class.active-card]="currentFilter === 'admin'">
-      <span class="stat-label">ADMINISTRADORES</span>
-      <span class="stat-number">{{ countAdmin }}</span>
+    <div class="card stat-card secretaria" 
+         (click)="applyFilter('secretaria')" 
+         [class.active-card]="currentFilter === 'secretaria'">
+      <span class="stat-label">SECRETARIAS</span>
+      <span class="stat-number">{{ countSecretaria }}</span>
       <div class="indicator"></div>
     </div>
 
@@ -62,7 +62,7 @@
             <th>NOMBRE</th>
             <th>CORREO ELECTRONICO</th>
             <th>ROL</th>
-            <th style="text-align: center;">CAMBIOS</th>
+            <th style="text-align: center;">DETALLES</th>
           </tr>
         </thead>
         <tbody>
