@@ -222,7 +222,7 @@ export class TicketsListComponent implements OnInit {
               type: 'pie', 
               data: { 
                   labels: ['Alta', 'Media', 'Baja'], 
-                  datasets: [{ data: [stats.alta, stats.media, stats.baja], backgroundColor: ['#dc2626', '#f59e0b', '#10b981'], hoverOffset: 4 }] 
+                  datasets: [{ data: [stats.alta, stats.media, stats.baja], backgroundColor: ['#28f328', '#f3f028', '#f32828'], hoverOffset: 4 }] 
               }, options: { responsive: true, plugins: { legend: { position: 'bottom' } } } 
           }); 
       }

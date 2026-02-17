@@ -101,7 +101,7 @@
 .simple-table th:nth-child(3), .simple-table td:nth-child(3) { width: 140px; }
 
 .simple-table th:nth-child(4), .simple-table td:nth-child(4) { 
-    width: 15%; 
+    width: 100px; 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

@@ -286,10 +286,10 @@ export class PersonalHistoryComponent implements OnInit {
 
   renderizarGraficas(idEstatus: string, idPuntualidad: string, idTiempos: string, stats: any) {
       const ctx1 = document.getElementById(idEstatus) as HTMLCanvasElement;
-      if(ctx1) { new Chart(ctx1, { type: 'doughnut', data: { labels: ['Completos', 'Vencidos'], datasets: [{ data: [stats.completos, stats.vencidos], backgroundColor: ['#22c55e', '#000000'], hoverOffset: 4 }] }, options: { responsive: true, plugins: { legend: { position: 'bottom' } } } }); }
+      if(ctx1) { new Chart(ctx1, { type: 'doughnut', data: { labels: ['Completos', 'Vencidos'], datasets: [{ data: [stats.completos, stats.vencidos], backgroundColor: ['#28f328', '#f32828'], hoverOffset: 4 }] }, options: { responsive: true, plugins: { legend: { position: 'bottom' } } } }); }
       const ctx2 = document.getElementById(idPuntualidad) as HTMLCanvasElement;
-      if(ctx2) { new Chart(ctx2, { type: 'pie', data: { labels: ['A tiempo', 'Tarde', 'Vencido'], datasets: [{ data: [stats.aTiempo, stats.tarde, stats.vencidos], backgroundColor: ['#166534', '#ef4444', '#000000'], hoverOffset: 4 }] }, options: { responsive: true, plugins: { legend: { position: 'bottom' } } } }); }
+      if(ctx2) { new Chart(ctx2, { type: 'pie', data: { labels: ['A tiempo', 'Tarde', 'Vencido'], datasets: [{ data: [stats.aTiempo, stats.tarde, stats.vencidos], backgroundColor: ['#28f328', '#f3f028', '#f32828'], hoverOffset: 4 }] }, options: { responsive: true, plugins: { legend: { position: 'bottom' } } } }); }
       const ctx3 = document.getElementById(idTiempos) as HTMLCanvasElement;
-      if(ctx3) { new Chart(ctx3, { type: 'bar', data: { labels: ['<1h', '1-24h', '>24h'], datasets: [{ label: 'Reportes', data: [stats.rapido, stats.normal, stats.lento], backgroundColor: ['#3b82f6', '#f59e0b', '#ef4444'], borderRadius: 5 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } } }); }
+      if(ctx3) { new Chart(ctx3, { type: 'bar', data: { labels: ['<1h', '1-24h', '>24h'], datasets: [{ label: 'Reportes', data: [stats.rapido, stats.normal, stats.lento], backgroundColor: ['#28f328', '#f3f028', '#f32828'], borderRadius: 5 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } } }); }
   }
 }
