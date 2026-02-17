@@ -30,7 +30,6 @@ export class PersonalPendingComponent implements OnInit {
 
   cargarTickets() {
     this.cargando = true;
-    const cacheBuster = new Date().getTime();
     
     this.apiService.getMisTickets(this.user.nombre).subscribe({
       next: (data) => {
@@ -38,18 +37,19 @@ export class PersonalPendingComponent implements OnInit {
         this.fechaActual = new Date();
       
         todos.forEach((t: any) => {
-            if (t.estado !== 'Completo' && t.estado !== 'Incompleto') {
-                if (t.fecha_limite && new Date(t.fecha_limite) < this.fechaActual) {
-                    this.marcarComoVencido(t.id);
-                    
-                    t.estado = 'Incompleto'; 
-                }
+    
+            if (t.estado !== 'Completo' && t.estado !== 'Completado' && t.fecha_limite && new Date(t.fecha_limite) < this.fechaActual) {
+                
             }
         });
 
         this.ticketsPendientes = todos.filter((t: any) => 
-            t.estado !== 'Completo' && t.estado !== 'Incompleto'
+            (t.estado === 'En espera' || t.estado === 'Asignado' || !t.estado)
         );
+    
+        this.ticketsPendientes.sort((a, b) => {
+             return new Date(a.fecha_limite).getTime() - new Date(b.fecha_limite).getTime();
+        });
         
         this.cargando = false;
         this.cd.detectChanges(); 
@@ -59,7 +59,6 @@ export class PersonalPendingComponent implements OnInit {
       }
     });
   }
-
   marcarComoVencido(id: number) {
       this.apiService.actualizarEstadoTicket(id, 'Incompleto').subscribe({
           next: () => console.log(`Ticket ${id} movido a historial por vencimiento.`),
@@ -84,25 +83,19 @@ export class PersonalPendingComponent implements OnInit {
     });
   }
 
+  // Solo permitir COMPLETAR
   cambiarEstado(ticket: any) {
     Swal.fire({
-      title: 'Actualizar Estado',
-      text: `Reporte #${ticket.id}`,
+      title: '¿Finalizar Reporte?',
+      text: `¿Confirmas que el reporte #${ticket.id} ha sido atendido?`,
       icon: 'question',
-      input: 'select',
-      inputOptions: {
-        'En espera': '🟡 En espera',
-        'Incompleto': '🔴 Incompleto', 
-        'Completo': '🟢 Completo'
-      },
-      inputValue: ticket.estado,
       showCancelButton: true,
-      confirmButtonText: 'Guardar',
-      confirmButtonColor: '#56212f', 
+      confirmButtonText: 'Sí, Completar',
+      confirmButtonColor: '#27ae60', 
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.guardarNuevoEstado(ticket.id, result.value);
+        this.guardarNuevoEstado(ticket.id, 'Completo');
       }
     });
   }
@@ -114,7 +107,7 @@ export class PersonalPendingComponent implements OnInit {
           const Toast = Swal.mixin({
             toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true
           });
-          Toast.fire({ icon: 'success', title: 'Estado actualizado' });
+          Toast.fire({ icon: 'success', title: 'Ticket completado' });
           this.cargarTickets(); 
         } else {
           Swal.fire('Error', 'No se pudo actualizar', 'error');

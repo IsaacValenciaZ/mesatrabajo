@@ -1,6 +1,6 @@
 <div class="dashboard-layout">
 
-  <aside class="sidebar" [class.closed]="!menuAbierto">
+<aside class="sidebar" [class.closed]="!isSidebarOpen">
     <div class="sidebar-header">
       <div class="brand">
         <h2>Bienvenido {{ user.nombre }}</h2>
@@ -10,33 +10,36 @@
     </div> 
 
     <nav class="sidebar-nav">
-      
       <a routerLink="mis-reportes" routerLinkActive="active" class="nav-item"> Pendientes</a>
 
       <a routerLink="historial" routerLinkActive="active" class="nav-item"> Historial</a>
 
- <div class="spacer"></div>
+      <div class="spacer"></div>
 
-      <div class="user-info-sidebar profile-link" routerLink="perfil">
-        <div class="avatar-circle">{{ user.nombre?.charAt(0) }}</div>
-        <div class="user-details">
-          <span class="user-name">{{ user.nombre }}</span>
-          <span class="user-role">Visualizar Perfil</span> </div>
-      </div>
+              <div class="user-info-sidebar profile-link" routerLink="perfil">
+                <div class="avatar-circle">{{ user.nombre?.charAt(0) }}</div>
+                <div class="user-details">
+                  <span class="user-name">{{ user.nombre }}</span>
+                  <span class="user-role">Visualizar Perfil</span> </div>
+              </div>
 
-      <button (click)="logout()" class="btn-logout"> Cerrar Sesión</button>
-
+                <button (click)="logout()" class="btn-logout"> Cerrar Sesión</button>
     </nav>
   </aside>
 
-  <div class="main-content">
-    <header class="mobile-header">
-
+  <div class="main-wrapper">
+    <header class="top-bar">
+      <div class="flex-start">
         <button class="hamburger-btn" (click)="toggleSidebar()">☰</button>
-      <h2>Mesa de Ayuda</h2>
+
+        <div class="header-top logos-container">
+           <img src="icons/seiem_blanco.svg" class="logo-header" alt="Logo">
+        </div>
+      </div>
     </header>
 
-    <router-outlet></router-outlet>
-
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
   </div>
 </div>

@@ -15,6 +15,7 @@ export class PersonalDashboardComponent implements OnInit {
   user: any = {};
   menuAbierto: boolean = true; 
   isSidebarOpen = true;
+  
   ngOnInit() {
     this.verificarSesion();
   }
