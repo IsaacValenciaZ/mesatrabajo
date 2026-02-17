@@ -29,13 +29,13 @@ export class TicketsListComponent implements OnInit {
   diaSeleccionado: number | null = null;
   cargando: boolean = false;
   
-  adminId: number = 0;
+  secretariaId: number = 0;
 
   ngOnInit() {
     const userStored = localStorage.getItem('usuario_actual');
     if (userStored) {
         const user = JSON.parse(userStored);
-        this.adminId = user.id; 
+        this.secretariaId = user.id; 
         this.cargarHistorial();
     } else {
         console.error("Error: No hay sesión iniciada.");
@@ -46,7 +46,7 @@ export class TicketsListComponent implements OnInit {
   cargarHistorial() {
     this.cargando = true;
     
-    this.apiService.getTicketsCreadosPorAdmin(this.adminId).subscribe({
+    this.apiService.getTicketsCreadosPorSecretaria(this.secretariaId).subscribe({
       next: (data) => {
         this.ticketsTodos = data || [];
         

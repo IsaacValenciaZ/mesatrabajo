@@ -55,7 +55,7 @@ export class UserProfileComponent implements OnInit {
   }
 
   cargarEstadisticasCreadas(id: number) {
-      this.apiService.getTicketsCreadosPorAdmin(id).subscribe({
+      this.apiService.getTicketsCreadosPorSecretaria(id).subscribe({
           next: (data: any[]) => {
               this.ticketsCreadosData = data || [];
               

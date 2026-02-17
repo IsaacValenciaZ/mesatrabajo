@@ -1,12 +1,13 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './login/login';
 
-import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard';
-import { UsersListComponent } from './admin-dashboard/users-list/users-list';
-//import { UserRegisterComponent } from './admin-dashboard/user-register/user-register';
-import { TicketsComponent } from './admin-dashboard/tickets/tickets';
-import { TicketsListComponent } from './admin-dashboard/tickets-list/tickets-list';
-import { UserProfileComponent } from './admin-dashboard/user-profile/user-profile';
+
+import { SecretariaDashboardComponent } from './secretaria-dashboard/secretaria-dashboard'; 
+import { UsersListComponent } from './secretaria-dashboard/users-list/users-list';
+//import { UserRegisterComponent } from './secretaria-dashboard/user-register/user-register';
+import { TicketsComponent } from './secretaria-dashboard/tickets/tickets';
+import { TicketsListComponent } from './secretaria-dashboard/tickets-list/tickets-list';
+import { UserProfileComponent } from './secretaria-dashboard/user-profile/user-profile';
 
 import { SupervisorDashboardComponent } from './supervisor-dashboard/supervisor-dashboard';
 
@@ -23,12 +24,9 @@ export const routes: Routes = [
     
     { path: 'login', component: LoginComponent },
      
-    
-     
-     
     { 
-        path: 'admin', 
-        component: AdminDashboardComponent,
+        path: 'secretaria', 
+        component: SecretariaDashboardComponent,
         canActivate: [authGuard],
         children: [
             { path: '', redirectTo: 'tickets', pathMatch: 'full' }, 

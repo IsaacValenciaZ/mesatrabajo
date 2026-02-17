@@ -36,6 +36,6 @@ export class UsersListComponent implements OnInit {
   }
 
   irATickets(userId: any) {
-    this.router.navigate(['/admin/tickets']);
+    this.router.navigate(['/secretaria/tickets']);
   }
 }

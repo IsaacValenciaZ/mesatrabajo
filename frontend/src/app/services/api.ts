@@ -54,8 +54,8 @@ updateUser(user: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/update_tickets_personal.php`, { id, estado: nuevoEstado });
   }
 
-getTicketsCreadosPorAdmin(idAdmin: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/get_admin_tickets.php?id=${idAdmin}`);
+getTicketsCreadosPorSecretaria(idSecretaria: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/get_secretaria_tickets.php?id=${idSecretaria}`);
   }
 
 enviarTokenRecuperacion(email: string): Observable<any> {

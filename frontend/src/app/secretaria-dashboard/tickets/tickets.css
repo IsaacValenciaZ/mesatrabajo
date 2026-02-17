@@ -12,7 +12,6 @@
   border-radius: 10px;
   padding: 40px;
   margin: 0 auto 50px auto; 
-  /* Aumentamos un poco el ancho para que quepan bien las 2 columnas */
   max-width: 950px; 
   box-shadow: 0 5px 20px rgba(0,0,0,0.05);
 }
@@ -27,23 +26,20 @@
   padding-left: 15px;
 }
 
-/* --- NUEVO: GRID LAYOUT (Horizontal) --- */
 .form-content {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Crea dos columnas iguales */
-  gap: 20px; /* Espacio entre columnas y filas */
+  grid-template-columns: 1fr 1fr; 
+  gap: 20px; 
   align-items: start;
 }
 
-/* Para que inputs y selects ocupen el 100% de su celda */
 .form-group {
-  margin-bottom: 0; /* El gap del grid ya se encarga del espacio */
+  margin-bottom: 0;
   width: 100%;
 }
 
-/* --- NUEVO: Clase para elementos que ocupan todo el ancho (Notas y Botón) --- */
 .full-width {
-  grid-column: 1 / -1; /* Hace que el elemento abarque todas las columnas */
+  grid-column: 1 / -1; 
 }
 
 .form-group label {
@@ -105,7 +101,6 @@ textarea { resize: vertical; }
 .autocomplete-list li:hover { background-color: #fff8e1; color: #d4a055; }
 .no-results { padding: 10px 15px; color: #999; font-style: italic; font-size: 0.85rem; }
 
-/* --- TABLA DE REPORTES --- */
 .report-card {
   background: white;
   border-radius: 12px;
@@ -171,11 +166,9 @@ textarea { resize: vertical; }
 .qty-badge { background-color: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0;
   padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; display: inline-block;}
 
-/* --- RESPONSIVE (Móvil) --- */
 @media (max-width: 768px) {
   .central-form-card { padding: 20px; }
   
-  /* En celular, volvemos a una sola columna */
   .form-content {
     grid-template-columns: 1fr; 
     gap: 15px;

@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-admin-dashboard',
+  selector: 'app-secretaria-dashboard',
   standalone: true,
   imports: [CommonModule, RouterModule], 
-  templateUrl: './admin-dashboard.html',
-  styleUrl: './admin-dashboard.css'
+  templateUrl: './secretaria-dashboard.html', 
+  styleUrl: './secretaria-dashboard.css'
 })
-export class AdminDashboardComponent {
+export class SecretariaDashboardComponent {
   private router = inject(Router);
   isSidebarOpen = true;
   user: any = {nombre: ''};

@@ -27,7 +27,7 @@ export class UserRegisterComponent {
   confirmButtonText: 'Aceptar',
   confirmButtonColor: '#000000' 
 });
-        this.router.navigate(['/admin/usuarios']); 
+        this.router.navigate(['/secretaria/usuarios']); 
       },
       error: () => alert('Error al registrar')
     });
