@@ -198,6 +198,19 @@ export class PersonalHistoryComponent implements OnInit {
       return `${nombreMes} ${parts[0]}`.charAt(0).toUpperCase() + `${nombreMes} ${parts[0]}`.slice(1);
   }
 
+    verNotaCompleta(nota: string) {
+      Swal.fire({
+        title: 'Detalle de la Nota',
+        text: nota ? nota : 'Sin información adicional.',
+        icon: 'info',
+        confirmButtonText: 'Cerrar',
+        confirmButtonColor: '#56212f',
+        background: '#fff',
+        iconColor: '#977e5b'
+      });
+    }
+    
+
   cambiarEstado(ticket: any) {
     Swal.fire({
       title: '¿Corregir reporte?',

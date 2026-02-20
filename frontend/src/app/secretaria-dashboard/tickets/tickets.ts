@@ -75,13 +75,29 @@ export class TicketsComponent implements OnInit {
     personalId: '',     
     descripcion: '',    
     prioridad: '',
-    notas: '' ,
-    cantidad: null
+    notas: '',
+    cantidad_dicta: null,
+    extension_tel: '',
+    correo_tipo: '',
+    soporte: {
+      impresora: false,
+      escaner: false,
+      software: false,
+      hardware: false
+    }
   };
 
   ngOnInit() {
     this.cargarUsuarios();
     this.cargarTicketsDelDia();
+  }
+
+  soloNumeros(event: KeyboardEvent): boolean {
+    const charCode = (event.which) ? event.which : event.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+      return false; 
+    }
+    return true; 
   }
 
   filtrarDepartamentos(event: any) {
@@ -153,6 +169,25 @@ export class TicketsComponent implements OnInit {
     if (!this.newTicket.personalId)     camposFaltantes.push('Técnico');
     if (!this.newTicket.descripcion)    camposFaltantes.push('Categoría');
     if (!this.newTicket.prioridad)      camposFaltantes.push('Prioridad');
+    
+    if (this.newTicket.descripcion === 'Correo' && !this.newTicket.correo_tipo) {
+        camposFaltantes.push('Dominio del Correo (.edu o .gob)');
+    }
+
+    let opcionesSoporteSeleccionadas = '';
+    if (this.newTicket.descripcion === 'Tecnico') {
+        const opciones = [];
+        if (this.newTicket.soporte.impresora) opciones.push('Impresora');
+        if (this.newTicket.soporte.escaner) opciones.push('Escáner');
+        if (this.newTicket.soporte.software) opciones.push('Software');
+        if (this.newTicket.soporte.hardware) opciones.push('Hardware');
+
+        if (opciones.length === 0) {
+            camposFaltantes.push('Opciones de Soporte (Selecciona al menos una)');
+        } else {
+            opcionesSoporteSeleccionadas = opciones.join(', ');
+        }
+    }
 
     if (camposFaltantes.length > 0) {
       Swal.fire({
@@ -166,59 +201,46 @@ export class TicketsComponent implements OnInit {
     }
 
     const tecnicoAsignado = this.usersList.find(u => u.id == this.newTicket.personalId);
-    const adminActual = JSON.parse(localStorage.getItem('usuario_actual') || '{}');
+    const secretariaActual = JSON.parse(localStorage.getItem('usuario_actual') || '{}');
 
     const ticketParaBD = {
-      admin_id: adminActual.id, 
+      secretaria_id: secretariaActual.id || null,
       nombre_usuario: this.newTicket.nombre_usuario,
       departamento: this.newTicket.departamento,
       descripcion: this.newTicket.descripcion, 
       prioridad: this.newTicket.prioridad,
       notas: this.newTicket.notas || '',
-      cantidad: this.newTicket.cantidad, 
+      cantidad: this.newTicket.cantidad_dicta, 
+      extension_tel: this.newTicket.extension_tel, 
+      correo_tipo: this.newTicket.correo_tipo, 
+      soporte_tipo: opcionesSoporteSeleccionadas, // NUEVO
       personal: tecnicoAsignado ? tecnicoAsignado.nombre : 'Sin asignar' 
     };
 
     this.apiService.createTicket(ticketParaBD).subscribe({
       next: (res) => {
         if(res.status === true) {
-          
           const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true
+            toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true
           });
-          
-          Toast.fire({
-            icon: 'success',
-            title: 'Ticket registrado correctamente'
-          });
+          Toast.fire({ icon: 'success', title: 'Ticket registrado correctamente' });
 
           this.newTicket = { 
             nombre_usuario: '', departamento: '', personalId: '', 
-            descripcion: '', prioridad: '', notas: '' , cantidad: null
+            descripcion: '', prioridad: '', notas: '', cantidad_dicta: null, extension_tel: '', correo_tipo: '',
+            soporte: { impresora: false, escaner: false, software: false, hardware: false }
           };
           
-          this.cargarTicketsDelDia();
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
 
         } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error al guardar',
-            text: res.error || res.message, 
-            confirmButtonColor: '#56212f'
-          });
+          Swal.fire({ icon: 'error', title: 'Error al guardar', text: res.error || res.message, confirmButtonColor: '#56212f' });
         }
       },
       error: (err) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error de conexión',
-          text: 'No se pudo conectar con el servidor',
-          confirmButtonColor: '#56212f'
-        });
+        Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo conectar con el servidor', confirmButtonColor: '#56212f' });
       }
     });
   }

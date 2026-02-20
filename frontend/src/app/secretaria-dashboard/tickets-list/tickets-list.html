@@ -85,9 +85,26 @@
                         'cat-office': t.descripcion === 'Office', 
                         'cat-telefonia': t.descripcion === 'Telefonia', 
                         'cat-tecnico': t.descripcion === 'Tecnico',
-                        'cat-dictaminar': t.descripcion === 'Dictaminar'
+                        'cat-dictaminar': t.descripcion === 'Dictaminar',
+                        'cat-extension': t.descripcion === 'Extension/Telefono',
+                        'cat-correo': t.descripcion === 'Correo'
                     }">{{ t.descripcion }}</span>
-                    <span *ngIf="t.descripcion === 'Dictaminar' && t.cantidad" class="qty-badge">EQ:{{ t.cantidad }}</span>
+                    
+                    <span *ngIf="t.descripcion === 'Dictaminar' && t.cantidad_dicta" class="qty-badge" style="margin-top: 5px; display: block;">
+                        EQ: {{ t.cantidad_dicta }}
+                    </span>
+                    
+                    <span *ngIf="t.descripcion === 'Extension/Telefono' && t.extension_tel" class="qty-badge" style="margin-top: 5px; display: block;">
+                        Num: {{ t.extension_tel }}
+                    </span>
+    
+                    <span *ngIf="t.descripcion === 'Correo' && t.correo_tipo" class="qty-badge" style="margin-top: 5px; display: block;">
+                        Dom: {{ t.correo_tipo }}
+                    </span>
+    
+                    <span *ngIf="t.descripcion === 'Tecnico' && t.soporte_tipo" class="qty-badge" style="margin-top: 5px; display: block; white-space: normal; line-height: 1.2;">
+                        {{ t.soporte_tipo }}
+                    </span>
                 </td>
 
                 <td>

@@ -83,7 +83,6 @@ export class PersonalPendingComponent implements OnInit {
     });
   }
 
-  // Solo permitir COMPLETAR
   cambiarEstado(ticket: any) {
     Swal.fire({
       title: '¿Finalizar Reporte?',

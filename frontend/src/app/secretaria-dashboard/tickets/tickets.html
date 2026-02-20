@@ -49,12 +49,51 @@
           <option value="Telefonia">Telefonía</option>
           <option value="Tecnico">Soporte Técnico</option>
           <option value="Dictaminar">Dictaminar</option> 
+          <option value="Extension/Telefono">Extensión / Teléfono</option> 
+          <option value="Correo">Correo</option> 
         </select>
       </div>
 
       <div class="form-group fade-in" *ngIf="newTicket.descripcion === 'Dictaminar'">
         <label>¿Cuántos equipos se dictaminarán?</label>
-        <input type="number" [(ngModel)]="newTicket.cantidad" name="cantidad" min="1" placeholder="Ej: 5" class="simple-input">
+        <input type="number" [(ngModel)]="newTicket.cantidad_dicta" name="cantidad_dicta" min="1" placeholder="Ej: 5" class="simple-input">
+      </div>
+
+      <div class="form-group fade-in" *ngIf="newTicket.descripcion === 'Extension/Telefono'">
+        <label>Número de Extensión o Teléfono:</label>
+        <input type="tel" [(ngModel)]="newTicket.extension_tel" name="extension_tel" placeholder="Ej: 5512345678" class="simple-input" maxlength="12" (keypress)="soloNumeros($event)">
+      </div>
+
+      <div class="form-group fade-in" *ngIf="newTicket.descripcion === 'Correo'">
+        <label>Tipo de Dominio:</label>
+        <div style="display: flex; gap: 20px; margin-top: 10px;">
+          <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+            <input type="radio" [(ngModel)]="newTicket.correo_tipo" name="correo_tipo" value=".edu"> 
+            <span>.edu</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+            <input type="radio" [(ngModel)]="newTicket.correo_tipo" name="correo_tipo" value=".gob"> 
+            <span>.gob</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group fade-in" *ngIf="newTicket.descripcion === 'Tecnico'">
+        <label>Especifica el tipo de soporte (puedes elegir varios):</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-top: 10px;">
+          <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+            <input type="checkbox" [(ngModel)]="newTicket.soporte.impresora"> <span>Impresora</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+            <input type="checkbox" [(ngModel)]="newTicket.soporte.escaner"> <span>Escáner</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+            <input type="checkbox" [(ngModel)]="newTicket.soporte.software"> <span>Software</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+            <input type="checkbox" [(ngModel)]="newTicket.soporte.hardware"> <span>Hardware</span>
+          </label>
+        </div>
       </div>
 
       <div class="form-group">
@@ -80,9 +119,6 @@
 
     </div>
   </div>
-
-
-</div>
 
   <div class="report-card fade-in">
     
@@ -118,11 +154,25 @@
                   'bg-office': t.descripcion === 'Office',
                   'bg-telefonia': t.descripcion === 'Telefonia',
                   'bg-tecnico': t.descripcion === 'Tecnico',
-                  'bg-dictaminar': t.descripcion === 'Dictaminar'
+                  'bg-dictaminar': t.descripcion === 'Dictaminar',
+                  'bg-extension': t.descripcion === 'Extension/Telefono',
+                  'bg-correo': t.descripcion === 'Correo'
                 }">{{ t.descripcion }}</span>
 
-                <span *ngIf="t.descripcion === 'Dictaminar' && t.cantidad" class="qty-badge">
-                    EQ: {{ t.cantidad }}
+                <span *ngIf="t.descripcion === 'Dictaminar' && t.cantidad_dicta" class="qty-badge" style="margin-top: 5px; display: block;">
+                    EQ: {{ t.cantidad_dicta }}
+                </span>
+                
+                <span *ngIf="t.descripcion === 'Extension/Telefono' && t.extension_tel" class="qty-badge" style="margin-top: 5px; display: block;">
+                    Num: {{ t.extension_tel }}
+                </span>
+
+                <span *ngIf="t.descripcion === 'Correo' && t.correo_tipo" class="qty-badge" style="margin-top: 5px; display: block;">
+                    Dom: {{ t.correo_tipo }}
+                </span>
+
+                <span *ngIf="t.descripcion === 'Tecnico' && t.soporte_tipo" class="qty-badge" style="margin-top: 5px; display: block; white-space: normal; line-height: 1.2;">
+                    {{ t.soporte_tipo }}
                 </span>
             </td>
 
@@ -136,8 +186,6 @@
             
             <td class="tech-col">{{ t.personal || 'Sin asignar' }}</td>
             
-
-            
             <td class="notes-col">
               <span *ngIf="t.notas && t.notas.length <= 30">{{ t.notas }}</span>
               <div *ngIf="t.notas && t.notas.length > 30">
@@ -149,9 +197,11 @@
           </tr>
           
           <tr *ngIf="!ticketsHoy || ticketsHoy.length === 0">
-            <td colspan="9" class="empty-row">No hay reportes registrados hoy.</td>
+            <td colspan="8" class="empty-row">No hay reportes registrados hoy.</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
+
+</div>

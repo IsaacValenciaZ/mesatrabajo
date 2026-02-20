@@ -1,28 +1,20 @@
 <div class="view-section fade-in">
-  
   <div class="section-header">
     <div>
       <h1>Historial de Reportes</h1>
       <p>Consulta tus tickets organizados por mes.</p>
     </div>
-    
     <div class="filters-container" style="position: relative;"> 
-       
         <select class="month-select" [(ngModel)]="mesSeleccionado" (change)="aplicarFiltroMes()">
-            <option *ngFor="let m of mesesDisponibles" [value]="m">
-                {{ obtenerNombreMes(m) }}
-            </option>
+            <option *ngFor="let m of mesesDisponibles" [value]="m">{{ obtenerNombreMes(m) }}</option>
             <option *ngIf="mesesDisponibles.length === 0" value="" disabled>Sin registros</option>
         </select>
-
         <button class="btn-summary" (click)="toggleCalendario()" title="Seleccionar Día">
             <span class="material-symbols-outlined">calendar_month</span>
         </button>
-
         <button class="btn-summary" (click)="verResumenMensual()" title="Ver Resumen Mensual">
              <span class="material-symbols-outlined">bar_chart</span>
         </button>
-
         <div class="calendar-popup fade-in" *ngIf="mostrarCalendario && diasCalendario.length > 0">
             <div class="calendar-wrapper">
                 <div class="calendar-header">
@@ -31,47 +23,32 @@
                 <div class="calendar-grid">
                     <div *ngFor="let d of diasCalendario" 
                          class="calendar-day" 
-                         [ngClass]="{ 
-                            'empty': !d.dia, 
-                            'has-tickets': d.tieneTickets,
-                            'selected': d.dia === diaSeleccionado,
-                            'no-tickets': d.dia && !d.tieneTickets 
-                         }"
+                         [ngClass]="{ 'empty': !d.dia, 'has-tickets': d.tieneTickets, 'selected': d.dia === diaSeleccionado, 'no-tickets': d.dia && !d.tieneTickets }"
                          (click)="seleccionarDia(d)">
-                         
                          <span *ngIf="d.dia">{{ d.dia }}</span>
-                         
                          <div *ngIf="d.tieneTickets" class="dot-indicator"></div>
-
                          <div *ngIf="d.dia && !d.tieneTickets" class="empty-mark">-</div>
                     </div>
                 </div>
                 <div class="calendar-legend">
-                    <small *ngIf="diaSeleccionado" (click)="seleccionarDia({dia: diaSeleccionado})" style="cursor: pointer; color: #56212f; font-weight: bold; text-decoration: underline;">
-                       Mostrar todo el mes
-                    </small>
+                    <small *ngIf="diaSeleccionado" (click)="seleccionarDia({dia: diaSeleccionado})" style="cursor: pointer; color: #56212f; font-weight: bold; text-decoration: underline;">Mostrar todo el mes</small>
                     <small *ngIf="!diaSeleccionado">Selecciona un día</small>
                 </div>
             </div>
         </div>
-
     </div>
   </div>
 
   <div *ngIf="gruposPorDia.length === 0 && !cargando" class="empty-general">
-      <div class="empty-state">
-          No hay reportes para el período seleccionado.
-      </div>
+      <div class="empty-state">No hay reportes para el período seleccionado.</div>
   </div>
 
   <div *ngFor="let grupo of gruposPorDia" class="day-group fade-in">
-      
       <div class="date-divider">
           <div class="left-info">
               <span class="date-text">{{ grupo.fecha | date:'fullDate' | titlecase }}</span>
               <span class="count-badge">{{ grupo.tickets.length }} reportes</span>
           </div>
-          
           <button class="btn-stats" (click)="verEstadisticasDia(grupo)" title="Ver Estadísticas Diarias">
              <span class="material-symbols-outlined">donut_large</span>
           </button>
@@ -88,6 +65,7 @@
                 <th>Solicitante</th>
                 <th>Depto</th>
                 <th>Problema</th>
+                <th class="text-center">Notas</th>
                 <th class="text-center">Estado Final</th>
                 <th class="text-center">Cumplimiento</th>
                 <th class="text-center">Acción</th>
@@ -98,30 +76,45 @@
                 <td class="text-muted"><strong>#{{ t.id }}</strong></td>
                 <td class="time-col">{{ t.fecha | date:'HH:mm' }}</td>
                 <td class="time-col" style="color: #555;">{{ t.fecha_fin ? (t.fecha_fin | date:'HH:mm') : '-' }}</td>
-                <td>{{ t.nombre_usuario }}</td>
+                <td><strong>{{ t.nombre_usuario }}</strong></td>
                 <td>{{ t.departamento }}</td>
-                
                 <td>
                     <span class="badge" [ngClass]="{
                         'cat-internet': t.descripcion === 'Internet', 
                         'cat-office': t.descripcion === 'Office', 
                         'cat-telefonia': t.descripcion === 'Telefonia', 
                         'cat-tecnico': t.descripcion === 'Tecnico',
-                        'cat-dictaminar': t.descripcion === 'Dictaminar'
-                    }">
-                        {{ t.descripcion }}
+                        'cat-dictaminar': t.descripcion === 'Dictaminar',
+                        'cat-extension': t.descripcion === 'Extension/Telefono',
+                        'cat-correo': t.descripcion === 'Correo'
+                    }">{{ t.descripcion }}</span>
+
+                    <span *ngIf="t.descripcion === 'Dictaminar' && t.cantidad_dicta" class="qty-badge" style="margin-top: 5px; display: block;">
+                        EQ: {{ t.cantidad_dicta }}
+                    </span>
+                    
+                    <span *ngIf="t.descripcion === 'Extension/Telefono' && t.extension_tel" class="qty-badge" style="margin-top: 5px; display: block;">
+                        Num: {{ t.extension_tel }}
                     </span>
 
-                    <span *ngIf="t.descripcion === 'Dictaminar' && t.cantidad" class="qty-badge">
-                        EQ: {{ t.cantidad }}
+                    <span *ngIf="t.descripcion === 'Correo' && t.correo_tipo" class="qty-badge" style="margin-top: 5px; display: block;">
+                        Dom: {{ t.correo_tipo }}
+                    </span>
+
+                    <span *ngIf="t.descripcion === 'Tecnico' && t.soporte_tipo" class="qty-badge" style="margin-top: 5px; display: block; white-space: normal; line-height: 1.2;">
+                        {{ t.soporte_tipo }}
                     </span>
                 </td>
-                
+                <td class="text-center">
+                    <button *ngIf="t.notes || t.notas" class="btn-icon-small" (click)="verNotaCompleta(t.notes || t.notas)">
+                        <span class="material-symbols-outlined icon">read_more</span>
+                    </button>
+                    <span *ngIf="!t.notes && !t.notas">-</span>
+                </td>
                 <td class="text-center">
                    <span *ngIf="t.estado === 'Completo' || t.estado === 'Completado'" class="badge-completed">Completado</span>
                    <span *ngIf="t.estado === 'Incompleto'" class="badge-incomplete">Incompleto</span>
                 </td>
-
                 <td class="text-center">
                     <div *ngIf="t.estado === 'Completo' || t.estado === 'Completado'">
                         <span *ngIf="t.fecha_fin && t.fecha_limite && t.fecha_fin <= t.fecha_limite" class="badge-status success">A tiempo</span>
@@ -131,7 +124,6 @@
                           <span class="badge-status late" style="background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca;"> Vencido</span>
                     </div>
                 </td>
-
                 <td class="text-center">
                    <button class="btn-text" (click)="cambiarEstado(t)" title="Regresar a pendientes">Corregir</button>
                 </td>

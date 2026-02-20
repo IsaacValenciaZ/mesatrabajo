@@ -155,6 +155,9 @@ textarea { resize: vertical; }
 .bg-internet { background-color: #2563eb; }
 .bg-tecnico { background-color: #059669; }
 .bg-dictaminar { background-color: #6d28d9; }
+.bg-extension { background-color: #94961c; }
+.bg-correo { background-color: #96241c; }
+
 .bg-alta { background-color: #dc2626; }
 .bg-media { background-color: #f59e0b; }
 .bg-baja { background-color: #10b981; }
