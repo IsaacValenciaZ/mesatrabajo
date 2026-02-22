@@ -30,19 +30,11 @@ export class PersonalPendingComponent implements OnInit {
 
   cargarTickets() {
     this.cargando = true;
-    
     this.apiService.getMisTickets(this.user.nombre).subscribe({
       next: (data) => {
         const todos = data || [];
         this.fechaActual = new Date();
       
-        todos.forEach((t: any) => {
-    
-            if (t.estado !== 'Completo' && t.estado !== 'Completado' && t.fecha_limite && new Date(t.fecha_limite) < this.fechaActual) {
-                
-            }
-        });
-
         this.ticketsPendientes = todos.filter((t: any) => 
             (t.estado === 'En espera' || t.estado === 'Asignado' || !t.estado)
         );
@@ -58,12 +50,6 @@ export class PersonalPendingComponent implements OnInit {
         this.cargando = false;
       }
     });
-  }
-  marcarComoVencido(id: number) {
-      this.apiService.actualizarEstadoTicket(id, 'Incompleto').subscribe({
-          next: () => console.log(`Ticket ${id} movido a historial por vencimiento.`),
-          error: (e) => console.error(e)
-      });
   }
 
   esVencido(fechaLimite: string): boolean {
@@ -83,35 +69,60 @@ export class PersonalPendingComponent implements OnInit {
     });
   }
 
-  cambiarEstado(ticket: any) {
+ cambiarEstado(ticket: any) {
     Swal.fire({
-      title: '¿Finalizar Reporte?',
-      text: `¿Confirmas que el reporte #${ticket.id} ha sido atendido?`,
-      icon: 'question',
+      title: `Finalizar Ticket #${ticket.id}`,
+      html: `
+        <div style="text-align: left;">
+          <label style="font-weight: bold; font-size: 0.9rem;">Reporte de solución:</label>
+          <textarea id="solucion-text" class="swal2-textarea" style="margin: 10px 0; width: 90%; height: 100px;" placeholder="¿Qué se reparó o realizó?"></textarea>
+          
+          <label style="font-weight: bold; font-size: 0.9rem; display: block; margin-top: 10px;">Adjuntar imagen de evidencia:</label>
+          <input type="file" id="evidencia-file" class="swal2-file" accept="image/*" style="width: 100%; margin-top: 5px;">
+        </div>
+      `,
       showCancelButton: true,
-      confirmButtonText: 'Sí, Completar',
-      confirmButtonColor: '#27ae60', 
-      cancelButtonText: 'Cancelar'
+      confirmButtonText: 'Guardar y Finalizar',
+      confirmButtonColor: '#27ae60',
+      cancelButtonText: 'Cancelar',
+      preConfirm: () => {
+        const resolucion = (document.getElementById('solucion-text') as HTMLTextAreaElement).value;
+        const fileInput = (document.getElementById('evidencia-file') as HTMLInputElement).files?.[0];
+
+        if (!resolucion) {
+          Swal.showValidationMessage('La descripción de la solución es obligatoria');
+          return false;
+        }
+        return { resolucion: resolucion, archivo: fileInput };
+      }
     }).then((result) => {
       if (result.isConfirmed) {
-        this.guardarNuevoEstado(ticket.id, 'Completo');
+        this.enviarEvidenciaFinal(ticket.id, result.value.resolucion, result.value.archivo);
       }
     });
-  }
+}
+enviarEvidenciaFinal(id: number, resolucion: string, archivo?: File) {
+    const formData = new FormData();
+    formData.append('id', id.toString());
+    formData.append('estado', 'Completo');
+    formData.append('descripcion_resolucion', resolucion);
+    
+    if (archivo) {
+      formData.append('evidencia', archivo);
+    }
 
-  guardarNuevoEstado(id: number, nuevoEstado: string) {
-    this.apiService.actualizarEstadoTicket(id, nuevoEstado).subscribe({
-      next: (res) => {
+    this.apiService.actualizarEstadoTicketConEvidencia(formData).subscribe({
+      next: (res: any) => {
         if (res.status === true) {
-          const Toast = Swal.mixin({
-            toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true
-          });
-          Toast.fire({ icon: 'success', title: 'Ticket completado' });
+          Swal.fire({ icon: 'success', title: 'Ticket cerrado correctamente', timer: 2000, showConfirmButton: false });
           this.cargarTickets(); 
         } else {
-          Swal.fire('Error', 'No se pudo actualizar', 'error');
+          Swal.fire('Error', res.message || 'No se pudo actualizar', 'error');
         }
+      },
+      error: (err) => {
+        Swal.fire('Error de conexión', 'No se pudo conectar con el servidor', 'error');
       }
     });
-  }
+}
 }

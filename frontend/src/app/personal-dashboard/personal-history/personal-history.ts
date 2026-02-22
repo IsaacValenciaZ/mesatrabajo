@@ -77,11 +77,9 @@ export class PersonalHistoryComponent implements OnInit {
         const ticketsHoy = this.ticketsFiltrados.filter(t => t.fecha && t.fecha.startsWith(fechaHoyStr));
 
         if (ticketsHoy.length > 0) {
-            console.log("Mostrando día actual:", fechaHoyStr);
             this.diaSeleccionado = parseInt(dia);
             this.organizarPorFecha(ticketsHoy);
         } else {
-            console.log("No hay tickets hoy, mostrando mes completo");
             this.diaSeleccionado = null;
             this.organizarPorFecha(this.ticketsFiltrados);
         }
@@ -145,7 +143,6 @@ export class PersonalHistoryComponent implements OnInit {
 
     for (let dia = 1; dia <= diasEnMes; dia++) {
         const fechaStr = `${anio}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
-
         const ticketsDelDia = this.ticketsFiltrados.filter(t => t.fecha && t.fecha.startsWith(fechaStr));
 
         this.diasCalendario.push({
@@ -198,7 +195,7 @@ export class PersonalHistoryComponent implements OnInit {
       return `${nombreMes} ${parts[0]}`.charAt(0).toUpperCase() + `${nombreMes} ${parts[0]}`.slice(1);
   }
 
-    verNotaCompleta(nota: string) {
+  verNotaCompleta(nota: string) {
       Swal.fire({
         title: 'Detalle de la Nota',
         text: nota ? nota : 'Sin información adicional.',
@@ -208,8 +205,70 @@ export class PersonalHistoryComponent implements OnInit {
         background: '#fff',
         iconColor: '#977e5b'
       });
+  }
+
+  verEvidenciaFinal(ticket: any) {
+  const imagenData = ticket.evidencia_archivo; 
+
+  Swal.fire({
+    title: `Resolución del Ticket #${ticket.id}`,
+    html: `
+      <div style="text-align: left; padding: 5px;">
+        <p style="font-weight: bold; color: #56212f; margin-bottom: 5px;">Descripción de la solución:</p>
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 5px solid #27ae60; margin-bottom: 15px; max-height: 150px; overflow-y: auto;">
+          ${ticket.descripcion_resolucion || 'El técnico no proporcionó una descripción.'}
+        </div>
+        
+        ${imagenData ? `
+          <p style="font-weight: bold; color: #56212f; margin-bottom: 5px;">Evidencia fotográfica:</p>
+          <div style="text-align: center; border: 1px solid #ddd; padding: 5px; border-radius: 8px; background: #fff;">
+            <img id="img-evidencia-${ticket.id}" src="${imagenData}" 
+                 style="width: 100%; max-height: 250px; object-fit: contain; border-radius: 4px; cursor: zoom-in; transition: transform 0.2s;"
+                 onmouseover="this.style.transform='scale(1.02)'"
+                 onmouseout="this.style.transform='scale(1)'">
+            <small style="display:block; color: #666; margin-top: 8px; font-weight: bold;">
+              <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">zoom_in</span> 
+              Haz clic en la imagen para ampliarla
+            </small>
+          </div>
+        ` : '<p style="color: #999; font-style: italic; text-align: center;">Sin evidencia fotográfica.</p>'}
+      </div>
+    `,
+    confirmButtonText: 'Cerrar',
+    confirmButtonColor: '#56212f',
+    width: '600px',
+    didOpen: () => {
+      if (imagenData) {
+        const imgElement = document.getElementById(`img-evidencia-${ticket.id}`);
+        if (imgElement) {
+          imgElement.addEventListener('click', () => {
+            this.abrirImagenCompleta(imagenData, ticket.id);
+          });
+        }
+      }
     }
-    
+  });
+}
+
+abrirImagenCompleta(base64Image: string, ticketId: number) {
+  Swal.fire({
+    title: `Evidencia - Ticket #${ticketId}`,
+    imageUrl: base64Image,
+    imageAlt: 'Evidencia ',
+    width: '90%',
+    padding: '1em',
+    color: '#fff',
+    background: '#1a1a1a', 
+    backdrop: `rgba(0,0,0,0.85)`,
+    showConfirmButton: false,  
+    showCloseButton: true, 
+    customClass: {
+      image: 'img-fluid',
+      popup: 'swal-wide'
+    }
+  }).then(() => {
+  });
+}
 
   cambiarEstado(ticket: any) {
     Swal.fire({
@@ -234,8 +293,8 @@ export class PersonalHistoryComponent implements OnInit {
   }
 
   verEstadisticasDia(grupo: any) {
-     const stats = this.calcularEstadisticas(grupo.tickets);
-     const htmlContent = `
+      const stats = this.calcularEstadisticas(grupo.tickets);
+      const htmlContent = `
         <div style="padding: 10px;">
           <h3 style="color:#56212f; margin-top:0;">Reporte del Día</h3>
           <p style="color:#666; margin-bottom: 20px;">Fecha: <strong>${grupo.fecha}</strong> | Total: <strong>${stats.total}</strong></p>

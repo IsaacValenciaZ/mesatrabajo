@@ -41,14 +41,14 @@ updateUser(user: any): Observable<any> {
     return this.http.get<any[]>(`${this.baseUrl}/get_tickets.php`);
   }
 
-  getHistoryTickets(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/history_tickets.php`);
-  }
-
-
+ 
   getMisTickets(nombreUsuario: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/get_tickets_personal.php?personal=${nombreUsuario}`);
   }
+
+actualizarEstadoTicketConEvidencia(formData: FormData): Observable<any> {
+    return this.http.post(`${this.baseUrl}/update_tickets_personal.php`, formData);
+}
 
   actualizarEstadoTicket(id: number, nuevoEstado: string): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/update_tickets_personal.php`, { id, estado: nuevoEstado });

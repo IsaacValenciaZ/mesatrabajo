@@ -68,7 +68,10 @@
                 <th class="text-center">Notas</th>
                 <th class="text-center">Estado Final</th>
                 <th class="text-center">Cumplimiento</th>
+                
+                <th class="text-center">Evidencia</th>
                 <th class="text-center">Acción</th>
+                
               </tr>
             </thead>
             <tbody>
@@ -106,10 +109,10 @@
                     </span>
                 </td>
                 <td class="text-center">
-                    <button *ngIf="t.notes || t.notas" class="btn-icon-small" (click)="verNotaCompleta(t.notes || t.notas)">
+                    <button *ngIf="t.notas" class="btn-icon-small" (click)="verNotaCompleta(t.notas)">
                         <span class="material-symbols-outlined icon">read_more</span>
                     </button>
-                    <span *ngIf="!t.notes && !t.notas">-</span>
+                    <span *ngIf="!t.notas">-</span>
                 </td>
                 <td class="text-center">
                    <span *ngIf="t.estado === 'Completo' || t.estado === 'Completado'" class="badge-completed">Completado</span>
@@ -124,9 +127,24 @@
                           <span class="badge-status late" style="background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca;"> Vencido</span>
                     </div>
                 </td>
+                
                 <td class="text-center">
-                   <button class="btn-text" (click)="cambiarEstado(t)" title="Regresar a pendientes">Corregir</button>
+                    <button *ngIf="t.descripcion_resolucion || t.evidencia_archivo" 
+                            class="btn-icon-small" 
+                            style="background: #ebd3da; border: 1px solid #ebd3da; color: #56212f; display: inline-flex; align-items: center; padding: 4px 6px;"
+                            (click)="verEvidenciaFinal(t)" 
+                            title="Ver resolución y evidencia">
+                        <span class="material-symbols-outlined" style="font-size: 1.2rem;">visibility</span>
+                    </button>
+                    <span *ngIf="!t.descripcion_resolucion && !t.evidencia_archivo">-</span>
                 </td>
+
+                <td class="text-center">
+                    <button class="btn-text" (click)="cambiarEstado(t)" title="Regresar a pendientes">
+                        Corregir
+                    </button>
+                </td>
+
               </tr>
             </tbody>
           </table>
