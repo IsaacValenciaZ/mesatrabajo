@@ -16,232 +16,305 @@ Chart.register(...registerables);
 })
 export class TicketsListComponent implements OnInit {
   private apiService = inject(ApiService);
-  private cd = inject(ChangeDetectorRef); 
+  private cdr = inject(ChangeDetectorRef); 
 
-  ticketsTodos: any[] = [];
-  ticketsFiltrados: any[] = [];
-  gruposPorDia: { fecha: string, tickets: any[] }[] = [];
+  listaHistorialCompleto: any[] = [];
+  listaTicketsFiltrados: any[] = [];
+  reportesAgrupadosPorDia: { fecha: string, tickets: any[] }[] = [];
 
-  mesesDisponibles: string[] = [];
-  mesSeleccionado: string = '';
-  mostrarCalendario: boolean = false;
-  diasCalendario: any[] = [];
-  diaSeleccionado: number | null = null;
-  cargando: boolean = false;
+  opcionesMesesDisponibles: string[] = [];
+  mesFiltroSeleccionado: string = '';
+  calendarioVisible: boolean = false;
+  diasDelCalendario: any[] = [];
+  diaFiltroSeleccionado: number | null = null;
+  estadoCargaActivo: boolean = false;
   
-  secretariaId: number = 0;
+  idSecretariaActiva: number = 0;
 
   ngOnInit() {
-    const userStored = localStorage.getItem('usuario_actual');
-    if (userStored) {
-        const user = JSON.parse(userStored);
-        this.secretariaId = user.id; 
-        this.cargarHistorial();
+    const sesionUsuarioStr = localStorage.getItem('usuario_actual');
+    
+    if (sesionUsuarioStr) {
+        const informacionUsuario = JSON.parse(sesionUsuarioStr);
+        this.idSecretariaActiva = informacionUsuario.id; 
+        this.solicitarDatosHistorial();
     } else {
-        console.error("Error: No hay sesión iniciada.");
-        this.cargando = false;
+        this.estadoCargaActivo = false;
     }
   }
 
-  cargarHistorial() {
-    this.cargando = true;
+  solicitarDatosHistorial() {
+    this.estadoCargaActivo = true;
     
-    this.apiService.getTicketsCreadosPorSecretaria(this.secretariaId).subscribe({
-      next: (data) => {
-        this.ticketsTodos = data || [];
+    this.apiService.getTicketsCreadosPorSecretaria(this.idSecretariaActiva).subscribe({
+      next: (respuestaApi) => {
+        this.listaHistorialCompleto = respuestaApi || [];
         
-        this.generarOpcionesMeses();
+        this.construirListaDeMesesDisponibles();
 
-        const hoy = new Date();
-        const anio = hoy.getFullYear();
-        const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-        const mesActualStr = `${anio}-${mes}`; 
+        const fechaActual = new Date();
+        const añoActual = fechaActual.getFullYear();
+        const mesActualFormato = String(fechaActual.getMonth() + 1).padStart(2, '0');
+        const cadenaMesActual = `${añoActual}-${mesActualFormato}`; 
         
-        if (this.mesesDisponibles.includes(mesActualStr)) {
-            this.mesSeleccionado = mesActualStr;
-        } else if (this.mesesDisponibles.length > 0) {
-            this.mesSeleccionado = this.mesesDisponibles[0];
+        if (this.opcionesMesesDisponibles.includes(cadenaMesActual)) {
+            this.mesFiltroSeleccionado = cadenaMesActual;
+        } else if (this.opcionesMesesDisponibles.length > 0) {
+            this.mesFiltroSeleccionado = this.opcionesMesesDisponibles[0];
         }
 
-        this.aplicarFiltroMes(true);
+        this.aplicarFiltroMensual(true);
         
-        this.cargando = false;
-        this.cd.detectChanges();
+        this.estadoCargaActivo = false;
+        this.cdr.detectChanges();
       },
-      error: (err) => { 
-          console.error("Error cargando historial:", err);
-          this.cargando = false; 
+      error: () => { 
+          this.estadoCargaActivo = false; 
       }
     });
   }
 
-  generarOpcionesMeses() {
-    const mesesSet = new Set<string>();
-    this.ticketsTodos.forEach(t => {
-      if(t.fecha) {
-         const mesAnio = t.fecha.substring(0, 7); 
-         mesesSet.add(mesAnio);
+  construirListaDeMesesDisponibles() {
+    const mesesUnicosSet = new Set<string>();
+    
+    this.listaHistorialCompleto.forEach(ticket => {
+      if(ticket.fecha) {
+         const cadenaMesAnio = ticket.fecha.substring(0, 7); 
+         mesesUnicosSet.add(cadenaMesAnio);
       }
     });
-    this.mesesDisponibles = Array.from(mesesSet).sort().reverse();
+    
+    this.opcionesMesesDisponibles = Array.from(mesesUnicosSet).sort().reverse();
   }
 
-  aplicarFiltroMes(limpiarDia: boolean = true) {
-    if (limpiarDia) {
-        this.diaSeleccionado = null; 
+  aplicarFiltroMensual(reiniciarFiltroDia: boolean = true) {
+    if (reiniciarFiltroDia) {
+        this.diaFiltroSeleccionado = null; 
     }
     
-    if (!this.mesSeleccionado) {
-        this.ticketsFiltrados = this.ticketsTodos;
+    if (!this.mesFiltroSeleccionado) {
+        this.listaTicketsFiltrados = this.listaHistorialCompleto;
     } else {
-        this.ticketsFiltrados = this.ticketsTodos.filter(t => 
-            t.fecha && t.fecha.startsWith(this.mesSeleccionado)
+        this.listaTicketsFiltrados = this.listaHistorialCompleto.filter(ticket => 
+            ticket.fecha && ticket.fecha.startsWith(this.mesFiltroSeleccionado)
         );
     }
 
-    this.generarDiasCalendario(this.ticketsFiltrados); 
+    this.construirEstructuraCalendario(this.listaTicketsFiltrados); 
     
-    if (this.diaSeleccionado === null) {
-        this.organizarPorFecha(this.ticketsFiltrados);
+    if (this.diaFiltroSeleccionado === null) {
+        this.agruparTicketsPorDia(this.listaTicketsFiltrados);
     }
-    this.cd.detectChanges();
+    
+    this.cdr.detectChanges();
   }
 
-  organizarPorFecha(lista: any[]) {
-    if (!lista || lista.length === 0) {
-        this.gruposPorDia = [];
+  agruparTicketsPorDia(listaParaAgrupar: any[]) {
+    if (!listaParaAgrupar || listaParaAgrupar.length === 0) {
+        this.reportesAgrupadosPorDia = [];
         return;
     }
-    const grupos: { [key: string]: any[] } = {};
-    lista.forEach(ticket => {
-        const fechaSola = ticket.fecha.split(' ')[0];
-        if (!grupos[fechaSola]) grupos[fechaSola] = [];
-        grupos[fechaSola].push(ticket);
+    
+    const objetoAgrupador: { [claveFecha: string]: any[] } = {};
+    
+    listaParaAgrupar.forEach(registro => {
+        const fechaExtraida = registro.fecha.split(' ')[0];
+        
+        if (!objetoAgrupador[fechaExtraida]) {
+            objetoAgrupador[fechaExtraida] = [];
+        }
+        
+        objetoAgrupador[fechaExtraida].push(registro);
     });
-    this.gruposPorDia = Object.keys(grupos)
-      .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())
-      .map(fecha => ({ fecha: fecha, tickets: grupos[fecha] }));
+    
+    this.reportesAgrupadosPorDia = Object.keys(objetoAgrupador)
+      .sort((fechaA, fechaB) => new Date(fechaB).getTime() - new Date(fechaA).getTime())
+      .map(fechaLlave => ({ fecha: fechaLlave, tickets: objetoAgrupador[fechaLlave] }));
   }
 
-  toggleCalendario() { this.mostrarCalendario = !this.mostrarCalendario; }
+  alternarVistaCalendario() { 
+      this.calendarioVisible = !this.calendarioVisible; 
+  }
 
-  generarDiasCalendario(ticketsDelMes: any[]) {
-    if (!this.mesSeleccionado) return;
-    const [anio, mes] = this.mesSeleccionado.split('-').map(Number);
-    const diasEnMes = new Date(anio, mes, 0).getDate();
-    const primerDiaSemana = new Date(anio, mes - 1, 1).getDay(); 
+  construirEstructuraCalendario(ticketsDelPeriodoSeleccionado: any[]) {
+    if (!this.mesFiltroSeleccionado) return;
+    
+    const [añoValor, mesValor] = this.mesFiltroSeleccionado.split('-').map(Number);
+    const cantidadDiasEnMes = new Date(añoValor, mesValor, 0).getDate();
+    const diaComienzoSemana = new Date(añoValor, mesValor - 1, 1).getDay(); 
 
-    this.diasCalendario = [];
-    for (let i = 0; i < primerDiaSemana; i++) {
-      this.diasCalendario.push({ dia: null, tieneTickets: false });
+    this.diasDelCalendario = [];
+    
+    for (let iterador = 0; iterador < diaComienzoSemana; iterador++) {
+      this.diasDelCalendario.push({ dia: null, tieneTickets: false });
     }
-    for (let i = 1; i <= diasEnMes; i++) {
-      const diaStr = `${this.mesSeleccionado}-${i.toString().padStart(2, '0')}`;
-      const tieneTickets = ticketsDelMes.some(t => t.fecha.startsWith(diaStr));
-      this.diasCalendario.push({
-        dia: i, fechaCompleta: diaStr, tieneTickets: tieneTickets,
-        tickets: ticketsDelMes.filter(t => t.fecha.startsWith(diaStr))
+    
+    for (let numeroDia = 1; numeroDia <= cantidadDiasEnMes; numeroDia++) {
+      const cadenaDiaFormateada = `${this.mesFiltroSeleccionado}-${numeroDia.toString().padStart(2, '0')}`;
+      const existenTicketsEseDia = ticketsDelPeriodoSeleccionado.some(ticket => ticket.fecha.startsWith(cadenaDiaFormateada));
+      
+      this.diasDelCalendario.push({
+        dia: numeroDia, 
+        fechaCompleta: cadenaDiaFormateada, 
+        tieneTickets: existenTicketsEseDia,
+        tickets: ticketsDelPeriodoSeleccionado.filter(ticket => ticket.fecha.startsWith(cadenaDiaFormateada))
       });
     }
   }
 
-  seleccionarDia(diaObj: any) {
-    if (!diaObj.dia) return; 
+  filtrarPorDiaSeleccionado(objetoDiaCalendario: any) {
+    if (!objetoDiaCalendario.dia) return; 
     
-    if (this.diaSeleccionado === diaObj.dia) {
-        this.diaSeleccionado = null;
-        this.organizarPorFecha(this.ticketsFiltrados); 
+    if (this.diaFiltroSeleccionado === objetoDiaCalendario.dia) {
+        this.diaFiltroSeleccionado = null;
+        this.agruparTicketsPorDia(this.listaTicketsFiltrados); 
     } else {
-        this.diaSeleccionado = diaObj.dia;
-        this.organizarPorFecha(diaObj.tickets); 
-        this.mostrarCalendario = false; 
+        this.diaFiltroSeleccionado = objetoDiaCalendario.dia;
+        this.agruparTicketsPorDia(objetoDiaCalendario.tickets); 
+        this.calendarioVisible = false; 
     }
   }
 
-  obtenerNombreMes(mesStr: string): string {
-    if (!mesStr) return '';
-    const [anio, mes] = mesStr.split('-');
-    const date = new Date(parseInt(anio), parseInt(mes) - 1, 1);
-    const nombre = date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-    return nombre.charAt(0).toUpperCase() + nombre.slice(1);
-  }
-
-  verResumenMensual() {
-    this.mostrarResumen(this.ticketsFiltrados, this.obtenerNombreMes(this.mesSeleccionado));
-  }
-
-  verEstadisticasDia(grupo: any) {
-     this.mostrarResumen(grupo.tickets, `Reporte del Día: ${grupo.fecha}`);
-  }
-
-  mostrarResumen(listaTickets: any[], titulo: string) {
-    if (listaTickets.length === 0) { Swal.fire('Sin datos', 'No hay historial.', 'info'); return; }
+  obtenerNombreMesFormateado(cadenaMesAnio: string): string {
+    if (!cadenaMesAnio) return '';
     
-    const stats = this.calcularEstadisticas(listaTickets);
+    const [añoParseado, mesParseado] = cadenaMesAnio.split('-');
+    const objetoFechaReferencia = new Date(parseInt(añoParseado), parseInt(mesParseado) - 1, 1);
+    const nombreDelMes = objetoFechaReferencia.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
     
-    const htmlContent = `
+    return nombreDelMes.charAt(0).toUpperCase() + nombreDelMes.slice(1);
+  }
+
+  mostrarGraficasMensuales() {
+    this.lanzarModalGraficas(this.listaTicketsFiltrados, this.obtenerNombreMesFormateado(this.mesFiltroSeleccionado));
+  }
+
+  mostrarGraficasDiarias(grupoDeTickets: any) {
+     this.lanzarModalGraficas(grupoDeTickets.tickets, `Reporte del Día: ${grupoDeTickets.fecha}`);
+  }
+
+  lanzarModalGraficas(conjuntoDeTickets: any[], textoTitulo: string) {
+    if (conjuntoDeTickets.length === 0) { 
+        Swal.fire('Sin datos suficientes', 'No hay historial para generar reporte.', 'info'); 
+        return; 
+    }
+    
+    const calculoMetricas = this.generarAnalisisDeTickets(conjuntoDeTickets);
+    
+    const estructuraModalHtml = `
       <div style="padding: 10px;">
-        <h3 style="color:#56212f; margin-top:0;">${titulo}</h3>
-        <p style="color:#666; margin-bottom: 20px;">Total: <strong>${stats.total}</strong> reportes</p>
+        <h3 style="color:#56212f; margin-top:0;">${textoTitulo}</h3>
+        <p style="color:#666; margin-bottom: 20px;">Total analizado: <strong>${calculoMetricas.total}</strong> reportes</p>
         
         <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px;">
             <div style="width: 220px;"> 
-                <h5 style="margin-bottom: 10px; color:#56212f;">Por Prioridad</h5> 
-                <canvas id="chartPrioridad" width="220" height="220"></canvas> 
+                <h5 style="margin-bottom: 10px; color:#56212f;">Distribución por Prioridad</h5> 
+                <canvas id="graficaPrioridadesCanvas" width="220" height="220"></canvas> 
             </div>
             <div style="width: 220px;"> 
-                <h5 style="margin-bottom: 10px; color:#56212f;">Por Categoría</h5> 
-                <canvas id="chartProblema" width="220" height="220"></canvas> 
+                <h5 style="margin-bottom: 10px; color:#56212f;">Distribución por Categoría</h5> 
+                <canvas id="graficaProblemasCanvas" width="220" height="220"></canvas> 
             </div>
         </div>
       </div>`;
     
-    Swal.fire({ html: htmlContent, width: '700px', showConfirmButton: false, showCloseButton: true, didOpen: () => { this.renderizarGraficas('chartPrioridad', 'chartProblema', stats); } });
+    Swal.fire({ 
+        html: estructuraModalHtml, 
+        width: '700px', 
+        showConfirmButton: false, 
+        showCloseButton: true, 
+        didOpen: () => { 
+            this.inicializarInstanciasGraficas('graficaPrioridadesCanvas', 'graficaProblemasCanvas', calculoMetricas); 
+        } 
+    });
   }
 
-  calcularEstadisticas(listaTickets: any[]) {
-      let total = listaTickets.length;
-      let alta = 0, media = 0, baja = 0;
-      const problemas: {[key: string]: number} = {};
+  generarAnalisisDeTickets(listaEntradaTickets: any[]) {
+      const cantidadTotal = listaEntradaTickets.length;
+      let contadorAlta = 0;
+      let contadorMedia = 0;
+      let contadorBaja = 0;
+      const categoriasProblemas: {[llaveCategoria: string]: number} = {};
 
-      listaTickets.forEach(t => {
-         if (t.prioridad === 'Alta') alta++;
-         else if (t.prioridad === 'Media') media++;
-         else if (t.prioridad === 'Baja') baja++;
+      listaEntradaTickets.forEach(elementoTicket => {
+         if (elementoTicket.prioridad === 'Alta') contadorAlta++;
+         else if (elementoTicket.prioridad === 'Media') contadorMedia++;
+         else if (elementoTicket.prioridad === 'Baja') contadorBaja++;
 
-         const desc = t.descripcion || 'Otro';
-         problemas[desc] = (problemas[desc] || 0) + 1;
+         const nombreCategoria = elementoTicket.descripcion || 'Sin clasificar';
+         categoriasProblemas[nombreCategoria] = (categoriasProblemas[nombreCategoria] || 0) + 1;
       });
-      return { total, alta, media, baja, problemas };
+      
+      return { 
+          total: cantidadTotal, 
+          alta: contadorAlta, 
+          media: contadorMedia, 
+          baja: contadorBaja, 
+          problemas: categoriasProblemas 
+      };
   }
 
-  renderizarGraficas(idPrioridad: string, idProblema: string, stats: any) {
-      const ctx1 = document.getElementById(idPrioridad) as HTMLCanvasElement;
-      if(ctx1) { 
-          new Chart(ctx1, { 
+  inicializarInstanciasGraficas(idLienzoPrioridad: string, idLienzoProblema: string, metricasAnalizadas: any) {
+      const lienzoPrioridadElem = document.getElementById(idLienzoPrioridad) as HTMLCanvasElement;
+      
+      if(lienzoPrioridadElem) { 
+          new Chart(lienzoPrioridadElem, { 
               type: 'pie', 
               data: { 
                   labels: ['Alta', 'Media', 'Baja'], 
-                  datasets: [{ data: [stats.alta, stats.media, stats.baja], backgroundColor: ['#28f328', '#f3f028', '#f32828'], hoverOffset: 4 }] 
-              }, options: { responsive: true, plugins: { legend: { position: 'bottom' } } } 
+                  datasets: [{ 
+                      data: [metricasAnalizadas.alta, metricasAnalizadas.media, metricasAnalizadas.baja], 
+                      backgroundColor: ['#f32828', '#f3f028', '#28f328'], 
+                      hoverOffset: 4 
+                  }] 
+              }, 
+              options: { 
+                  responsive: true, 
+                  plugins: { 
+                      legend: { position: 'bottom' } 
+                  } 
+              } 
           }); 
       }
-      const ctx2 = document.getElementById(idProblema) as HTMLCanvasElement;
-      if(ctx2) { 
-          const labels = Object.keys(stats.problemas);
-          const data = Object.values(stats.problemas);
-          const backgroundColors = labels.map(() => '#56212f'); 
-          new Chart(ctx2, { 
+      
+      const lienzoProblemaElem = document.getElementById(idLienzoProblema) as HTMLCanvasElement;
+      
+      if(lienzoProblemaElem) { 
+          const listaEtiquetasCategorias = Object.keys(metricasAnalizadas.problemas);
+          const listaDatosCantidades = Object.values(metricasAnalizadas.problemas);
+          const matrizColoresFondo = listaEtiquetasCategorias.map(() => '#56212f'); 
+          
+          new Chart(lienzoProblemaElem, { 
               type: 'bar', 
-              data: { labels: labels, datasets: [{ label: 'Tickets', data: data, backgroundColor: backgroundColors, borderRadius: 5 }] }, 
-              options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } } 
+              data: { 
+                  labels: listaEtiquetasCategorias, 
+                  datasets: [{ 
+                      label: 'Volumen de Tickets', 
+                      data: listaDatosCantidades, 
+                      backgroundColor: matrizColoresFondo, 
+                      borderRadius: 5 
+                  }] 
+              }, 
+              options: { 
+                  responsive: true, 
+                  plugins: { 
+                      legend: { display: false } 
+                  }, 
+                  scales: { 
+                      y: { beginAtZero: true, ticks: { stepSize: 1 } } 
+                  } 
+              } 
           }); 
       }
   }
 
-  verNotaCompleta(nota: string) {
+  abrirDetalleNotaCompleta(textoNotaCompleto: string) {
     Swal.fire({
-      title: 'Detalle de la Nota', text: nota, icon: 'info', confirmButtonText: 'Cerrar', confirmButtonColor: '#2c3e50'
-    })
+      title: 'Detalle de la Nota', 
+      text: textoNotaCompleto, 
+      icon: 'info', 
+      confirmButtonText: 'Cerrar', 
+      confirmButtonColor: '#2c3e50'
+    });
   }
 }

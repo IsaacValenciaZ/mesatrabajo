@@ -5,7 +5,7 @@
       <p>Tickets pendientes de atención.</p>
     </div>
     <div class="big-counter">
-      <span class="number">{{ ticketsPendientes.length }}</span>
+      <span class="number">{{ listaTicketsPendientes.length }}</span>
       <span class="label">Pendientes</span>
     </div>
   </div>
@@ -28,80 +28,84 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let t of ticketsPendientes">
-             <td><strong>#{{ t.id }}</strong></td>
+          <tr *ngFor="let ticket of listaTicketsPendientes">
+             <td class="text-muted"><strong>#{{ ticket.id }}</strong></td>
              
-             <td class="time-col">{{ t.fecha | date:'dd/MM/yyyy' }}</td>
+             <td class="time-col">{{ ticket.fecha | date:'dd/MM/yyyy' }}</td>
 
              <td class="time-col">
                 <div style="font-size: 0.9rem; margin-bottom: 4px;">
-                   {{ t.fecha_limite ? (t.fecha_limite | date:'dd/MM HH:mm') : 'N/A' }}
+                   {{ ticket.fecha_limite ? (ticket.fecha_limite | date:'dd/MM HH:mm') : 'N/A' }}
                 </div>
                 
-                <span *ngIf="esVencido(t.fecha_limite)" class="badge-status late">
+                <span *ngIf="verificarVencimiento(ticket.fecha_limite)" class="badge-status late">
                     Vencido
                 </span>
-                <span *ngIf="t.fecha_limite && !esVencido(t.fecha_limite)" class="badge-status pending">
+                <span *ngIf="ticket.fecha_limite && !verificarVencimiento(ticket.fecha_limite)" class="badge-status pending">
                     En curso
                 </span>
              </td>
 
-             <td>{{ t.nombre_usuario }}</td>
+             <td><strong>{{ ticket.nombre_usuario }}</strong></td>
              
-             <td class="depto-col">{{ t.departamento }}</td>
+             <td class="depto-col">{{ ticket.departamento }}</td>
              
              <td>
-                  <span class="badge" [ngClass]="{
-                      'cat-internet': t.descripcion === 'Internet', 
-                      'cat-office': t.descripcion === 'Office', 
-                      'cat-telefonia': t.descripcion === 'Telefonia', 
-                      'cat-tecnico': t.descripcion === 'Tecnico',
-                      'cat-dictaminar': t.descripcion === 'Dictaminar',
-                      'cat-extension': t.descripcion === 'Extension/Telefono',
-                      'cat-correo': t.descripcion === 'Correo'
-                  }">
-                      {{ t.descripcion }}
-                  </span>
+                 <span class="badge" [ngClass]="{
+                     'cat-internet': ticket.descripcion === 'Internet', 
+                     'cat-office': ticket.descripcion === 'Office', 
+                     'cat-telefonia': ticket.descripcion === 'Telefonia', 
+                     'cat-tecnico': ticket.descripcion === 'Tecnico',
+                     'cat-dictaminar': ticket.descripcion === 'Dictaminar',
+                     'cat-extension': ticket.descripcion === 'Extension/Telefono',
+                     'cat-correo': ticket.descripcion === 'Correo'
+                 }">
+                     {{ ticket.descripcion }}
+                 </span>
 
-                  <span *ngIf="t.descripcion === 'Dictaminar' && t.cantidad_dicta" class="qty-badge" style="margin-top: 5px; display: block;">
-                      EQ: {{ t.cantidad_dicta }}
-                  </span>
-                  
-                  <span *ngIf="t.descripcion === 'Extension/Telefono' && t.extension_tel" class="qty-badge" style="margin-top: 5px; display: block;">
-                      Num: {{ t.extension_tel }}
-                  </span>
+                 <span *ngIf="ticket.descripcion === 'Dictaminar' && ticket.cantidad_dicta" class="qty-badge" style="margin-top: 5px; display: block;">
+                     EQ: {{ ticket.cantidad_dicta }}
+                 </span>
+                 
+                 <span *ngIf="ticket.descripcion === 'Extension/Telefono' && ticket.extension_tel" class="qty-badge" style="margin-top: 5px; display: block;">
+                     Num: {{ ticket.extension_tel }}
+                 </span>
 
-                  <span *ngIf="t.descripcion === 'Correo' && t.correo_tipo" class="qty-badge" style="margin-top: 5px; display: block;">
-                      Dom: {{ t.correo_tipo }}
-                  </span>
+                 <span *ngIf="ticket.descripcion === 'Correo' && ticket.correo_tipo" class="qty-badge" style="margin-top: 5px; display: block;">
+                     Dom: {{ ticket.correo_tipo }}
+                 </span>
 
-                  <span *ngIf="t.descripcion === 'Tecnico' && t.soporte_tipo" class="qty-badge" style="margin-top: 5px; display: block; white-space: normal; line-height: 1.2;">
-                      {{ t.soporte_tipo }}
-                  </span>
-              </td>
+                 <span *ngIf="ticket.descripcion === 'Tecnico' && ticket.soporte_tipo" class="qty-badge" style="margin-top: 5px; display: block; white-space: normal; line-height: 1.2;">
+                     {{ ticket.soporte_tipo }}
+                 </span>
+             </td>
 
              <td>
-                 <span class="badge" [ngClass]="{'prio-alta': t.prioridad === 'Alta', 'prio-media': t.prioridad === 'Media', 'prio-baja': t.prioridad === 'Baja'}">
-                     {{ t.prioridad }}
+                 <span class="badge" [ngClass]="{'prio-alta': ticket.prioridad === 'Alta', 'prio-media': ticket.prioridad === 'Media', 'prio-baja': ticket.prioridad === 'Baja'}">
+                     {{ ticket.prioridad }}
                  </span>
              </td>
              
              <td class="text-center">
-                 <button *ngIf="t.notas" class="btn-icon-small" (click)="verNotaCompleta(t.notas)"><span class="material-symbols-outlined icon">read_more</span></button>
-                 <span *ngIf="!t.notas">-</span>
+                 <button *ngIf="ticket.notas" class="btn-icon-small" (click)="verNotaCompleta(ticket.notas)">
+                     <span class="material-symbols-outlined icon">read_more</span>
+                 </button>
+                 <span *ngIf="!ticket.notas">-</span>
              </td>
              
              <td class="text-center">
                <span class="badge" [ngClass]="{
-                 'status-espera': t.estado === 'En espera',
-                 'status-incompleto': t.estado === 'Incompleto'
-               }">{{ t.estado }}</span>
+                 'status-espera': ticket.estado === 'En espera',
+                 'status-incompleto': ticket.estado === 'Incompleto'
+               }">{{ ticket.estado }}</span>
              </td>
              
-             <td class="text-center"><button class="btn-action" (click)="cambiarEstado(t)"> Completar</button></td>
+             <td class="text-center">
+                 <button class="btn-action" (click)="abrirModalFinalizacion(ticket)">Completar</button>
+             </td>
           </tr>
-          <tr *ngIf="ticketsPendientes.length === 0 && !cargando">
-            <td colspan="10" class="empty-state">  No tienes tickets pendientes.</td>
+          <tr *ngIf="listaTicketsPendientes.length === 0 && !cargandoDatos">
+            <td colspan="10" class="empty-state">No tienes tickets pendientes en este momento.</td>
           </tr>
         </tbody>
       </table>

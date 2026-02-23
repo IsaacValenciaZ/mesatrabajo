@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 
@@ -9,29 +9,29 @@ import { RouterModule, Router } from '@angular/router';
   templateUrl: './secretaria-dashboard.html', 
   styleUrl: './secretaria-dashboard.css'
 })
-export class SecretariaDashboardComponent {
-  private router = inject(Router);
-  isSidebarOpen = true;
-  user: any = {nombre: ''};
-
-  toggleSidebar() {
-    this.isSidebarOpen = !this.isSidebarOpen;
-  }
-
-  logout() {
-    localStorage.removeItem('usuario_actual');
-    this.router.navigate(['/login']);
-  }
-
-  nombreUsuario: string = '';
+export class SecretariaDashboardComponent implements OnInit {
+  private enrutador = inject(Router);
+  
+  menuLateralAbierto = true;
+  nombreSecretaria: string = '';
+  datosUsuarioActivo: any = { nombre: '' };
 
   ngOnInit() {
-    const usuarioGuardado = localStorage.getItem('usuario_actual');
+    const sesionUsuario = localStorage.getItem('usuario_actual');
     
-    if (usuarioGuardado) {
-      const usuario = JSON.parse(usuarioGuardado);
-      this.nombreUsuario = usuario.nombre; 
+    if (sesionUsuario) {
+      const objetoUsuario = JSON.parse(sesionUsuario);
+      this.datosUsuarioActivo = objetoUsuario;
+      this.nombreSecretaria = objetoUsuario.nombre; 
     }
   }
-  
+
+  alternarMenuLateral() {
+    this.menuLateralAbierto = !this.menuLateralAbierto;
+  }
+
+  cerrarSesion() {
+    localStorage.removeItem('usuario_actual');
+    this.enrutador.navigate(['/login']);
+  }
 }

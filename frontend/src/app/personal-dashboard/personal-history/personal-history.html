@@ -2,37 +2,45 @@
   <div class="section-header">
     <div>
       <h1>Historial de Reportes</h1>
-      <p>Consulta tus tickets organizados por mes.</p>
+      <p>Consulta tus tickets organizados por mes y evalúa tu rendimiento.</p>
     </div>
     <div class="filters-container" style="position: relative;"> 
         <select class="month-select" [(ngModel)]="mesSeleccionado" (change)="aplicarFiltroMes()">
-            <option *ngFor="let m of mesesDisponibles" [value]="m">{{ obtenerNombreMes(m) }}</option>
-            <option *ngIf="mesesDisponibles.length === 0" value="" disabled>Sin registros</option>
+            <option *ngFor="let mes of mesesDisponibles" [value]="mes">{{ obtenerNombreMes(mes) }}</option>
+            <option *ngIf="mesesDisponibles.length === 0" value="" disabled>Sin registros históricos</option>
         </select>
-        <button class="btn-summary" (click)="toggleCalendario()" title="Seleccionar Día">
+        
+        <button class="btn-summary" (click)="toggleCalendario()" title="Filtrar por día">
             <span class="material-symbols-outlined">calendar_month</span>
         </button>
-        <button class="btn-summary" (click)="verResumenMensual()" title="Ver Resumen Mensual">
+        
+        <button class="btn-summary" (click)="verResumenMensual()" title="Ver métricas del mes">
              <span class="material-symbols-outlined">bar_chart</span>
         </button>
+        
         <div class="calendar-popup fade-in" *ngIf="mostrarCalendario && diasCalendario.length > 0">
             <div class="calendar-wrapper">
                 <div class="calendar-header">
                     <span>Dom</span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span>
                 </div>
                 <div class="calendar-grid">
-                    <div *ngFor="let d of diasCalendario" 
+                    <div *ngFor="let dia of diasCalendario" 
                          class="calendar-day" 
-                         [ngClass]="{ 'empty': !d.dia, 'has-tickets': d.tieneTickets, 'selected': d.dia === diaSeleccionado, 'no-tickets': d.dia && !d.tieneTickets }"
-                         (click)="seleccionarDia(d)">
-                         <span *ngIf="d.dia">{{ d.dia }}</span>
-                         <div *ngIf="d.tieneTickets" class="dot-indicator"></div>
-                         <div *ngIf="d.dia && !d.tieneTickets" class="empty-mark">-</div>
+                         [ngClass]="{ 
+                             'empty': !dia.dia, 
+                             'has-tickets': dia.tieneTickets, 
+                             'selected': dia.dia === diaSeleccionado, 
+                             'no-tickets': dia.dia && !dia.tieneTickets 
+                         }"
+                         (click)="seleccionarDia(dia)">
+                         <span *ngIf="dia.dia">{{ dia.dia }}</span>
+                         <div *ngIf="dia.tieneTickets" class="dot-indicator"></div>
+                         <div *ngIf="dia.dia && !dia.tieneTickets" class="empty-mark">-</div>
                     </div>
                 </div>
                 <div class="calendar-legend">
                     <small *ngIf="diaSeleccionado" (click)="seleccionarDia({dia: diaSeleccionado})" style="cursor: pointer; color: #56212f; font-weight: bold; text-decoration: underline;">Mostrar todo el mes</small>
-                    <small *ngIf="!diaSeleccionado">Selecciona un día</small>
+                    <small *ngIf="!diaSeleccionado">Selecciona un día en el calendario</small>
                 </div>
             </div>
         </div>
@@ -40,16 +48,16 @@
   </div>
 
   <div *ngIf="gruposPorDia.length === 0 && !cargando" class="empty-general">
-      <div class="empty-state">No hay reportes para el período seleccionado.</div>
+      <div class="empty-state">No hay reportes finalizados para el período seleccionado.</div>
   </div>
 
   <div *ngFor="let grupo of gruposPorDia" class="day-group fade-in">
       <div class="date-divider">
           <div class="left-info">
               <span class="date-text">{{ grupo.fecha | date:'fullDate' | titlecase }}</span>
-              <span class="count-badge">{{ grupo.tickets.length }} reportes</span>
+              <span class="count-badge">{{ grupo.tickets.length }} reportes procesados</span>
           </div>
-          <button class="btn-stats" (click)="verEstadisticasDia(grupo)" title="Ver Estadísticas Diarias">
+          <button class="btn-stats" (click)="verEstadisticasDia(grupo)" title="Ver rendimiento diario">
              <span class="material-symbols-outlined">donut_large</span>
           </button>
       </div>
@@ -60,88 +68,89 @@
             <thead>
               <tr>
                 <th>#ID</th>
-                <th>Hora</th> 
-                <th>Finalizado</th> 
+                <th>Hora Asignación</th> 
+                <th>Hora Término</th> 
                 <th>Solicitante</th>
-                <th>Depto</th>
-                <th>Problema</th>
-                <th class="text-center">Notas</th>
-                <th class="text-center">Estado Final</th>
-                <th class="text-center">Cumplimiento</th>
-                
-                <th class="text-center">Evidencia</th>
-                <th class="text-center">Acción</th>
-                
+                <th>Departamento</th>
+                <th>Clasificación</th>
+                <th class="text-center">Notas Extras</th>
+                <th class="text-center">Estatus</th>
+                <th class="text-center">Métrica</th>
+                <th class="text-center">Resolución</th>
+                <th class="text-center">Ajustes</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let t of grupo.tickets">
-                <td class="text-muted"><strong>#{{ t.id }}</strong></td>
-                <td class="time-col">{{ t.fecha | date:'HH:mm' }}</td>
-                <td class="time-col" style="color: #555;">{{ t.fecha_fin ? (t.fecha_fin | date:'HH:mm') : '-' }}</td>
-                <td><strong>{{ t.nombre_usuario }}</strong></td>
-                <td>{{ t.departamento }}</td>
+              <tr *ngFor="let ticket of grupo.tickets">
+                <td class="text-muted"><strong>#{{ ticket.id }}</strong></td>
+                <td class="time-col">{{ ticket.fecha | date:'HH:mm' }} hrs</td>
+                <td class="time-col" style="color: #555;">{{ ticket.fecha_fin ? (ticket.fecha_fin | date:'HH:mm') + ' hrs' : '-' }}</td>
+                <td><strong>{{ ticket.nombre_usuario }}</strong></td>
+                <td>{{ ticket.departamento }}</td>
                 <td>
                     <span class="badge" [ngClass]="{
-                        'cat-internet': t.descripcion === 'Internet', 
-                        'cat-office': t.descripcion === 'Office', 
-                        'cat-telefonia': t.descripcion === 'Telefonia', 
-                        'cat-tecnico': t.descripcion === 'Tecnico',
-                        'cat-dictaminar': t.descripcion === 'Dictaminar',
-                        'cat-extension': t.descripcion === 'Extension/Telefono',
-                        'cat-correo': t.descripcion === 'Correo'
-                    }">{{ t.descripcion }}</span>
+                        'cat-internet': ticket.descripcion === 'Internet', 
+                        'cat-office': ticket.descripcion === 'Office', 
+                        'cat-telefonia': ticket.descripcion === 'Telefonia', 
+                        'cat-tecnico': ticket.descripcion === 'Tecnico',
+                        'cat-dictaminar': ticket.descripcion === 'Dictaminar',
+                        'cat-extension': ticket.descripcion === 'Extension/Telefono',
+                        'cat-correo': ticket.descripcion === 'Correo'
+                    }">{{ ticket.descripcion }}</span>
 
-                    <span *ngIf="t.descripcion === 'Dictaminar' && t.cantidad_dicta" class="qty-badge" style="margin-top: 5px; display: block;">
-                        EQ: {{ t.cantidad_dicta }}
+                    <span *ngIf="ticket.descripcion === 'Dictaminar' && ticket.cantidad_dicta" class="qty-badge" style="margin-top: 5px; display: block;">
+                        Equipos: {{ ticket.cantidad_dicta }}
                     </span>
                     
-                    <span *ngIf="t.descripcion === 'Extension/Telefono' && t.extension_tel" class="qty-badge" style="margin-top: 5px; display: block;">
-                        Num: {{ t.extension_tel }}
+                    <span *ngIf="ticket.descripcion === 'Extension/Telefono' && ticket.extension_tel" class="qty-badge" style="margin-top: 5px; display: block;">
+                        Núm: {{ ticket.extension_tel }}
                     </span>
 
-                    <span *ngIf="t.descripcion === 'Correo' && t.correo_tipo" class="qty-badge" style="margin-top: 5px; display: block;">
-                        Dom: {{ t.correo_tipo }}
+                    <span *ngIf="ticket.descripcion === 'Correo' && ticket.correo_tipo" class="qty-badge" style="margin-top: 5px; display: block;">
+                        Dominio: {{ ticket.correo_tipo }}
                     </span>
 
-                    <span *ngIf="t.descripcion === 'Tecnico' && t.soporte_tipo" class="qty-badge" style="margin-top: 5px; display: block; white-space: normal; line-height: 1.2;">
-                        {{ t.soporte_tipo }}
+                    <span *ngIf="ticket.descripcion === 'Tecnico' && ticket.soporte_tipo" class="qty-badge" style="margin-top: 5px; display: block; white-space: normal; line-height: 1.2;">
+                        {{ ticket.soporte_tipo }}
                     </span>
                 </td>
+                
                 <td class="text-center">
-                    <button *ngIf="t.notas" class="btn-icon-small" (click)="verNotaCompleta(t.notas)">
+                    <button *ngIf="ticket.notas" class="btn-icon-small" (click)="verNotaCompleta(ticket.notas)" title="Leer requerimientos del usuario">
                         <span class="material-symbols-outlined icon">read_more</span>
                     </button>
-                    <span *ngIf="!t.notas">-</span>
+                    <span *ngIf="!ticket.notas" style="color: #ccc;">-</span>
                 </td>
+                
                 <td class="text-center">
-                   <span *ngIf="t.estado === 'Completo' || t.estado === 'Completado'" class="badge-completed">Completado</span>
-                   <span *ngIf="t.estado === 'Incompleto'" class="badge-incomplete">Incompleto</span>
+                   <span *ngIf="ticket.estado === 'Completo' || ticket.estado === 'Completado'" class="badge-completed">Tendido</span>
+                   <span *ngIf="ticket.estado === 'Incompleto'" class="badge-incomplete">Incumplido</span>
                 </td>
+                
                 <td class="text-center">
-                    <div *ngIf="t.estado === 'Completo' || t.estado === 'Completado'">
-                        <span *ngIf="t.fecha_fin && t.fecha_limite && t.fecha_fin <= t.fecha_limite" class="badge-status success">A tiempo</span>
-                        <span *ngIf="t.fecha_fin && t.fecha_limite && t.fecha_fin > t.fecha_limite" class="badge-status lateT">Tarde</span>
+                    <div *ngIf="ticket.estado === 'Completo' || ticket.estado === 'Completado'">
+                        <span *ngIf="ticket.fecha_fin && ticket.fecha_limite && ticket.fecha_fin <= ticket.fecha_limite" class="badge-status success">A tiempo</span>
+                        <span *ngIf="ticket.fecha_fin && ticket.fecha_limite && ticket.fecha_fin > ticket.fecha_limite" class="badge-status lateT">Atrasado</span>
                     </div>
-                    <div *ngIf="t.estado === 'Incompleto'">
-                          <span class="badge-status late" style="background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca;"> Vencido</span>
+                    <div *ngIf="ticket.estado === 'Incompleto'">
+                          <span class="badge-status late" style="background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca;"> Caducado</span>
                     </div>
                 </td>
                 
                 <td class="text-center">
-                    <button *ngIf="t.descripcion_resolucion || t.evidencia_archivo" 
+                    <button *ngIf="ticket.descripcion_resolucion || ticket.evidencia_archivo" 
                             class="btn-icon-small" 
                             style="background: #ebd3da; border: 1px solid #ebd3da; color: #56212f; display: inline-flex; align-items: center; padding: 4px 6px;"
-                            (click)="verEvidenciaFinal(t)" 
-                            title="Ver resolución y evidencia">
+                            (click)="verEvidenciaFinal(ticket)" 
+                            title="Consultar datos de resolución">
                         <span class="material-symbols-outlined" style="font-size: 1.2rem;">visibility</span>
                     </button>
-                    <span *ngIf="!t.descripcion_resolucion && !t.evidencia_archivo">-</span>
+                    <span *ngIf="!ticket.descripcion_resolucion && !ticket.evidencia_archivo" style="color: #ccc;">-</span>
                 </td>
 
                 <td class="text-center">
-                    <button class="btn-text" (click)="cambiarEstado(t)" title="Regresar a pendientes">
-                        Corregir
+                    <button class="btn-text" (click)="cambiarEstado(ticket)" title="Devolver ticket a la bandeja de pendientes">
+                        Reabrir
                     </button>
                 </td>
 

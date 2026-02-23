@@ -17,91 +17,91 @@ Chart.register(...registerables);
 })
 export class UserProfileComponent implements OnInit {
 
-  private http = inject(HttpClient);
-  private apiService = inject(ApiService);
-  private cd = inject(ChangeDetectorRef);
-  private apiUrl = 'http://localhost/mesatrabajoBACKEND/backend/update_profile.php'; 
+  private clienteHttp = inject(HttpClient);
+  private servicioApi = inject(ApiService);
+  private detectorCambios = inject(ChangeDetectorRef);
+  private rutaActualizacion = 'http://localhost/mesatrabajoBACKEND/backend/update_profile.php'; 
 
-  user: any = { nombre: '', email: '' }; 
-  newPassword = '';
-  confirmPassword = ''; 
-  tituloMesActual = ''; 
+  datosUsuario: any = { nombre: '', email: '' }; 
+  nuevaContrasena = '';
+  confirmarContrasena = ''; 
+  nombreMesActual = ''; 
   
-  creadosMesActual = 0;
-  ticketsCreadosData: any[] = [];
+  cantidadTicketsMesActual = 0;
+  historialTicketsCreados: any[] = [];
   
-  chartsReady = false; 
+  indicadorGraficasCargadas = false; 
 
-  datosAnualesLabels: string[] = [];
-  datosAnualesValores: number[] = [];
+  etiquetasEvolucionAnual: string[] = [];
+  valoresEvolucionAnual: number[] = [];
 
   ngOnInit() {
-    this.generarTituloMes(); 
-    const stored = localStorage.getItem('usuario_actual');
+    this.construirNombreMesActual(); 
+    const sesionAlmacenada = localStorage.getItem('usuario_actual');
     
-    if (stored) {
-      this.user = JSON.parse(stored);
-      if (this.user.id) {
-          this.cargarEstadisticasCreadas(this.user.id);
+    if (sesionAlmacenada) {
+      this.datosUsuario = JSON.parse(sesionAlmacenada);
+      if (this.datosUsuario.id) {
+          this.obtenerRendimientoHistorico(this.datosUsuario.id);
       }
     }
   }
 
-  generarTituloMes() {
-    const fecha = new Date();
-    const mes = new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(fecha);
-    const anio = fecha.getFullYear();
-    this.tituloMesActual = `${mes.charAt(0).toUpperCase() + mes.slice(1)}/${anio}`;
+  construirNombreMesActual() {
+    const fechaSistema = new Date();
+    const nombreMes = new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(fechaSistema);
+    const añoSistema = fechaSistema.getFullYear();
+    this.nombreMesActual = `${nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1)}/${añoSistema}`;
   }
 
-  cargarEstadisticasCreadas(id: number) {
-      this.apiService.getTicketsCreadosPorSecretaria(id).subscribe({
-          next: (data: any[]) => {
-              this.ticketsCreadosData = data || [];
+  obtenerRendimientoHistorico(idUsuario: number) {
+      this.servicioApi.getTicketsCreadosPorSecretaria(idUsuario).subscribe({
+          next: (respuestaServidor: any[]) => {
+              this.historialTicketsCreados = respuestaServidor || [];
               
-              if(this.ticketsCreadosData.length > 0) {
-                  console.log("EJEMPLO DE TICKET:", this.ticketsCreadosData[0]);
+              if(this.historialTicketsCreados.length > 0) {
+                  console.log("EJEMPLO DE TICKET:", this.historialTicketsCreados[0]);
               }
 
-              const hoy = new Date();
-              const mesActual = hoy.getMonth(); 
-              const anioActual = hoy.getFullYear();
+              const fechaReferencia = new Date();
+              const mesFiltro = fechaReferencia.getMonth(); 
+              const añoFiltro = fechaReferencia.getFullYear();
               
-              const ticketsEsteMes = this.ticketsCreadosData.filter(t => {
-                  if (!t.fecha) return false;
-                  const fechaTicket = new Date(t.fecha.replace(' ', 'T'));
-                  return fechaTicket.getMonth() === mesActual && 
-                         fechaTicket.getFullYear() === anioActual;
+              const filtradoMesActual = this.historialTicketsCreados.filter(ticket => {
+                  if (!ticket.fecha) return false;
+                  const objetoFechaTicket = new Date(ticket.fecha.replace(' ', 'T'));
+                  return objetoFechaTicket.getMonth() === mesFiltro && 
+                         objetoFechaTicket.getFullYear() === añoFiltro;
               });
 
-              this.creadosMesActual = ticketsEsteMes.length;
-              this.procesarRitmoAnual();
-              this.chartsReady = true; 
-              this.cd.detectChanges(); 
+              this.cantidadTicketsMesActual = filtradoMesActual.length;
+              this.calcularDistribucionAnual();
+              this.indicadorGraficasCargadas = true; 
+              this.detectorCambios.detectChanges(); 
 
               setTimeout(() => {
-                  this.renderChartCreadosMes(); 
-                  this.renderMonthlyChart(this.datosAnualesLabels, this.datosAnualesValores);
-                  this.renderAssignmentsChart();
+                  this.dibujarGraficaDona(); 
+                  this.dibujarGraficaLineas(this.etiquetasEvolucionAnual, this.valoresEvolucionAnual);
+                  this.dibujarGraficaBarras();
               }, 100);
           },
-          error: (err) => console.error("Error cargando stats:", err)
+          error: (errorPeticion) => console.error("Error cargando stats:", errorPeticion)
       });
   }
 
-  renderMonthlyChart(labels: string[], data: number[]) {
-      const ctx = document.getElementById('monthlyChart') as HTMLCanvasElement;
-      if (ctx) {
-          const existingChart = Chart.getChart(ctx);
-          if (existingChart) existingChart.destroy();
+  dibujarGraficaLineas(etiquetasGrafica: string[], datosGrafica: number[]) {
+      const elementoLienzo = document.getElementById('monthlyChart') as HTMLCanvasElement;
+      if (elementoLienzo) {
+          const instanciaPrevia = Chart.getChart(elementoLienzo);
+          if (instanciaPrevia) instanciaPrevia.destroy();
 
-          new Chart(ctx, {
+          new Chart(elementoLienzo, {
               type: 'line', 
               data: {
-                  labels: labels,
+                  labels: etiquetasGrafica,
                   datasets: [{
                       label: 'Efectividad (%)',
-                      data: data,
+                      data: datosGrafica,
                       borderColor: '#56212f', 
                       backgroundColor: 'rgba(86, 33, 47, 0.1)', 
                       borderWidth: 3,
@@ -124,19 +124,19 @@ export class UserProfileComponent implements OnInit {
       }
   }
 
-  renderChartCreadosMes() {
-      const ctx = document.getElementById('createdTotalChart') as HTMLCanvasElement;
-      if (!ctx) return;
-      const existingChart = Chart.getChart(ctx);
-      if (existingChart) existingChart.destroy();
-      const hayDatos = this.creadosMesActual > 0;
-      new Chart(ctx, {
+  dibujarGraficaDona() {
+      const elementoLienzo = document.getElementById('createdTotalChart') as HTMLCanvasElement;
+      if (!elementoLienzo) return;
+      const instanciaPrevia = Chart.getChart(elementoLienzo);
+      if (instanciaPrevia) instanciaPrevia.destroy();
+      const existenRegistros = this.cantidadTicketsMesActual > 0;
+      new Chart(elementoLienzo, {
           type: 'doughnut',
           data: {
               labels: ['Mis Tickets'],
               datasets: [{
-                  data: hayDatos ? [this.creadosMesActual] : [1],
-                  backgroundColor: hayDatos ? ['#3b82f6'] : ['#e2e8f0'],
+                  data: existenRegistros ? [this.cantidadTicketsMesActual] : [1],
+                  backgroundColor: existenRegistros ? ['#3b82f6'] : ['#e2e8f0'],
                   borderWidth: 0
               }]
           },
@@ -147,60 +147,60 @@ export class UserProfileComponent implements OnInit {
             layout: {
                 padding: 0 
             },
-            plugins: { legend: { display: false }, tooltip: { enabled: hayDatos } } 
+            plugins: { legend: { display: false }, tooltip: { enabled: existenRegistros } } 
           }
       });
   }
-renderAssignmentsChart() {
-      const ctx = document.getElementById('createdHistoryChart') as HTMLCanvasElement;
-      if (!ctx) return;
 
-      const existingChart = Chart.getChart(ctx);
-      if (existingChart) existingChart.destroy();
+  dibujarGraficaBarras() {
+      const elementoLienzo = document.getElementById('createdHistoryChart') as HTMLCanvasElement;
+      if (!elementoLienzo) return;
 
-      const conteoPorPersona: { [key: string]: number } = {};
-      const anioActual = new Date().getFullYear();
+      const instanciaPrevia = Chart.getChart(elementoLienzo);
+      if (instanciaPrevia) instanciaPrevia.destroy();
 
-      if (this.ticketsCreadosData.length > 0) {
-          console.log("Campos del ticket:", Object.keys(this.ticketsCreadosData[0]));
+      const agrupacionPorPersonal: { [identificadorPersona: string]: number } = {};
+      const añoActual = new Date().getFullYear();
+
+      if (this.historialTicketsCreados.length > 0) {
+          console.log("Campos del ticket:", Object.keys(this.historialTicketsCreados[0]));
       }
 
-      this.ticketsCreadosData.forEach(t => {
-          if (!t.fecha) return;
-          const fechaT = new Date(t.fecha.replace(' ', 'T'));
+      this.historialTicketsCreados.forEach(ticket => {
+          if (!ticket.fecha) return;
+          const objetoFechaTicket = new Date(ticket.fecha.replace(' ', 'T'));
           
-          if (!isNaN(fechaT.getTime()) && fechaT.getFullYear() === anioActual) {
+          if (!isNaN(objetoFechaTicket.getTime()) && objetoFechaTicket.getFullYear() === añoActual) {
               
-
-              let nombrePersona = t.personal || 
-                                  t.asignado_a || 
-                                  t.nombre_asignado || 
+              let identificadorTecnico = ticket.personal || 
+                                  ticket.asignado_a || 
+                                  ticket.nombre_asignado || 
                                   'Sin Asignar';
 
-              if (!isNaN(Number(nombrePersona)) && nombrePersona !== 'Sin Asignar') {
-                 nombrePersona = `Usuario ID: ${nombrePersona}`; 
+              if (!isNaN(Number(identificadorTecnico)) && identificadorTecnico !== 'Sin Asignar') {
+                 identificadorTecnico = `Usuario ID: ${identificadorTecnico}`; 
               }
 
-              conteoPorPersona[nombrePersona] = (conteoPorPersona[nombrePersona] || 0) + 1;
+              agrupacionPorPersonal[identificadorTecnico] = (agrupacionPorPersonal[identificadorTecnico] || 0) + 1;
           }
       });
 
-      let asignacionesOrdenadas = Object.entries(conteoPorPersona);
-      asignacionesOrdenadas.sort((a, b) => b[1] - a[1]);
+      let arregloOrdenadoAsignaciones = Object.entries(agrupacionPorPersonal);
+      arregloOrdenadoAsignaciones.sort((elementoA, elementoB) => elementoB[1] - elementoA[1]);
 
-      const nombres = asignacionesOrdenadas.map(item => item[0]);
-      const valores = asignacionesOrdenadas.map(item => item[1]);
-      const colores = nombres.map((_, i) => this.obtenerColor(i));
+      const etiquetasNombres = arregloOrdenadoAsignaciones.map(item => item[0]);
+      const datosCantidades = arregloOrdenadoAsignaciones.map(item => item[1]);
+      const paletaColores = etiquetasNombres.map((_, indice) => this.seleccionarColorHex(indice));
 
-      new Chart(ctx, {
+      new Chart(elementoLienzo, {
           type: 'bar',
           data: {
-              labels: nombres, 
+              labels: etiquetasNombres, 
               datasets: [{
                   label: 'Tickets',
-                  data: valores,   
-                  backgroundColor: colores,
-                  borderColor: colores,
+                  data: datosCantidades,   
+                  backgroundColor: paletaColores,
+                  borderColor: paletaColores,
                   borderWidth: 1,
                   borderRadius: 4,
                   barPercentage: 0.6,
@@ -213,7 +213,7 @@ renderAssignmentsChart() {
               plugins: {
                   legend: { display: false }, 
                   tooltip: {
-                      callbacks: { label: (context) => `Tickets: ${context.raw}` }
+                      callbacks: { label: (contexto) => `Tickets: ${contexto.raw}` }
                   }
               },
               scales: {
@@ -234,43 +234,43 @@ renderAssignmentsChart() {
       });
   }
 
-  procesarRitmoAnual() {
-      const anioActual = new Date().getFullYear();
-      this.datosAnualesLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-      this.datosAnualesValores = new Array(12).fill(0); 
+  calcularDistribucionAnual() {
+      const añoActual = new Date().getFullYear();
+      this.etiquetasEvolucionAnual = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+      this.valoresEvolucionAnual = new Array(12).fill(0); 
 
-      this.ticketsCreadosData.forEach(t => {
-          if (!t.fecha) return;
-          const fechaT = new Date(t.fecha.replace(' ', 'T'));
-          if (!isNaN(fechaT.getTime()) && fechaT.getFullYear() === anioActual) {
-              const mesIndex = fechaT.getMonth(); 
-              this.datosAnualesValores[mesIndex]++;
+      this.historialTicketsCreados.forEach(ticket => {
+          if (!ticket.fecha) return;
+          const objetoFechaTicket = new Date(ticket.fecha.replace(' ', 'T'));
+          if (!isNaN(objetoFechaTicket.getTime()) && objetoFechaTicket.getFullYear() === añoActual) {
+              const indiceDelMes = objetoFechaTicket.getMonth(); 
+              this.valoresEvolucionAnual[indiceDelMes]++;
           }
       });
   }
 
-  obtenerColor(index: number): string {
-      const colores = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6'];
-      return colores[index % colores.length];
+  seleccionarColorHex(indiceArreglo: number): string {
+      const coloresPredefinidos = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6'];
+      return coloresPredefinidos[indiceArreglo % coloresPredefinidos.length];
   }
 
-  actualizarPerfil() { 
-     if (!this.user.nombre || !this.user.email) {
+  procesarActualizacionPerfil() { 
+     if (!this.datosUsuario.nombre || !this.datosUsuario.email) {
          Swal.fire('Atención', 'Datos incompletos', 'warning'); return;
      }
-     const payload = { id: this.user.id, nombre: this.user.nombre, email: this.user.email, password: this.newPassword };
-     this.http.post(this.apiUrl, payload).subscribe({
-         next: (res: any) => {
-             if(res.status) {
-                 const stored = localStorage.getItem('usuario_actual');
-                 if (stored) {
-                     let usuarioGuardado = JSON.parse(stored);
-                     usuarioGuardado.nombre = this.user.nombre;
-                     usuarioGuardado.email = this.user.email;
-                     localStorage.setItem('usuario_actual', JSON.stringify(usuarioGuardado));
+     const objetoEnvio = { id: this.datosUsuario.id, nombre: this.datosUsuario.nombre, email: this.datosUsuario.email, password: this.nuevaContrasena };
+     this.clienteHttp.post(this.rutaActualizacion, objetoEnvio).subscribe({
+         next: (respuestaServidor: any) => {
+             if(respuestaServidor.status) {
+                 const sesionAlmacenada = localStorage.getItem('usuario_actual');
+                 if (sesionAlmacenada) {
+                     let parseoUsuario = JSON.parse(sesionAlmacenada);
+                     parseoUsuario.nombre = this.datosUsuario.nombre;
+                     parseoUsuario.email = this.datosUsuario.email;
+                     localStorage.setItem('usuario_actual', JSON.stringify(parseoUsuario));
                  }
                  Swal.fire({ icon: 'success', title: '¡Éxito!', text: 'Perfil actualizado', confirmButtonColor: '#56212f' }).then(() => window.location.reload());
-             } else { Swal.fire('Error', res.message, 'error'); }
+             } else { Swal.fire('Error', respuestaServidor.message, 'error'); }
          }
      });
   }

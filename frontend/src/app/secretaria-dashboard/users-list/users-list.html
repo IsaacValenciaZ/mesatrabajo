@@ -1,7 +1,7 @@
 <div class="table-card fade-in">
   <div class="card-header">
     <h2>Lista de Personal</h2>
-    <span class="badge-count">{{ personalUsers.length }} Tecnicos</span>
+    <span class="badge-count">{{ listaTecnicos.length }} Técnicos</span>
   </div>
 
   <div class="table-responsive">
@@ -15,18 +15,18 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let user of personalUsers">
-          <td><strong>{{ user.nombre }}</strong></td>
-          <td>{{ user.email }}</td>
-          <td><span class="role-badge">{{ user.rol | uppercase }}</span></td>
+        <tr *ngFor="let tecnico of listaTecnicos">
+          <td><strong>{{ tecnico.nombre }}</strong></td>
+          <td>{{ tecnico.email }}</td>
+          <td><span class="role-badge">{{ tecnico.rol | uppercase }}</span></td>
           <td>
-            <button class="btn-icon" (click)="irATickets(user.id)">
+            <button class="btn-icon" (click)="navegarAFormularioTickets(tecnico.id)">
               Enviar Ticket
             </button>
           </td>
         </tr>
-        <tr *ngIf="personalUsers.length === 0">
-          <td colspan="4" class="text-center">No hay personal registrado.</td>
+        <tr *ngIf="listaTecnicos.length === 0">
+          <td colspan="4" class="text-center">No hay personal registrado en el sistema.</td>
         </tr>
       </tbody>
     </table>

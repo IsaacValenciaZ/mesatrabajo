@@ -1,4 +1,3 @@
-
 :host {
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   display: block;
@@ -10,7 +9,6 @@
   flex-direction: column;
   min-height: 100vh;
 }
-
 
 .header-top {
   display: flex;
@@ -34,7 +32,7 @@
 
 .color-bar-top {
   height: 40px;
-  background-color: #8b2136;  /* 8b2136 */
+  background-color: #8b2136;
   width: 100%;
 }
 
@@ -67,7 +65,6 @@
   padding: 20px;
 }
 
-/* logo */
 .empty-space {
   flex: 1;
   min-width: 300px;
@@ -76,7 +73,6 @@
   background: linear-gradient(135deg, #f1eded 0%, #ffffff 100%); 
   border-top-left-radius: 17px; 
   border-bottom-left-radius: 17px;
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -88,7 +84,8 @@
   filter: blur(1px);
   z-index: 1; 
 }
-/* bola vino*/
+
+/* Bolas */
 .blob-top {
   top: -60px;   
   left: -60px;
@@ -96,11 +93,8 @@
   height: 160px;
   background: linear-gradient(45deg, #8b2136, #b03a55);
   border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-  
- 
 }
 
-/* bola beige*/
 .blob-bottom {
   bottom: -40px;
   right: -40px;
@@ -111,10 +105,8 @@
   opacity: 0.6;
 }
 
-/* seiem */
 .brand-showcase {
   position: relative;
-  
   z-index: 10; 
   text-align: center;
   display: flex;
@@ -122,6 +114,7 @@
   align-items: center;
 }
 
+/* Formulario */
 .form-section {
   flex: 1;
   min-width: 300px;
@@ -136,7 +129,6 @@ h2 {
   margin-bottom: 40px; 
   color: #000;
 }
-
 
 .group {
   position: relative;
@@ -157,11 +149,9 @@ h2 {
 
 .main-input:focus {
   outline: none;
-
 }
 
-
-.lebal-email {
+.floating-label {
   color: #999999;
   font-size: 16px;
   font-weight: normal;
@@ -172,15 +162,13 @@ h2 {
   transition: 0.2s ease all;
 }
 
-
-.main-input:focus ~ .lebal-email,
-.main-input:valid ~ .lebal-email {
+.main-input:focus ~ .floating-label,
+.main-input:valid ~ .floating-label {
   top: -20px;      
   font-size: 14px; 
   color: #8b2136;  
   font-weight: bold;
 }
-
 
 .highlight-span {
   position: absolute;
@@ -193,11 +181,9 @@ h2 {
   transition: width 0.3s ease;
 }
 
-
 .main-input:focus ~ .highlight-span {
   width: 100%;
 }
-
 
 .btn-container {
   display: flex;
@@ -221,6 +207,25 @@ h2 {
   background-color: #ba9156;
 }
 
+.forgot-pass-container {
+  text-align: right;
+  margin-top: -25px; 
+  margin-bottom: 25px; 
+}
+
+.forgot-pass-link {
+  color: #8b2136;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.forgot-pass-link:hover {
+  color: #ba9156; 
+  text-decoration: underline;
+}
+
 .fondo-pattern {
   width: 100%;
   height: 180px;
@@ -239,88 +244,22 @@ h2 {
 }
 
 @media (max-width: 1024px) {
-  .login-content {
-    gap: 30px;
-  }
-
-  .login-card-border {
-    padding: 30px;
-  }
+  .login-content { gap: 30px; }
+  .login-card-border { padding: 30px; }
 }
 
 @media (min-width: 1400px) {
-  .login-card-border {
-    max-width: 1100px;
-  }
+  .login-card-border { max-width: 1100px; }
 }
-
 
 @media screen and (max-width: 1366px) and (max-height: 768px) {
-
-  .main-content {
-    padding: 30px 20px;
-  }
-
-  .login-card-border {
-    max-width: 750px;
-    padding: 30px;
-  }
-
-  .login-content {
-    gap: 40px;
-  }
-
-
-  .empty-space {
-    min-height: 200px;
-  }
-
-  .brand-showcase img,
-  .hero-logo {
-    max-width: 260px;
-  }
-
-
-  h2 {
-    font-size: 1.6rem;
-    margin-bottom: 30px;
-  }
-
-  .group {
-    margin-bottom: 35px;
-  }
-
- 
-  .btn-primary {
-    padding: 10px 32px;
-    font-size: 0.95rem;
-  }
-
-
-  .fondo-pattern {
-    height: 140px;
-  }
+  .main-content { padding: 30px 20px; }
+  .login-card-border { max-width: 750px; padding: 30px; }
+  .login-content { gap: 40px; }
+  .empty-space { min-height: 200px; }
+  .brand-showcase img, .hero-logo { max-width: 260px; }
+  h2 { font-size: 1.6rem; margin-bottom: 30px; }
+  .group { margin-bottom: 35px; }
+  .btn-primary { padding: 10px 32px; font-size: 0.95rem; }
+  .fondo-pattern { height: 140px; }
 }
-
-
-.forgot-pass-container {
-  text-align: right;
-  margin-top: -25px; 
-  margin-bottom: 25px; 
-}
-
-.forgot-pass-link {
-  color: #8b2136;
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-.forgot-pass-link:hover {
-  color: #ba9156; /* Color Dorado al pasar el mouse */
-  text-decoration: underline;
-}
-
-
-
