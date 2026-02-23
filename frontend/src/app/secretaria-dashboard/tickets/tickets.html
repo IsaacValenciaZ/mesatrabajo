@@ -1,5 +1,4 @@
 <div class="profile-page-container fade-in">
-
   <div class="central-form-card">
     <h2 class="form-title">Registrar Nuevo Reporte</h2>
 
@@ -7,7 +6,7 @@
       
       <div class="form-group">
         <label>Nombre del Usuario:</label>
-        <input type="text" [(ngModel)]="newTicket.nombre_usuario" class="simple-input" placeholder="Nombre completo">
+        <input type="text" [(ngModel)]="nuevoTicket.nombre_usuario" class="simple-input" placeholder="Nombre completo">
       </div>
 
       <div class="form-group" style="position: relative;">
@@ -16,33 +15,33 @@
           type="text" 
           class="simple-input"
           placeholder="Escribe o selecciona..." 
-          [value]="newTicket.departamento"
-          (input)="filtrarDepartamentos($event)"
-          (focus)="mostrarListaDepartamentos = true"
-          (blur)="ocultarListaRetrasada()"
+          [value]="nuevoTicket.departamento"
+          (input)="buscarDepartamento($event)"
+          (focus)="mostrarSugerencias = true"
+          (blur)="cerrarSugerenciasConRetraso()"
         >
         
-        <ul class="autocomplete-list" *ngIf="mostrarListaDepartamentos && departamentosFiltrados.length > 0">
-          <li *ngFor="let dep of departamentosFiltrados" (click)="seleccionarDepartamento(dep)">
-            {{ dep }}
+        <ul class="autocomplete-list" *ngIf="mostrarSugerencias && departamentosSugeridos.length > 0">
+          <li *ngFor="let departamento of departamentosSugeridos" (click)="elegirDepartamento(departamento)">
+            {{ departamento }}
           </li>
         </ul>
-        <ul class="autocomplete-list" *ngIf="mostrarListaDepartamentos && departamentosFiltrados.length === 0">
+        <ul class="autocomplete-list" *ngIf="mostrarSugerencias && departamentosSugeridos.length === 0">
           <li class="no-results">Se guardará como nuevo departamento.</li>
         </ul>
       </div>
 
       <div class="form-group">
         <label>Técnico Asignado:</label>
-        <select [(ngModel)]="newTicket.personalId" class="simple-input">
+        <select [(ngModel)]="nuevoTicket.personalId" class="simple-input">
           <option value="" disabled selected>-- Selecciona Técnico --</option>
-          <option *ngFor="let u of usersList" [value]="u.id">{{ u.nombre }}</option> 
+          <option *ngFor="let tecnico of listaTecnicos" [value]="tecnico.id">{{ tecnico.nombre }}</option> 
         </select>
       </div>
 
       <div class="form-group">
         <label>Tipo de Problema:</label>
-        <select [(ngModel)]="newTicket.descripcion" name="descripcion" class="simple-input" required>
+        <select [(ngModel)]="nuevoTicket.descripcion" name="descripcion" class="simple-input" required>
           <option value="" disabled selected>Selecciona un servicio</option>
           <option value="Internet">Internet</option>
           <option value="Office">Office</option>
@@ -54,51 +53,51 @@
         </select>
       </div>
 
-      <div class="form-group fade-in" *ngIf="newTicket.descripcion === 'Dictaminar'">
+      <div class="form-group fade-in" *ngIf="nuevoTicket.descripcion === 'Dictaminar'">
         <label>¿Cuántos equipos se dictaminarán?</label>
-        <input type="number" [(ngModel)]="newTicket.cantidad_dicta" name="cantidad_dicta" min="1" placeholder="Ej: 5" class="simple-input">
+        <input type="number" [(ngModel)]="nuevoTicket.cantidad_dicta" name="cantidad_dicta" min="1" placeholder="Ej: 5" class="simple-input">
       </div>
 
-      <div class="form-group fade-in" *ngIf="newTicket.descripcion === 'Extension/Telefono'">
+      <div class="form-group fade-in" *ngIf="nuevoTicket.descripcion === 'Extension/Telefono'">
         <label>Número de Extensión o Teléfono:</label>
-        <input type="tel" [(ngModel)]="newTicket.extension_tel" name="extension_tel" placeholder="Ej: 5512345678" class="simple-input" maxlength="12" (keypress)="soloNumeros($event)">
+        <input type="tel" [(ngModel)]="nuevoTicket.extension_tel" name="extension_tel" placeholder="Ej: 5512345678" class="simple-input" maxlength="12" (keypress)="validarSoloNumeros($event)">
       </div>
 
-      <div class="form-group fade-in" *ngIf="newTicket.descripcion === 'Correo'">
+      <div class="form-group fade-in" *ngIf="nuevoTicket.descripcion === 'Correo'">
         <label>Tipo de Dominio:</label>
         <div style="display: flex; gap: 20px; margin-top: 10px;">
           <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
-            <input type="radio" [(ngModel)]="newTicket.correo_tipo" name="correo_tipo" value=".edu"> 
+            <input type="radio" [(ngModel)]="nuevoTicket.correo_tipo" name="correo_tipo" value=".edu"> 
             <span>.edu</span>
           </label>
           <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
-            <input type="radio" [(ngModel)]="newTicket.correo_tipo" name="correo_tipo" value=".gob"> 
+            <input type="radio" [(ngModel)]="nuevoTicket.correo_tipo" name="correo_tipo" value=".gob"> 
             <span>.gob</span>
           </label>
         </div>
       </div>
 
-      <div class="form-group fade-in" *ngIf="newTicket.descripcion === 'Tecnico'">
+      <div class="form-group fade-in" *ngIf="nuevoTicket.descripcion === 'Tecnico'">
         <label>Especifica el tipo de soporte (puedes elegir varios):</label>
         <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-top: 10px;">
           <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
-            <input type="checkbox" [(ngModel)]="newTicket.soporte.impresora"> <span>Impresora</span>
+            <input type="checkbox" [(ngModel)]="nuevoTicket.soporte.impresora"> <span>Impresora</span>
           </label>
           <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
-            <input type="checkbox" [(ngModel)]="newTicket.soporte.escaner"> <span>Escáner</span>
+            <input type="checkbox" [(ngModel)]="nuevoTicket.soporte.escaner"> <span>Escáner</span>
           </label>
           <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
-            <input type="checkbox" [(ngModel)]="newTicket.soporte.software"> <span>Software</span>
+            <input type="checkbox" [(ngModel)]="nuevoTicket.soporte.software"> <span>Software</span>
           </label>
           <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
-            <input type="checkbox" [(ngModel)]="newTicket.soporte.hardware"> <span>Hardware</span>
+            <input type="checkbox" [(ngModel)]="nuevoTicket.soporte.hardware"> <span>Hardware</span>
           </label>
         </div>
       </div>
 
       <div class="form-group">
         <label>Prioridad:</label>
-        <select [(ngModel)]="newTicket.prioridad" class="simple-input">
+        <select [(ngModel)]="nuevoTicket.prioridad" class="simple-input">
           <option value="" disabled selected>-- Selecciona --</option>
           <option value="Alta">Alta</option>
           <option value="Media">Media</option>
@@ -108,11 +107,11 @@
 
       <div class="form-group full-width">
         <label>Detalles del Problema (Notas):</label>
-        <textarea [(ngModel)]="newTicket.notas" rows="4" placeholder="Describe la falla..." class="simple-input"></textarea>
+        <textarea [(ngModel)]="nuevoTicket.notas" rows="4" placeholder="Describe la falla..." class="simple-input"></textarea>
       </div>
 
       <div class="full-width">
-        <button class="btn-gold" (click)="enviarTicket()">
+        <button class="btn-gold" (click)="procesarRegistroTicket()">
           GUARDAR TICKET
         </button>
       </div>
@@ -123,8 +122,8 @@
   <div class="report-card fade-in">
     
     <div class="card-header-red">
-      <h3>Reportes de {{ fechaActual | date:'fullDate' | titlecase }}</h3>
-      <div class="counter-badge">{{ ticketsHoy ? ticketsHoy.length : 0 }} reportes</div>
+      <h3>Reportes de {{ fechaSistema | date:'fullDate' | titlecase }}</h3>
+      <div class="counter-badge">{{ reportesDelDia ? reportesDelDia.length : 0 }} reportes</div>
     </div>
 
     <div class="table-responsive">
@@ -142,66 +141,65 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let t of ticketsHoy">
-            <td class="id-col">#{{ t.id }}</td>
-           <td class="time-col">{{ t.fecha | date:'hh:mm a' }}</td>
-            <td class="user-col">{{ t.nombre_usuario }}</td>
-            <td class="depto-col">{{ t.departamento }}</td>
+          <tr *ngFor="let reporte of reportesDelDia">
+            <td class="id-col">#{{ reporte.id }}</td>
+            <td class="time-col">{{ reporte.fecha | date:'hh:mm a' }}</td>
+            <td class="user-col">{{ reporte.nombre_usuario }}</td>
+            <td class="depto-col">{{ reporte.departamento }}</td>
             
             <td>
                 <span class="badge-solid" [ngClass]="{
-                  'bg-internet': t.descripcion === 'Internet',
-                  'bg-office': t.descripcion === 'Office',
-                  'bg-telefonia': t.descripcion === 'Telefonia',
-                  'bg-tecnico': t.descripcion === 'Tecnico',
-                  'bg-dictaminar': t.descripcion === 'Dictaminar',
-                  'bg-extension': t.descripcion === 'Extension/Telefono',
-                  'bg-correo': t.descripcion === 'Correo'
-                }">{{ t.descripcion }}</span>
+                  'bg-internet': reporte.descripcion === 'Internet',
+                  'bg-office': reporte.descripcion === 'Office',
+                  'bg-telefonia': reporte.descripcion === 'Telefonia',
+                  'bg-tecnico': reporte.descripcion === 'Tecnico',
+                  'bg-dictaminar': reporte.descripcion === 'Dictaminar',
+                  'bg-extension': reporte.descripcion === 'Extension/Telefono',
+                  'bg-correo': reporte.descripcion === 'Correo'
+                }">{{ reporte.descripcion }}</span>
 
-                <span *ngIf="t.descripcion === 'Dictaminar' && t.cantidad_dicta" class="qty-badge" style="margin-top: 5px; display: block;">
-                    EQ: {{ t.cantidad_dicta }}
+                <span *ngIf="reporte.descripcion === 'Dictaminar' && reporte.cantidad_dicta" class="qty-badge" style="margin-top: 5px; display: block;">
+                    EQ: {{ reporte.cantidad_dicta }}
                 </span>
                 
-                <span *ngIf="t.descripcion === 'Extension/Telefono' && t.extension_tel" class="qty-badge" style="margin-top: 5px; display: block;">
-                    Num: {{ t.extension_tel }}
+                <span *ngIf="reporte.descripcion === 'Extension/Telefono' && reporte.extension_tel" class="qty-badge" style="margin-top: 5px; display: block;">
+                    Num: {{ reporte.extension_tel }}
                 </span>
 
-                <span *ngIf="t.descripcion === 'Correo' && t.correo_tipo" class="qty-badge" style="margin-top: 5px; display: block;">
-                    Dom: {{ t.correo_tipo }}
+                <span *ngIf="reporte.descripcion === 'Correo' && reporte.correo_tipo" class="qty-badge" style="margin-top: 5px; display: block;">
+                    Dom: {{ reporte.correo_tipo }}
                 </span>
 
-                <span *ngIf="t.descripcion === 'Tecnico' && t.soporte_tipo" class="qty-badge" style="margin-top: 5px; display: block; white-space: normal; line-height: 1.2;">
-                    {{ t.soporte_tipo }}
+                <span *ngIf="reporte.descripcion === 'Tecnico' && reporte.soporte_tipo" class="qty-badge" style="margin-top: 5px; display: block; white-space: normal; line-height: 1.2;">
+                    {{ reporte.soporte_tipo }}
                 </span>
             </td>
 
             <td>
               <span class="badge-solid" [ngClass]="{
-                'bg-alta': t.prioridad === 'Alta',
-                'bg-media': t.prioridad === 'Media',
-                'bg-baja': t.prioridad === 'Baja'
-              }">{{ t.prioridad }}</span>
+                'bg-alta': reporte.prioridad === 'Alta',
+                'bg-media': reporte.prioridad === 'Media',
+                'bg-baja': reporte.prioridad === 'Baja'
+              }">{{ reporte.prioridad }}</span>
             </td>
             
-            <td class="tech-col">{{ t.personal || 'Sin asignar' }}</td>
+            <td class="tech-col">{{ reporte.personal || 'Sin asignar' }}</td>
             
             <td class="notes-col">
-              <span *ngIf="t.notas && t.notas.length <= 30">{{ t.notas }}</span>
-              <div *ngIf="t.notas && t.notas.length > 30">
-                  <span>{{ t.notas | slice:0:30 }}...</span>
-                  <a class="link-ver-mas" (click)="verNotaCompleta(t.notas)">Ver más</a>
+              <span *ngIf="reporte.notas && reporte.notas.length <= 30">{{ reporte.notas }}</span>
+              <div *ngIf="reporte.notas && reporte.notas.length > 30">
+                  <span>{{ reporte.notas | slice:0:30 }}...</span>
+                  <a class="link-ver-mas" (click)="mostrarDetalleNota(reporte.notas)">Ver más</a>
               </div>
-              <span *ngIf="!t.notas" style="color: #ccc;">-</span>
+              <span *ngIf="!reporte.notas" style="color: #ccc;">-</span>
             </td>
           </tr>
           
-          <tr *ngIf="!ticketsHoy || ticketsHoy.length === 0">
+          <tr *ngIf="!reportesDelDia || reportesDelDia.length === 0">
             <td colspan="8" class="empty-row">No hay reportes registrados hoy.</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
-
 </div>

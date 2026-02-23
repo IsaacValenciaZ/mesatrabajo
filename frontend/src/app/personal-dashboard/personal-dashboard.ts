@@ -11,24 +11,26 @@ import { Router, RouterModule } from '@angular/router';
 })
 export class PersonalDashboardComponent implements OnInit {
 
-  router = inject(Router);
-  user: any = {};
-  menuAbierto: boolean = true; 
-  isSidebarOpen = true;
+  private router = inject(Router);
+  
+  usuarioActual: any = {};
+  menuLateralAbierto: boolean = true;
   
   ngOnInit() {
-    this.verificarSesion();
+    this.validarAutenticacion();
   }
 
-  toggleSidebar() {
-    this.isSidebarOpen = !this.isSidebarOpen;
+  alternarMenuLateral() {
+    this.menuLateralAbierto = !this.menuLateralAbierto;
   }
   
-  verificarSesion() {
-    const userStored = localStorage.getItem('usuario_actual');
-    if (userStored) {
-      this.user = JSON.parse(userStored);
-      if(this.user.rol !== 'personal') {
+  validarAutenticacion() {
+    const sesionGuardada = localStorage.getItem('usuario_actual');
+    
+    if (sesionGuardada) {
+      this.usuarioActual = JSON.parse(sesionGuardada);
+      
+      if (this.usuarioActual.rol !== 'personal') {
         this.router.navigate(['/login']);
       }
     } else {
@@ -36,8 +38,7 @@ export class PersonalDashboardComponent implements OnInit {
     }
   }
 
-
-  logout() {
+  cerrarSesion() {
     localStorage.removeItem('usuario_actual');
     this.router.navigate(['/login']);
   }

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core'; // 1. IMPORTAR ChangeDetectorRef
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api';
 import { Router } from '@angular/router';
@@ -11,31 +11,31 @@ import { Router } from '@angular/router';
   styleUrl: './users-list.css'
 })
 export class UsersListComponent implements OnInit {
-  private apiService = inject(ApiService);
-  private router = inject(Router);
-  private cd = inject(ChangeDetectorRef); 
+  private servicioApi = inject(ApiService);
+  private enrutador = inject(Router);
+  private detectorCambios = inject(ChangeDetectorRef); 
 
-  usersList: any[] = [];
+  listaUsuariosGeneral: any[] = [];
 
   ngOnInit() {
-    this.cargarUsuarios();
+    this.solicitarUsuariosRegistrados();
   }
 
-  cargarUsuarios() {
-    this.apiService.getUsers().subscribe({
-      next: (data) => {
-        this.usersList = data || [];
-        this.cd.detectChanges(); 
+  solicitarUsuariosRegistrados() {
+    this.servicioApi.getUsers().subscribe({
+      next: (datosServidor) => {
+        this.listaUsuariosGeneral = datosServidor || [];
+        this.detectorCambios.detectChanges(); 
       },
-      error: (err) => console.error(err)
+      error: (errorPeticion) => console.error(errorPeticion)
     });
   }
 
-  get personalUsers() {
-    return (this.usersList || []).filter(u => u.rol === 'personal');
+  get listaTecnicos() {
+    return (this.listaUsuariosGeneral || []).filter(usuario => usuario.rol === 'personal');
   }
 
-  irATickets(userId: any) {
-    this.router.navigate(['/secretaria/tickets']);
+  navegarAFormularioTickets(idUsuario: any) {
+    this.enrutador.navigate(['/secretaria/tickets']);
   }
 }

@@ -16,109 +16,124 @@ Chart.register(...registerables);
   styleUrls: ['./personal-profile.css']
 })
 export class PersonalProfileComponent implements OnInit {
-
   private http = inject(HttpClient);
   private apiService = inject(ApiService);
-  private cd = inject(ChangeDetectorRef); 
+  private cdr = inject(ChangeDetectorRef); 
   private apiUrl = 'http://localhost/mesatrabajoBACKEND/backend/update_profile.php'; 
 
-  user: any = { nombre: '', email: '' }; 
-  newPassword = '';
-  confirmPassword = ''; 
+  usuarioActual: any = { nombre: '', email: '' }; 
+  nuevaContrasena = '';
+  confirmarContrasena = ''; 
   
-  tituloMesActual = ''; 
+  etiquetaMesActual = ''; 
   totalTickets = 0;
-  completados = 0;
-  incompletos = 0;
-  eficiencia = 0;
+  ticketsCompletados = 0;
+  ticketsIncompletos = 0;
+  porcentajeEficiencia = 0;
 
   ngOnInit() {
-    this.generarTituloMes(); 
-    const stored = localStorage.getItem('usuario_actual');
-    if (stored) {
-      this.user = JSON.parse(stored);
-      this.cargarEstadisticas();
+    this.establecerMesActual(); 
+    const datosGuardados = localStorage.getItem('usuario_actual');
+    
+    if (datosGuardados) {
+      this.usuarioActual = JSON.parse(datosGuardados);
+      this.obtenerRendimiento();
     }
   }
   
-  generarTituloMes() {
-    const fecha = new Date();
-    const mes = new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(fecha);
-    const anio = fecha.getFullYear();
-    const mesCapitalizado = mes.charAt(0).toUpperCase() + mes.slice(1);
+  establecerMesActual() {
+    const fechaActual = new Date();
+    const nombreMes = new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(fechaActual);
+    const anioActual = fechaActual.getFullYear();
+    const mesFormateado = nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1);
     
-    this.tituloMesActual = `${mesCapitalizado}/${anio}`;
+    this.etiquetaMesActual = `${mesFormateado}/${anioActual}`;
   }
 
-  cargarEstadisticas() {
-    this.apiService.getMisTickets(this.user.nombre).subscribe({
-      next: (data: any[]) => {
-        const todos = data || [];
-        
-        const fechaHoy = new Date();
-        const prefijoMes = `${fechaHoy.getFullYear()}-${String(fechaHoy.getMonth() + 1).padStart(2, '0')}`;
+  obtenerRendimiento() {
+    this.apiService.getMisTickets(this.usuarioActual.nombre).subscribe({
+      next: (respuestaServidor: any[]) => {
+        const historialTickets = respuestaServidor || [];
+        const fechaReferencia = new Date();
+        const mesFiltro = `${fechaReferencia.getFullYear()}-${String(fechaReferencia.getMonth() + 1).padStart(2, '0')}`;
 
-        const ticketsMesActual = todos.filter(t => t.fecha && t.fecha.startsWith(prefijoMes));
+        const ticketsDelMes = historialTickets.filter(ticket => ticket.fecha && ticket.fecha.startsWith(mesFiltro));
 
-        this.totalTickets = ticketsMesActual.length;
-        this.completados = ticketsMesActual.filter(t => t.estado === 'Completo').length;
-        this.incompletos = this.totalTickets - this.completados;
+        this.totalTickets = ticketsDelMes.length;
+        this.ticketsCompletados = ticketsDelMes.filter(ticket => ticket.estado === 'Completo').length;
+        this.ticketsIncompletos = this.totalTickets - this.ticketsCompletados;
+        this.porcentajeEficiencia = 0;
 
-        this.eficiencia = 0;
         if (this.totalTickets > 0) {
-            this.eficiencia = Math.round((this.completados / this.totalTickets) * 100);
+            this.porcentajeEficiencia = Math.round((this.ticketsCompletados / this.totalTickets) * 100);
         }
 
-        this.cd.detectChanges(); 
-
-        this.renderChart(); 
-        this.procesarDatosMensuales(todos); 
+        this.cdr.detectChanges(); 
+        this.generarGraficaGeneral(); 
+        this.procesarEvolucionMensual(historialTickets); 
       },
-      error: () => console.error('Error al cargar estadísticas')
+      error: () => {
+          console.error('No se pudo obtener la información de rendimiento');
+      }
     });
   }
 
-  procesarDatosMensuales(tickets: any[]) {
-      const grupos: { [key: string]: { total: number, completados: number } } = {};
+  procesarEvolucionMensual(listaTickets: any[]) {
+      const agrupacionMensual: { [claveMes: string]: { total: number, completados: number } } = {};
 
-      tickets.forEach(t => {
-          if (!t.fecha) return;
-          const mes = t.fecha.substring(0, 7); 
-          if (!grupos[mes]) grupos[mes] = { total: 0, completados: 0 };
+      listaTickets.forEach(ticket => {
+          if (!ticket.fecha) {
+              return;
+          }
+
+          const periodo = ticket.fecha.substring(0, 7); 
+
+          if (!agrupacionMensual[periodo]) {
+              agrupacionMensual[periodo] = { total: 0, completados: 0 };
+          }
           
-          grupos[mes].total++;
-          if (t.estado === 'Completo') grupos[mes].completados++;
+          agrupacionMensual[periodo].total++;
+
+          if (ticket.estado === 'Completo') {
+              agrupacionMensual[periodo].completados++;
+          }
       });
 
-      const etiquetas: string[] = [];
-      const datosEficiencia: number[] = [];
+      const etiquetasMeses: string[] = [];
+      const nivelesEficiencia: number[] = [];
 
-      Object.keys(grupos).sort().forEach(mesKey => {
-          const fechaObj = new Date(mesKey + '-02'); 
-          const nombreMes = new Intl.DateTimeFormat('es-ES', { month: 'short', year: '2-digit' }).format(fechaObj);
+      Object.keys(agrupacionMensual).sort().forEach(clave => {
+          const fechaBase = new Date(clave + '-02'); 
+          const formatoEtiqueta = new Intl.DateTimeFormat('es-ES', { month: 'short', year: '2-digit' }).format(fechaBase);
           
-          etiquetas.push(nombreMes); 
-          const total = grupos[mesKey].total;
-          const comp = grupos[mesKey].completados;
-          const porcentaje = total > 0 ? Math.round((comp / total) * 100) : 0;
-          datosEficiencia.push(porcentaje); 
+          etiquetasMeses.push(formatoEtiqueta); 
+
+          const cantidadTotal = agrupacionMensual[clave].total;
+          const cantidadCompletados = agrupacionMensual[clave].completados;
+          const calculoPorcentaje = cantidadTotal > 0 ? Math.round((cantidadCompletados / cantidadTotal) * 100) : 0;
+          
+          nivelesEficiencia.push(calculoPorcentaje); 
       });
 
-      this.renderMonthlyChart(etiquetas, datosEficiencia);
+      this.generarGraficaEvolucion(etiquetasMeses, nivelesEficiencia);
   }
 
-  renderChart() {
-    const ctx = document.getElementById('profileChart') as HTMLCanvasElement;
-    if (ctx) {
-        const existingChart = Chart.getChart(ctx);
-        if (existingChart) existingChart.destroy();
+  generarGraficaGeneral() {
+    const lienzo = document.getElementById('profileChart') as HTMLCanvasElement;
+    
+    if (lienzo) {
+        const graficaExistente = Chart.getChart(lienzo);
 
-        new Chart(ctx, {
+        if (graficaExistente) {
+            graficaExistente.destroy();
+        }
+
+        new Chart(lienzo, {
             type: 'doughnut',
             data: {
                 labels: ['Completados', 'Pendientes'],
                 datasets: [{
-                    data: [this.completados, this.incompletos],
+                    data: [this.ticketsCompletados, this.ticketsIncompletos],
                     backgroundColor: ['#22c55e', '#ef4444'],
                     borderWidth: 0,
                     hoverOffset: 4
@@ -127,25 +142,33 @@ export class PersonalProfileComponent implements OnInit {
             options: {
                 responsive: true,
                 cutout: '75%',
-                plugins: { legend: { display: false } }
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
             }
         });
     }
   }
 
-  renderMonthlyChart(labels: string[], data: number[]) {
-      const ctx = document.getElementById('monthlyChart') as HTMLCanvasElement;
-      if (ctx) {
-          const existingChart = Chart.getChart(ctx);
-          if (existingChart) existingChart.destroy();
+  generarGraficaEvolucion(etiquetas: string[], datosEficiencia: number[]) {
+      const lienzoMensual = document.getElementById('monthlyChart') as HTMLCanvasElement;
 
-          new Chart(ctx, {
+      if (lienzoMensual) {
+          const graficaPrevia = Chart.getChart(lienzoMensual);
+
+          if (graficaPrevia) {
+              graficaPrevia.destroy();
+          }
+
+          new Chart(lienzoMensual, {
               type: 'line', 
               data: {
-                  labels: labels,
+                  labels: etiquetas,
                   datasets: [{
                       label: 'Efectividad (%)',
-                      data: data,
+                      data: datosEficiencia,
                       borderColor: '#56212f', 
                       backgroundColor: 'rgba(86, 33, 47, 0.1)', 
                       borderWidth: 3,
@@ -159,53 +182,72 @@ export class PersonalProfileComponent implements OnInit {
                   responsive: true,
                   maintainAspectRatio: false,
                   scales: {
-                      y: { beginAtZero: true, max: 100, grid: { color: '#f1f5f9' }, ticks: { callback: (val) => val + '%' } },
-                      x: { grid: { display: false } }
+                      y: {
+                          beginAtZero: true,
+                          max: 100,
+                          grid: {
+                              color: '#f1f5f9'
+                          },
+                          ticks: {
+                              callback: (valor) => valor + '%'
+                          }
+                      },
+                      x: {
+                          grid: {
+                              display: false
+                          }
+                      }
                   },
-                  plugins: { legend: { display: false } }
+                  plugins: {
+                      legend: {
+                          display: false
+                      }
+                  }
               }
           });
       }
   }
 
-  actualizarPerfil() { 
-    if (!this.user.nombre || !this.user.email) {
-        Swal.fire('Atención', 'Datos incompletos', 'warning'); 
+  guardarCambiosPerfil() { 
+    if (!this.usuarioActual.nombre || !this.usuarioActual.email) {
+        Swal.fire('Campos requeridos', 'Asegúrate de llenar tu nombre y correo', 'warning'); 
         return;
     }
 
-    const payload = { 
-        id: this.user.id, 
-        nombre: this.user.nombre, 
-        email: this.user.email, 
-        password: this.newPassword 
+    const datosFormulario = { 
+        id: this.usuarioActual.id, 
+        nombre: this.usuarioActual.nombre, 
+        email: this.usuarioActual.email, 
+        password: this.nuevaContrasena 
     };
 
-    this.http.post(this.apiUrl, payload).subscribe({
-        next: (res: any) => {
-            if(res.status) {
-                const stored = localStorage.getItem('usuario_actual');
-                if (stored) {
-                    let usuarioGuardado = JSON.parse(stored);
-                    usuarioGuardado.nombre = this.user.nombre;
-                    usuarioGuardado.email = this.user.email;
-                    localStorage.setItem('usuario_actual', JSON.stringify(usuarioGuardado));
+    this.http.post(this.apiUrl, datosFormulario).subscribe({
+        next: (respuestaServidor: any) => {
+            if (respuestaServidor.status) {
+                const sesionActual = localStorage.getItem('usuario_actual');
+
+                if (sesionActual) {
+                    let perfilActualizado = JSON.parse(sesionActual);
+                    perfilActualizado.nombre = this.usuarioActual.nombre;
+                    perfilActualizado.email = this.usuarioActual.email;
+                    localStorage.setItem('usuario_actual', JSON.stringify(perfilActualizado));
                 }
 
                 Swal.fire({
                     icon: 'success',
-                    title: '¡Éxito!', 
-                    text: 'Perfil actualizado correctamente',
+                    title: 'Perfil actualizado', 
+                    text: 'Tus datos se guardaron exitosamente',
                     confirmButtonColor: '#56212f'
                 }).then(() => {
                     window.location.reload(); 
                 });
-
             } else { 
-                Swal.fire('Error', res.message, 'error'); 
+                Swal.fire('No se pudo actualizar', respuestaServidor.message, 'error'); 
             }
         },
-        error: () => Swal.fire('Error', 'Fallo de conexión', 'error')
+        error: () => {
+            Swal.fire('Error de conexión', 'No se pudo contactar con el servidor', 'error');
+        }
     });
   }
 }
