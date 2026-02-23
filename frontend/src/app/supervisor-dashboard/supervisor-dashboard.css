@@ -227,7 +227,7 @@ tbody td { padding: 15px 25px; border-bottom: 1px solid #f0f0f0; }
 }
 .badge-secretaria { background: #e0f2fe; color: #0369a1; }
 .badge-supervisor { background: #fef3c7; color: #b45309; }
-.badge-personal { background: #dcfce7; color: #15803d; }
+.badge-personal  { background: #dcfce7; color: #15803d; }
 
 .avatar-circle {
   width: 32px; height: 32px;
@@ -323,3 +323,108 @@ tbody td { padding: 15px 25px; border-bottom: 1px solid #f0f0f0; }
 
 
 
+.menu-container-resaltado {
+  margin: 15px 10px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 253, 250, 0.2); 
+}
+
+
+.menu-header-main {
+  background-color: #c3b08f;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.menu-header-main:hover, .active-header {
+  background-color:#56212f
+}
+
+.menu-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+
+.hamburger-icon {
+  width: 20px;
+  height: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hamburger-icon span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background-color:#56212f;
+  border-radius: 2px;
+}
+
+
+.text-label {
+  color: #56212f;
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 1.5px;
+}
+
+
+.arrow-icon {
+  color: #56212f;
+  transition: transform 0.3s ease;
+}
+
+.arrow-icon.open {
+  transform: rotate(180deg);
+}
+
+
+.menu-content {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: #56212f;
+}
+
+.menu-content.show {
+  max-height: 200px;
+  opacity: 1;
+  padding: 10px 0;
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: 0.2s;
+}
+
+.menu-link i {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.menu-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding-left: 25px; 
+}
+
+
+.active-item {
+  background-color: #f3e5ab !important; 
+  color: #f3e5ab !important; 
+  border-left: 4px solid #bfa15f;
+}

@@ -31,7 +31,7 @@
     "@angular/router": "^21.1.0",
     "chart.js": "^4.5.1",
     "rxjs": "~7.8.0",
-    "sweetalert2": "^11.26.17",
+    "sweetalert2": "^11.26.19",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
