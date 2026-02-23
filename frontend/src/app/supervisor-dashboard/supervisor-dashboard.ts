@@ -17,15 +17,18 @@ import { PerformanceUserComponent } from './performance-user/performance-user.co
   standalone: true,
   imports: [
     CommonModule,
+    RouterModule,
     ViewUserComponent,
     EditUserComponent,
     DeleteUserComponent,
     CreateUserComponent,
     PerformanceUserComponent,
-    RouterModule, 
+    CommonModule,
+    PerformanceUserComponent,
+  
   ],
-  templateUrl: './supervisor-dashboard.html',
-  styleUrl: './supervisor-dashboard.css'
+templateUrl: './supervisor-dashboard.html',
+  styleUrls: ['./supervisor-dashboard.css']
 })
 export class SupervisorDashboardComponent implements OnInit {
 
@@ -34,7 +37,8 @@ export class SupervisorDashboardComponent implements OnInit {
   cdr = inject(ChangeDetectorRef);
   apiUrl = 'http://localhost/mesatrabajoBACKEND/backend/get_users.php';
   usersList: any[] = [];      
-  filteredList: any[] = [];   
+  filteredList: any[] = []; 
+    
 
   currentFilter: string = 'all'; 
   filterTitle: string = 'Listado Completo';
@@ -49,9 +53,10 @@ export class SupervisorDashboardComponent implements OnInit {
   showEdit: boolean = false;
   showDelete: boolean = false;
   showCreate: boolean = false;
-  showPerformance: boolean = false; 
+  showPerformance: boolean = false;
   selectedUser: any = false;
   isControlPersonalOpen: boolean = false;
+  usuarioSeleccionado: any = false;
 
   ngOnInit() {
     this.cargarDatos();
@@ -131,8 +136,13 @@ export class SupervisorDashboardComponent implements OnInit {
   }
 
 
-  openPerformanceModal(user: any) {
-    this.selectedUser = { ...user };
+ openPerformanceModal(user: any) {
+    console.log("Abriendo desempeño para:", user.nombre);
+    this.selectedUser = user;     // Guardamos al usuario seleccionado
+    this.showPerformance = true;  // Encendemos el modal
+  }
+  verDesempeno(user: any) {
+this.selectedUser = user;
     this.showPerformance = true;
   }
 
@@ -141,8 +151,9 @@ export class SupervisorDashboardComponent implements OnInit {
     this.showEdit = false;
     this.showDelete = false;
     this.showCreate = false;
-    this.showPerformance = false; 
-    this.selectedUser = null;
+    this.showPerformance = false;
+    this.selectedUser = false;
+    this.usuarioSeleccionado = null;
   }
 
   handleCreateUser(newUser: any) {

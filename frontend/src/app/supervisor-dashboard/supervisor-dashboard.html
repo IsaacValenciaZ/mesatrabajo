@@ -15,6 +15,32 @@
       <button class="btn-create" (click)="openCreateModal()">+ Crear Usuario</button>
       <button class="btn-logout" (click)="logout()">Cerrar Sesión</button>
     </div>
+    <div class="sidebar">
+  <div class="menu-container-resaltado">
+    
+    <div class="menu-header-main" (click)="toggleControlPersonal()" [class.active-header]="isControlPersonalOpen">
+      <div class="menu-title-wrapper">
+        <div class="hamburger-icon">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <span class="text-label">CONTROL DE PERSONAL</span>
+      </div>
+      <i class="fas fa-chevron-down arrow-icon" [class.open]="isControlPersonalOpen"></i>
+    </div>
+
+    <div class="menu-content" [class.show]="isControlPersonalOpen">
+      <a routerLink="/admin/usuarios" routerLinkActive="active-item" class="menu-link">
+        <i class="fas fa-user-check"></i> Personal Activo
+      </a>
+      <a routerLink="/admin/tickets-list" routerLinkActive="active-item" class="menu-link">
+        <i class="fas fa-file-invoice"></i> Historial de Tickets
+      </a>
+    </div>
+
+  </div>
+</div>
   </header>
 
   <div class="stats-grid">
@@ -29,7 +55,7 @@
     <div class="card stat-card supervisor" 
          (click)="applyFilter('supervisor')" 
          [class.active-card]="currentFilter === 'supervisor'">
-      <span class="stat-label">SECRETARIAS</span>
+      <span class="stat-label">SUPERVIRSORES</span>
       <span class="stat-number">{{ countSupervisor }}</span>
       <div class="indicator"></div>
     </div>
@@ -89,7 +115,7 @@
                 <button class="btn-action view" (click)="openViewModal(user)">Ver</button>
                 <button class="btn-action edit" (click)="openEditModal(user)">Editar</button>
                 <button class="btn-action delete" (click)="openDeleteModal(user)">Eliminar</button>
-                <button class="btn-action performance" (click)="openPerformanceModal(user)">Desempeño</button>
+                <button class="btn-action performance" (click)="verDesempeno(user)">Rendiemiento de Personal</button>
               </div>
             </td>
           </tr>
@@ -132,8 +158,10 @@
   </div>
 }
 
-@if (showPerformance) {
-  <div class="modal-overlay">
-    <app-performance-user [user]="selectedUser" (close)="closeModals()"></app-performance-user>
-  </div>
+@if (showPerformance && selectedUser) {
+  <app-performance-user 
+    [user]="selectedUser" 
+    (close)="closeModals()">
+  </app-performance-user>
 }
+
