@@ -9,7 +9,6 @@ import { EditUserComponent } from './edit-user/edit-user.component';
 import { DeleteUserComponent } from './delete-user/delete-user.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { PerformanceUserComponent } from './performance-user/performance-user.component';
-import { HistorialSupervisorComponent } from './historial-supervisor/historial-supervisor.component';
 
 
 
@@ -26,7 +25,6 @@ import { HistorialSupervisorComponent } from './historial-supervisor/historial-s
     PerformanceUserComponent,
     CommonModule,
     PerformanceUserComponent,
-    HistorialSupervisorComponent,
    
 
   
