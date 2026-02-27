@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./historial-tickets.component.css']
 })
 export class HistorialEntradasComponent {
-  // Datos de ejemplo simulando lo que vendría de tu BD
+ 
   tickets = [
     {
       fecha: 'Viernes, 13 de Febrero De 2026',
@@ -19,6 +19,5 @@ export class HistorialEntradasComponent {
         { hora: '09:30 a.m.', solicitante: 'Carlos Ruiz', depto: 'Finanzas', tecnico: 'Isaac', problema: 'Impresora atascada', prioridad: 'Media' }
       ]
     },
-    // Puedes agregar más grupos de fechas aquí
   ];
 }

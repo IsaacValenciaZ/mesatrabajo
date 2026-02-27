@@ -9,6 +9,7 @@ import { EditUserComponent } from './edit-user/edit-user.component';
 import { DeleteUserComponent } from './delete-user/delete-user.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { PerformanceUserComponent } from './performance-user/performance-user.component';
+import { HistorialSupervisorComponent } from './historial-supervisor/historial-supervisor.component';
 
 
 
@@ -25,6 +26,9 @@ import { PerformanceUserComponent } from './performance-user/performance-user.co
     PerformanceUserComponent,
     CommonModule,
     PerformanceUserComponent,
+    HistorialSupervisorComponent,
+   
+
   
   ],
 templateUrl: './supervisor-dashboard.html',
@@ -38,15 +42,13 @@ export class SupervisorDashboardComponent implements OnInit {
   apiUrl = 'http://localhost/mesatrabajoBACKEND/backend/get_users.php';
   usersList: any[] = [];      
   filteredList: any[] = []; 
-    
-
   currentFilter: string = 'all'; 
   filterTitle: string = 'Listado Completo';
-
   totalUsers: number = 0;
   countPersonal: number = 0;
   countSecretaria: number = 0;
   countSupervisor: number = 0;
+  mostrarHistorial: boolean = false;
 
   
   showView: boolean = false;
@@ -57,6 +59,7 @@ export class SupervisorDashboardComponent implements OnInit {
   selectedUser: any = false;
   isControlPersonalOpen: boolean = false;
   usuarioSeleccionado: any = false;
+  mostrarListaPersonal: boolean = false;
 
   ngOnInit() {
     this.cargarDatos();
@@ -64,7 +67,13 @@ export class SupervisorDashboardComponent implements OnInit {
   toggleControlPersonal() {
     this.isControlPersonalOpen = !this.isControlPersonalOpen;
   }
-  
+verPersonalActivo() {
+  this.mostrarListaPersonal = true;
+  this.isControlPersonalOpen = false;
+}
+regresarAlDashboard() {
+  this.mostrarListaPersonal = false;
+}
 
   cargarDatos() {
     this.http.get<any[]>(this.apiUrl).subscribe({
@@ -138,8 +147,8 @@ export class SupervisorDashboardComponent implements OnInit {
 
  openPerformanceModal(user: any) {
     console.log("Abriendo desempeño para:", user.nombre);
-    this.selectedUser = user;     // Guardamos al usuario seleccionado
-    this.showPerformance = true;  // Encendemos el modal
+    this.selectedUser = user;     
+    this.showPerformance = true;  
   }
   verDesempeno(user: any) {
 this.selectedUser = user;
@@ -170,4 +179,10 @@ this.selectedUser = user;
     this.router.navigate(['/login']);
     
   }
+verHistorialTickets() {
+  this.mostrarHistorial = true;
+  this.mostrarListaPersonal = false; 
 }
+
+}
+

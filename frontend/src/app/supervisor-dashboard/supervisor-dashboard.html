@@ -25,15 +25,13 @@
           <span></span>
           <span></span>
         </div>
-        <span class="text-label">CONTROL DE PERSONAL</span>
+        <span class="text-label">CONTROL DE PERSONAL</span>   
       </div>
+   
       <i class="fas fa-chevron-down arrow-icon" [class.open]="isControlPersonalOpen"></i>
     </div>
 
     <div class="menu-content" [class.show]="isControlPersonalOpen">
-      <a routerLink="/admin/usuarios" routerLinkActive="active-item" class="menu-link">
-        <i class="fas fa-user-check"></i> Personal Activo
-      </a>
       <a routerLink="/admin/tickets-list" routerLinkActive="active-item" class="menu-link">
         <i class="fas fa-file-invoice"></i> Historial de Tickets
       </a>

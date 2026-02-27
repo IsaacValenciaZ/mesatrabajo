@@ -2,19 +2,20 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api';
 import { Router } from '@angular/router';
+import { Input } from '@angular/core';
 
 @Component({
   selector: 'app-users-list',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './users-list.html',
-  styleUrl: './users-list.css'
+  templateUrl: './users-list.component.html',
+  styleUrl: './users-list.component.css'
 })
 export class UsersListComponent implements OnInit {
   private servicioApi = inject(ApiService);
   private enrutador = inject(Router);
   private detectorCambios = inject(ChangeDetectorRef); 
-
+@Input() esSupervisor: boolean = false;
   listaUsuariosGeneral: any[] = [];
 
   ngOnInit() {

@@ -1,0 +1,57 @@
+<div class="historial-layout">
+  <div class="header-historial">
+    <h2 class="titulo">Historial de Reportes</h2>
+    <p class="subtitulo">Consulta tus tickets organizados por mes.</p>
+  </div>
+
+  <div class="filtros-bar">
+    <select [(ngModel)]="mesFiltroSeleccionado" (change)="aplicarFiltroMensual()" class="mes-select">
+      <option *ngFor="let mes of opcionesMesesDisponibles" [value]="mes">
+        {{ obtenerNombreMesFormateado(mes) }}
+      </option>
+    </select>
+    <button class="icon-btn" (click)="alternarVistaCalendario()">📅</button>
+  </div>
+
+  <div *ngIf="!estadoCargaActivo; else cargando">
+    <div *ngFor="let grupo of reportesAgrupadosPorDia" class="card-dia-contenedor">
+      <div class="dia-label">
+        <span class="fecha-full">{{ grupo.fecha | date:'fullDate':'':'es' }}</span>
+        <span class="conteo-badge">{{ grupo.tickets.length }} reportes</span>
+      </div>
+
+      <div class="tabla-blanca-card">
+        <table class="tabla-seiem">
+          <thead>
+            <tr>
+              <th>Hora</th>
+              <th>Solicitante</th>
+              <th>Depto</th>
+              <th>Técnico</th>
+              <th>Problema</th>
+              <th>Prioridad</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ticket of grupo.tickets">
+              <td>{{ ticket.fecha | date:'shortTime' }}</td>
+              <td><strong>{{ ticket.usuario_nombre }}</strong></td>
+              <td>{{ ticket.departamento }}</td>
+              <td>{{ ticket.tecnico_asignado }}</td>
+              <td><span class="problema-tag">{{ ticket.descripcion }}</span></td>
+              <td>
+                <span [class]="'prio-badge ' + ticket.prioridad.toLowerCase()">
+                  {{ ticket.prioridad }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #cargando>
+    <div class="loading-state">Cargando historial desde el servidor...</div>
+  </ng-template>
+</div>

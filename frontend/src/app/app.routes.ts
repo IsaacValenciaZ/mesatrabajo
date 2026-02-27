@@ -3,7 +3,7 @@ import { LoginComponent } from './login/login';
 
 //secretaria
 import { SecretariaDashboardComponent } from './secretaria-dashboard/secretaria-dashboard';
-import { UsersListComponent } from './secretaria-dashboard/users-list/users-list';
+import { UsersListComponent } from './secretaria-dashboard/users-list/users-list.component';
 //import { UserRegisterComponent } from './secretaria-dashboard/user-register/user-register';
 import { TicketsComponent } from './secretaria-dashboard/tickets/tickets';
 import { TicketsListComponent } from './secretaria-dashboard/tickets-list/tickets-list';
@@ -13,6 +13,8 @@ import { UserProfileComponent } from './secretaria-dashboard/user-profile/user-p
 import { SupervisorDashboardComponent } from './supervisor-dashboard/supervisor-dashboard';
 import { PersonalActivoComponent } from './supervisor-dashboard/personal-activo/personal-activo.component';
 import { HistorialEntradasComponent } from './supervisor-dashboard/historial-tickets/historial-tickets.component';
+import { HistorialSupervisorComponent } from './supervisor-dashboard/historial-supervisor/historial-supervisor.component';
+
 
 //personal
 import { PersonalDashboardComponent } from './personal-dashboard/personal-dashboard';
@@ -33,9 +35,9 @@ export const routes: Routes = [
         component: SecretariaDashboardComponent,
         canActivate: [authGuard],
         children: [
-        { path: '', redirectTo: 'personal-activo', pathMatch: 'full' }, 
+        { path: '', redirectTo: 'tickets', pathMatch: 'full' }, 
          { path: 'tickets', component: TicketsComponent },
-        { path: 'usuarios', component: UsersListComponent },
+              { path: 'usuarios', component: UsersListComponent },
         { path: 'tickets-list', component: TicketsListComponent },
         { path: 'perfil', component: UserProfileComponent }
         ]
@@ -46,7 +48,8 @@ export const routes: Routes = [
         component: SupervisorDashboardComponent,
         children: [
             { path: 'personal-activo', component: PersonalActivoComponent },
-            { path: 'historial-entradas', component: HistorialEntradasComponent }
+            { path: 'historial-entradas', component: HistorialEntradasComponent },
+            { path: 'historial-tickets', component: HistorialSupervisorComponent },
         ]
     },
 
@@ -61,3 +64,4 @@ export const routes: Routes = [
         ]
     },
 ];
+
