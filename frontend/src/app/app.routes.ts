@@ -3,7 +3,7 @@ import { LoginComponent } from './login/login';
 
 //secretaria
 import { SecretariaDashboardComponent } from './secretaria-dashboard/secretaria-dashboard';
-import { UsersListComponent } from './secretaria-dashboard/users-list/users-list.component';
+import { UsersListComponent } from './secretaria-dashboard/users-list/users-list';
 //import { UserRegisterComponent } from './secretaria-dashboard/user-register/user-register';
 import { TicketsComponent } from './secretaria-dashboard/tickets/tickets';
 import { TicketsListComponent } from './secretaria-dashboard/tickets-list/tickets-list';
