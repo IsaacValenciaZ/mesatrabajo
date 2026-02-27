@@ -67,7 +67,8 @@
                 <th>Solicitante</th>
                 <th>Depto</th>
                 <th>Técnico</th>
-                <th>Problema</th>
+                <th>Ext / Tel</th>
+                <th>Categoría</th>
                 <th>Prioridad</th>
                 <th>Notas</th>
               </tr>
@@ -78,6 +79,7 @@
                 <td><strong>{{ ticket.nombre_usuario }}</strong></td>
                 <td class="depto-col">{{ ticket.departamento }}</td>
                 <td>{{ ticket.personal }}</td>
+                <td class="tech-col">{{ ticket.extension_tel || '-' }}</td>
                 
                 <td>
                     <span class="badge" [ngClass]="{
@@ -92,10 +94,6 @@
                     
                     <span *ngIf="ticket.descripcion === 'Dictaminar' && ticket.cantidad_dicta" class="qty-badge" style="margin-top: 5px; display: block;">
                         EQ: {{ ticket.cantidad_dicta }}
-                    </span>
-                    
-                    <span *ngIf="ticket.descripcion === 'Extension/Telefono' && ticket.extension_tel" class="qty-badge" style="margin-top: 5px; display: block;">
-                        Num: {{ ticket.extension_tel }}
                     </span>
     
                     <span *ngIf="ticket.descripcion === 'Correo' && ticket.correo_tipo" class="qty-badge" style="margin-top: 5px; display: block;">

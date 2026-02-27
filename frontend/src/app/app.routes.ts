@@ -33,7 +33,7 @@ export const routes: Routes = [
         component: SecretariaDashboardComponent,
         canActivate: [authGuard],
         children: [
-        { path: '', redirectTo: 'personal-activo', pathMatch: 'full' }, 
+        { path: '', redirectTo: 'tickets', pathMatch: 'full' }, 
          { path: 'tickets', component: TicketsComponent },
         { path: 'usuarios', component: UsersListComponent },
         { path: 'tickets-list', component: TicketsListComponent },

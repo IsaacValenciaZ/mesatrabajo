@@ -1,4 +1,5 @@
 <div class="profile-page-container fade-in">
+
   <div class="central-form-card">
     <h2 class="form-title">Registrar Nuevo Reporte</h2>
 
@@ -32,6 +33,11 @@
       </div>
 
       <div class="form-group">
+        <label>Número de Extensión o Teléfono:</label>
+        <input type="tel" [(ngModel)]="nuevoTicket.extension_tel" name="extension_tel" placeholder="Escribe la extensión o número de teléfono" class="simple-input" maxlength="12" (keypress)="validarSoloNumeros($event)" required>
+      </div>
+
+      <div class="form-group">
         <label>Técnico Asignado:</label>
         <select [(ngModel)]="nuevoTicket.personalId" class="simple-input">
           <option value="" disabled selected>-- Selecciona Técnico --</option>
@@ -48,19 +54,13 @@
           <option value="Telefonia">Telefonía</option>
           <option value="Tecnico">Soporte Técnico</option>
           <option value="Dictaminar">Dictaminar</option> 
-          <option value="Extension/Telefono">Extensión / Teléfono</option> 
           <option value="Correo">Correo</option> 
         </select>
       </div>
 
       <div class="form-group fade-in" *ngIf="nuevoTicket.descripcion === 'Dictaminar'">
         <label>¿Cuántos equipos se dictaminarán?</label>
-        <input type="number" [(ngModel)]="nuevoTicket.cantidad_dicta" name="cantidad_dicta" min="1" placeholder="Ej: 5" class="simple-input">
-      </div>
-
-      <div class="form-group fade-in" *ngIf="nuevoTicket.descripcion === 'Extension/Telefono'">
-        <label>Número de Extensión o Teléfono:</label>
-        <input type="tel" [(ngModel)]="nuevoTicket.extension_tel" name="extension_tel" placeholder="Ej: 5512345678" class="simple-input" maxlength="12" (keypress)="validarSoloNumeros($event)">
+        <input type="number" [(ngModel)]="nuevoTicket.cantidad_dicta" name="cantidad_dicta" min="1" placeholder="Número de Equipos" class="simple-input">
       </div>
 
       <div class="form-group fade-in" *ngIf="nuevoTicket.descripcion === 'Correo'">
@@ -134,6 +134,7 @@
             <th>HORA</th>
             <th>SOLICITANTE</th>
             <th>DEPARTAMENTO</th>
+            <th>EXT / TEL</th>
             <th>CATEGORÍA</th>
             <th>PRIORIDAD</th>
             <th>TÉCNICO</th>
@@ -146,6 +147,7 @@
             <td class="time-col">{{ reporte.fecha | date:'hh:mm a' }}</td>
             <td class="user-col">{{ reporte.nombre_usuario }}</td>
             <td class="depto-col">{{ reporte.departamento }}</td>
+            <td class="tech-col">{{ reporte.extension_tel }}</td>
             
             <td>
                 <span class="badge-solid" [ngClass]="{
@@ -154,16 +156,11 @@
                   'bg-telefonia': reporte.descripcion === 'Telefonia',
                   'bg-tecnico': reporte.descripcion === 'Tecnico',
                   'bg-dictaminar': reporte.descripcion === 'Dictaminar',
-                  'bg-extension': reporte.descripcion === 'Extension/Telefono',
                   'bg-correo': reporte.descripcion === 'Correo'
                 }">{{ reporte.descripcion }}</span>
 
                 <span *ngIf="reporte.descripcion === 'Dictaminar' && reporte.cantidad_dicta" class="qty-badge" style="margin-top: 5px; display: block;">
                     EQ: {{ reporte.cantidad_dicta }}
-                </span>
-                
-                <span *ngIf="reporte.descripcion === 'Extension/Telefono' && reporte.extension_tel" class="qty-badge" style="margin-top: 5px; display: block;">
-                    Num: {{ reporte.extension_tel }}
                 </span>
 
                 <span *ngIf="reporte.descripcion === 'Correo' && reporte.correo_tipo" class="qty-badge" style="margin-top: 5px; display: block;">
@@ -196,10 +193,11 @@
           </tr>
           
           <tr *ngIf="!reportesDelDia || reportesDelDia.length === 0">
-            <td colspan="8" class="empty-row">No hay reportes registrados hoy.</td>
+            <td colspan="9" class="empty-row">No hay reportes registrados hoy.</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
+
 </div>
