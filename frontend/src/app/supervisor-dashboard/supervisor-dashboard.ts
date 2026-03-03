@@ -8,8 +8,11 @@ import { EditUserComponent } from './edit-user/edit-user.component';
 import { DeleteUserComponent } from './delete-user/delete-user.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { PerformanceUserComponent } from './performance-user/performance-user.component';
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 51b4a9ce6dc773ff8e6c74b32b0e8e18af267962
 
 @Component({
   selector: 'app-supervisor-dashboard',
@@ -21,12 +24,16 @@ import { PerformanceUserComponent } from './performance-user/performance-user.co
     EditUserComponent,
     DeleteUserComponent,
     CreateUserComponent,
+<<<<<<< HEAD
     PerformanceUserComponent,
     CommonModule,
     PerformanceUserComponent,
    
 
   
+=======
+    PerformanceUserComponent
+>>>>>>> 51b4a9ce6dc773ff8e6c74b32b0e8e18af267962
   ],
   templateUrl: './supervisor-dashboard.html',
   styleUrls: ['./supervisor-dashboard.css']
