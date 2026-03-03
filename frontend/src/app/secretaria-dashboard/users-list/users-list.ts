@@ -15,6 +15,7 @@ export class UsersListComponent implements OnInit {
   private servicioApi = inject(ApiService);
   private enrutador = inject(Router);
   private detectorCambios = inject(ChangeDetectorRef); 
+  
 @Input() esSupervisor: boolean = false;
   listaUsuariosGeneral: any[] = [];
 

@@ -24,19 +24,18 @@
           <span></span>
           <span></span>
           <span></span>
+       
         </div>
         <span class="text-label">CONTROL DE PERSONAL</span>   
       </div>
    
       <i class="fas fa-chevron-down arrow-icon" [class.open]="isControlPersonalOpen"></i>
-    </div>
-
     <div class="menu-content" [class.show]="isControlPersonalOpen">
       <a routerLink="/admin/tickets-list" routerLinkActive="active-item" class="menu-link">
         <i class="fas fa-file-invoice"></i> Historial de Tickets
       </a>
     </div>
-
+    </div>
   </div>
 </div>
   </header>
@@ -64,7 +63,7 @@
       <span class="stat-label">SECRETARIAS</span>
       <span class="stat-number">{{ countSecretaria }}</span>
       <div class="indicator"></div>
-    </div>
+  </div>
 
     <div class="card stat-card total" 
          (click)="applyFilter('all')" 
