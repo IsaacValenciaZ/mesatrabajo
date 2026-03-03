@@ -9,6 +9,8 @@ import { DeleteUserComponent } from './delete-user/delete-user.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { PerformanceUserComponent } from './performance-user/performance-user.component';
 
+
+
 @Component({
   selector: 'app-supervisor-dashboard',
   standalone: true,
@@ -19,13 +21,18 @@ import { PerformanceUserComponent } from './performance-user/performance-user.co
     EditUserComponent,
     DeleteUserComponent,
     CreateUserComponent,
-    PerformanceUserComponent
+    PerformanceUserComponent,
+    CommonModule,
+    PerformanceUserComponent,
+   
+
+  
   ],
   templateUrl: './supervisor-dashboard.html',
   styleUrls: ['./supervisor-dashboard.css']
 })
 export class SupervisorDashboardComponent implements OnInit {
-  // estado del sidebar
+
   isSidebarOpen: boolean = false;
 
   http = inject(HttpClient);
@@ -56,7 +63,7 @@ export class SupervisorDashboardComponent implements OnInit {
     this.cargarDatos();
   }
 
-  /* ---------- SIDEBAR / HAMBURGUESA ---------- */
+
 alternarMenuLateral() {
   this.menuLateralAbierto = !this.menuLateralAbierto;
 }
@@ -66,12 +73,11 @@ alternarMenuLateral() {
   }
 
 
-  /* ---------- MENU CONTROL ---------- */
   toggleControlPersonal() {
     this.isControlPersonalOpen = !this.isControlPersonalOpen;
   }
 
-  /* ---------- DATOS / FILTROS ---------- */
+
   cargarDatos() {
     this.http.get<any[]>(this.apiUrl).subscribe({
       next: (data) => {
@@ -120,7 +126,7 @@ alternarMenuLateral() {
     ).length;
   }
 
-  /* ---------- MODALES / CRUD ---------- */
+
   openViewModal(user: any) { this.selectedUser = { ...user }; this.showView = true; }
   openEditModal(user: any) { this.selectedUser = { ...user }; this.showEdit = true; }
   openDeleteModal(user: any) { this.selectedUser = { ...user }; this.showDelete = true; }

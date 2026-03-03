@@ -15,7 +15,6 @@ import { PersonalActivoComponent } from './supervisor-dashboard/personal-activo/
 import { HistorialEntradasComponent } from './supervisor-dashboard/historial-tickets/historial-tickets.component';
 
 
-
 //personal
 import { PersonalDashboardComponent } from './personal-dashboard/personal-dashboard';
 import { PersonalPendingComponent } from './personal-dashboard/personal-pending/personal-pending';
@@ -49,7 +48,6 @@ export const routes: Routes = [
         children: [
             { path: 'personal-activo', component: PersonalActivoComponent },
             { path: 'historial-entradas', component: HistorialEntradasComponent },
-            
         ]
     },
 
