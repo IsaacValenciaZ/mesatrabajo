@@ -9,7 +9,6 @@
 .sidebar {
     width: 260px;
     background-color: #56212f; 
-    background: linear-gradient(180deg, #56212f 0%, #3d1721 100%);
     color: #d6d1ca;
     display: flex;
     flex-direction: column;

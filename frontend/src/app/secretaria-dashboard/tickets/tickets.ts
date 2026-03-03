@@ -165,6 +165,7 @@ export class TicketsComponent implements OnInit {
 
     if (!this.nuevoTicket.nombre_usuario) camposVacios.push('Solicitante');
     if (!this.nuevoTicket.departamento)   camposVacios.push('Departamento');
+    if (!this.nuevoTicket.extension_tel)  camposVacios.push('Extensión o Teléfono');
     if (!this.nuevoTicket.personalId)     camposVacios.push('Técnico');
     if (!this.nuevoTicket.descripcion)    camposVacios.push('Categoría');
     if (!this.nuevoTicket.prioridad)      camposVacios.push('Prioridad');

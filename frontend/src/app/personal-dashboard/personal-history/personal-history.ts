@@ -208,16 +208,171 @@ export class PersonalHistoryComponent implements OnInit {
       return `${nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1)} ${anio}`;
   }
 
-  verNotaCompleta(nota: string) {
-      Swal.fire({
-        title: 'Detalle de la Nota',
-        text: nota || 'Sin información adicional.',
-        icon: 'info',
-        confirmButtonText: 'Cerrar',
-        confirmButtonColor: '#56212f',
-        background: '#fff',
-        iconColor: '#977e5b'
-      });
+  obtenerClaseCategoria(descripcion: string): string {
+    const clases: {[key: string]: string} = {
+      'Internet': 'cat-internet',
+      'Office': 'cat-office',
+      'Telefonia': 'cat-telefonia',
+      'Tecnico': 'cat-tecnico',
+      'Dictaminar': 'cat-dictaminar',
+      'Extension/Telefono': 'cat-extension',
+      'Correo': 'cat-correo'
+    };
+    return clases[descripcion] || '';
+  }
+
+  obtenerClasePrioridad(prioridad: string): string {
+    const clases: {[key: string]: string} = {
+      'Alta': 'prio-alta',
+      'Media': 'prio-media',
+      'Baja': 'prio-baja'
+    };
+    return clases[prioridad] || '';
+  }
+
+  obtenerColorEstado(estado: string): string {
+    if (estado === 'En espera') return '#8a772d';
+    if (estado === 'Incompleto') return '#e74c3c';
+    return '#dcfce7'; 
+  }
+
+  abrirModalTicket(ticketSeleccionado: any) {
+    let detallesExtraHtml = '';
+    let colorFondoCategoria = '#64748b'; 
+
+    if (ticketSeleccionado.descripcion === 'Internet') colorFondoCategoria = '#2980b9';
+    else if (ticketSeleccionado.descripcion === 'Office') colorFondoCategoria = '#d35400';
+    else if (ticketSeleccionado.descripcion === 'Telefonia') colorFondoCategoria = '#2c3e50';
+    else if (ticketSeleccionado.descripcion === 'Extension/Telefono') colorFondoCategoria = '#94961c';
+    else if (ticketSeleccionado.descripcion === 'Dictaminar') {
+        colorFondoCategoria = '#6c5ce7';
+        if (ticketSeleccionado.cantidad_dicta) {
+          detallesExtraHtml = `<span style="color: #cbd5e1; margin: 0 10px;">|</span> <span style="font-size: 0.95rem; font-weight: 800; color: ${colorFondoCategoria};">Equipos: ${ticketSeleccionado.cantidad_dicta}</span>`;
+        }
+    } 
+    else if (ticketSeleccionado.descripcion === 'Correo') {
+        colorFondoCategoria = '#96241c';
+        if (ticketSeleccionado.correo_tipo) {
+          detallesExtraHtml = `<span style="color: #cbd5e1; margin: 0 10px;">|</span> <span style="font-size: 0.95rem; font-weight: 800; color: ${colorFondoCategoria};">Dominio: ${ticketSeleccionado.correo_tipo}</span>`;
+        }
+    } 
+    else if (ticketSeleccionado.descripcion === 'Tecnico') {
+        colorFondoCategoria = '#16a085';
+        if (ticketSeleccionado.soporte_tipo) {
+          detallesExtraHtml = `<span style="color: #cbd5e1; margin: 0 10px;">|</span> <span style="font-size: 0.95rem; font-weight: 800; color: ${colorFondoCategoria};">Soporte: ${ticketSeleccionado.soporte_tipo}</span>`;
+        }
+    }
+
+    let colorPrioridad = '#64748b';
+    if (ticketSeleccionado.prioridad === 'Alta') colorPrioridad = '#c0392b';
+    else if (ticketSeleccionado.prioridad === 'Media') colorPrioridad = '#f39c12';
+    else if (ticketSeleccionado.prioridad === 'Baja') colorPrioridad = '#27ae60';
+
+    const fechaFormat = ticketSeleccionado.fecha ? new Date(ticketSeleccionado.fecha).toLocaleString('es-MX', {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute:'2-digit'}) : 'N/A';
+    const fechaFinFormat = ticketSeleccionado.fecha_fin ? new Date(ticketSeleccionado.fecha_fin).toLocaleString('es-MX', {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute:'2-digit'}) : 'N/A';
+
+    let metricaHtml = '';
+    if (ticketSeleccionado.estado !== 'Incompleto') {
+        if (ticketSeleccionado.fecha_fin <= ticketSeleccionado.fecha_limite) {
+            metricaHtml = `<span style="background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: 700; white-space: nowrap;">A Tiempo</span>`;
+        } else {
+             metricaHtml = `<span style="background-color: #fefae2; color: #e09a31; border: 1px solid #fee7ca; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: 700; white-space: nowrap; animation: pulse 2s infinite;">Atrasado</span>`;
+        }
+    } else {
+         metricaHtml = `<span style="background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: 700; white-space: nowrap; animation: pulse 2s infinite;">Caducado</span>`;
+    }
+
+    const colorFondoEstado = this.obtenerColorEstado(ticketSeleccionado.estado);
+
+    const htmlModal = `
+      <div style="text-align: left; font-family: 'Segoe UI', sans-serif; color: #1e293b;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+          <h2 style="margin: 0; color: #1e293b; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px;">Ticket:  #${ticketSeleccionado.id} </h2>
+          <div style="display: flex; gap: 10px;">
+              ${metricaHtml}
+              <span style="background-color: ${colorFondoEstado}; padding: 6px 16px; border-radius: 4px; font-size: 0.85rem; font-weight: 700; color: #166534;">
+                ${ticketSeleccionado.estado === 'Completo' ? 'Completado' : 'Incumplido'} 
+              </span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 30px; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0;">
+          <div>
+            <p style="margin: 0; font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Hora Asignación</p>
+            <p style="margin: 2px 0 0 0; font-size: 0.95rem; font-weight: 600; color: #475569;">${fechaFormat}</p>
+          </div>
+          <div>
+            <p style="margin: 0; font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Hora Término</p>
+            <p style="margin: 2px 0 0 0; font-size: 0.95rem; font-weight: 600; color: #56212f;">${fechaFinFormat}</p>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+          <div>
+            <p style="margin: 0; font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Solicitante</p>
+            <p style="margin: 4px 0 0 0; font-weight: 800; font-size: 1.1rem; color: #0f172a;">${ticketSeleccionado.nombre_usuarios || ticketSeleccionado.nombre_usuario}</p>
+          </div>
+          <div>
+            <p style="margin: 0; font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Ext / Teléfono</p>
+            <p style="margin: 4px 0 0 0; font-weight: 800; font-size: 1.1rem; color: #0f172a;">${ticketSeleccionado.extension_tel || '-'}</p>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 30px;">
+          <p style="margin: 0; font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Departamento</p>
+          <p style="margin: 4px 0 0 0; font-weight: 500; font-size: 1.05rem; color: #334155;">${ticketSeleccionado.departamento}</p>
+        </div>
+
+        <p style="margin: 0 0 8px 0; font-size: 0.75rem; color: 64748b; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;  display: inline-block; padding: 4px 8px; border-radius: 4px;">Clasificación del Problema</p>
+        
+        <div style="display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; border-left: 6px solid ${colorFondoCategoria}; border-radius: 8px; padding: 15px; margin-bottom: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+          <div style="display: flex; align-items: center; flex-wrap: wrap;">
+            <span style="background-color: ${colorFondoCategoria}; color: white; padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 700;">
+              ${ticketSeleccionado.descripcion}
+            </span>
+            ${detallesExtraHtml}
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+             <p style="margin:0; color: #64748b; font-size: 0.85rem; font-weight: 700; white-space: nowrap;">Prio:</p>
+             <span style="background-color: ${colorPrioridad}; color: white; padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; font-weight: 700; white-space: nowrap;">
+               ${ticketSeleccionado.prioridad}
+             </span>
+          </div>
+        </div>
+
+        <div>
+          <p style="margin: 0 0 8px 0; font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Notas Adicionales</p>
+          <div style="background-color: #f8fafc; border: 1px solid #f1f5f9; border-radius: 8px; padding: 15px;">
+            <p style="margin: 0; font-size: 0.95rem; color: #475569; line-height: 1.5;">
+              ${ticketSeleccionado.notas ? ticketSeleccionado.notas : '<em style="color: #cbd5e1;">Sin notas adicionales.</em>'}
+            </p>
+          </div>
+        </div>
+
+      </div>
+    `;
+
+    Swal.fire({
+      html: htmlModal,
+      width: '600px',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: '<span class="material-symbols-outlined" style="vertical-align: middle; font-size: 1.1rem; margin-right: 5px;">visibility</span> Ver Resolución',
+      confirmButtonColor: '#56212f', 
+      denyButtonText: '<span class="material-symbols-outlined" style="vertical-align: middle; font-size: 1.1rem; margin-right: 5px;">refresh</span> Reabrir Ticket',
+      denyButtonColor: '#b45309', 
+      cancelButtonText: 'Cerrar',
+      cancelButtonColor: '#000000', 
+      padding: '2em',
+      showConfirmButton: !!(ticketSeleccionado.descripcion_resolucion || ticketSeleccionado.evidencia_archivo) 
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.verEvidenciaFinal(ticketSeleccionado);
+      } else if (result.isDenied) {
+        this.cambiarEstado(ticketSeleccionado);
+      }
+    });
   }
 
   verEvidenciaFinal(ticket: any) {
@@ -234,12 +389,12 @@ export class PersonalHistoryComponent implements OnInit {
             
             ${imagenData ? `
               <p style="font-weight: bold; color: #56212f; margin-bottom: 5px;">Evidencia fotográfica:</p>
-              <div style="text-align: center; border: 1px solid #ddd; padding: 5px; border-radius: 8px; background: #fff;">
+              <div style="text-align: center; border: 1px solid #ddd; padding: 10px; border-radius: 8px; background: #1a1a1a;">
                 <img id="img-evidencia-${ticket.id}" src="${imagenData}" 
-                     style="width: 100%; max-height: 250px; object-fit: contain; border-radius: 4px; cursor: zoom-in; transition: transform 0.2s;"
+                     style="width: 100%; max-height: 400px; object-fit: contain; border-radius: 4px; cursor: zoom-in; transition: transform 0.2s;"
                      onmouseover="this.style.transform='scale(1.02)'"
                      onmouseout="this.style.transform='scale(1)'">
-                <small style="display:block; color: #666; margin-top: 8px; font-weight: bold;">
+                <small style="display:block; color: #aaa; margin-top: 8px; font-weight: bold;">
                   <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">zoom_in</span> 
                   Haz clic en la imagen para ampliarla
                 </small>
@@ -249,13 +404,13 @@ export class PersonalHistoryComponent implements OnInit {
         `,
         confirmButtonText: 'Cerrar',
         confirmButtonColor: '#56212f',
-        width: '600px',
+        width: '650px',
         didOpen: () => {
           if (imagenData) {
             const visorImagen = document.getElementById(`img-evidencia-${ticket.id}`);
             if (visorImagen) {
                 visorImagen.addEventListener('click', () => {
-                this.abrirImagenCompleta(imagenData, ticket.id);
+                this.abrirImagenCompleta(imagenData, ticket.id, ticket);
               });
             }
           }
@@ -263,21 +418,40 @@ export class PersonalHistoryComponent implements OnInit {
       });
   }
 
-  abrirImagenCompleta(imagenBase64: string, idTicket: number) {
+abrirImagenCompleta(imagenBase64: string, idTicket: number, ticket: any) {
+      const resolucionTexto = ticket.descripcion_resolucion ? ticket.descripcion_resolucion : 'No se agregó descripción de resolución.';
+
       Swal.fire({
-        title: `Evidencia - Ticket #${idTicket}`,
-        imageUrl: imagenBase64,
-        imageAlt: 'Evidencia técnica adjunta',
-        width: '90%',
-        padding: '1em',
-        color: '#fff',
-        background: '#1a1a1a', 
-        backdrop: `rgba(0,0,0,0.85)`,
+        title: `<span style="color: #ffffff; font-size: 1.6rem; font-weight: 800;">Evidencia - Ticket #${idTicket}</span>`,
+        html: `
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; margin-top: 15px;">
+            
+            <div style="width: 100%; display: flex; justify-content: center; background: #000; border-radius: 8px; padding: 10px;">
+                <img src="${imagenBase64}" 
+                     alt="Evidencia técnica adjunta" 
+                     style="max-width: 100%; max-height: 60vh; object-fit: contain; border-radius: 4px;">
+            </div>
+
+            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px 20px; border-radius: 8px; width: 100%; text-align: left; border-left: 5px solid #d4a055; box-sizing: border-box;">
+              <p style="margin: 0 0 8px 0; font-size: 0.85rem; color: #94a3b8; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">
+                 Notas de la resolución
+              </p>
+              <p style="margin: 0; font-size: 1.1rem; color: #ffffff; line-height: 1.5;">
+                ${resolucionTexto}
+              </p>
+            </div>
+            
+          </div>
+        `,
+        width: '850px',
+        padding: '2em',
+        background: '#000000',
+        backdrop: `rgba(0,0,0,0.9)`, 
         showConfirmButton: false,  
-        showCloseButton: true, 
+        showCloseButton: true,
+        closeButtonHtml: '<span style="color: #ffffff; font-size: 2rem;">&times;</span>',
         customClass: {
-          image: 'img-fluid',
-          popup: 'swal-wide'
+          popup: 'swal-evidencia-dark'
         }
       });
   }
@@ -285,11 +459,11 @@ export class PersonalHistoryComponent implements OnInit {
   cambiarEstado(ticket: any) {
     Swal.fire({
       title: '¿Reabrir reporte?',
-      text: `El ticket #${ticket.id} volverá a la lista de pendientes.`,
+      text: `El ticket #${ticket.id} volverá a la lista de pendientes y se vera reflejado en tus estadisticas. ¿Deseas continuar?`,
       icon: 'question', 
       showCancelButton: true, 
-      confirmButtonText: 'Sí, corregir', 
-      confirmButtonColor: '#56212f', 
+      confirmButtonText: 'Sí, reabrir', 
+      confirmButtonColor: '#b45309', 
       cancelButtonText: 'Cancelar'
     }).then((resultado) => {
       if (resultado.isConfirmed) {
@@ -445,7 +619,7 @@ export class PersonalHistoryComponent implements OnInit {
              </div>
         </div>
         <div style="margin-top: 30px; background: #f8f9fa; padding: 15px; border-radius: 10px;">
-            <h3 style="color: #56212f; margin: 0;">⏱️ ${resultados.tiempoPromedio}</h3> 
+            <h3 style="color: #56212f; margin: 0;"> ${resultados.tiempoPromedio}</h3> 
             <small style="color: #888;">Tiempo promedio de solución en el periodo actual</small>
         </div>
       </div>`;

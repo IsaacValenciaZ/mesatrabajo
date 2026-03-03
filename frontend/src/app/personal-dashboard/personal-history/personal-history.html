@@ -7,13 +7,10 @@
     <div class="filters-container" style="position: relative;"> 
         <select class="month-select" [(ngModel)]="mesSeleccionado" (change)="aplicarFiltroMes()">
             <option *ngFor="let mes of mesesDisponibles" [value]="mes">{{ obtenerNombreMes(mes) }}</option>
-            <option *ngIf="mesesDisponibles.length === 0" value="" disabled>Sin registros históricos</option>
         </select>
-        
         <button class="btn-summary" (click)="toggleCalendario()" title="Filtrar por día">
             <span class="material-symbols-outlined">calendar_month</span>
         </button>
-        
         <button class="btn-summary" (click)="verResumenMensual()" title="Ver métricas del mes">
              <span class="material-symbols-outlined">bar_chart</span>
         </button>
@@ -55,10 +52,10 @@
       <div class="date-divider">
           <div class="left-info">
               <span class="date-text">{{ grupo.fecha | date:'fullDate' | titlecase }}</span>
-              <span class="count-badge">{{ grupo.tickets.length }} reportes procesados</span>
+              <span class="count-badge">{{ grupo.tickets.length }} reportes</span>
           </div>
-          <button class="btn-stats" (click)="verEstadisticasDia(grupo)" title="Ver rendimiento diario">
-             <span class="material-symbols-outlined">donut_large</span>
+          <button class="btn-stats" (click)="verEstadisticasDia(grupo)">
+              <span class="material-symbols-outlined">donut_large</span>
           </button>
       </div>
 
@@ -72,86 +69,59 @@
                 <th>Hora Término</th> 
                 <th>Solicitante</th>
                 <th>Departamento</th>
+                <th>Ext / Tel</th>
                 <th>Clasificación</th>
-                <th class="text-center">Notas Extras</th>
                 <th class="text-center">Estatus</th>
                 <th class="text-center">Métrica</th>
-                <th class="text-center">Resolución</th>
-                <th class="text-center">Ajustes</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let ticket of grupo.tickets">
+              <tr *ngFor="let ticket of grupo.tickets" class="row-clickable" (click)="abrirModalTicket(ticket)">
                 <td class="text-muted"><strong>#{{ ticket.id }}</strong></td>
+                
                 <td class="time-col">{{ ticket.fecha | date:'HH:mm' }} hrs</td>
-                <td class="time-col" style="color: #555;">{{ ticket.fecha_fin ? (ticket.fecha_fin | date:'HH:mm') + ' hrs' : '-' }}</td>
-                <td><strong>{{ ticket.nombre_usuario }}</strong></td>
+                
+                <td class="time-col" style="color: #555;">
+                  {{ ticket.fecha_fin ? (ticket.fecha_fin | date:'HH:mm') + ' hrs' : '-' }}
+                </td>
+                
+                <td><strong>{{ ticket.nombre_usuarios || ticket.nombre_usuario }}</strong></td>
+                
                 <td>{{ ticket.departamento }}</td>
+
+                <td style="font-weight: 600; color: #475569;">{{ ticket.extension_tel || '-' }}</td>
+                
                 <td>
-                    <span class="badge" [ngClass]="{
-                        'cat-internet': ticket.descripcion === 'Internet', 
-                        'cat-office': ticket.descripcion === 'Office', 
-                        'cat-telefonia': ticket.descripcion === 'Telefonia', 
-                        'cat-tecnico': ticket.descripcion === 'Tecnico',
-                        'cat-dictaminar': ticket.descripcion === 'Dictaminar',
-                        'cat-extension': ticket.descripcion === 'Extension/Telefono',
-                        'cat-correo': ticket.descripcion === 'Correo'
-                    }">{{ ticket.descripcion }}</span>
-
-                    <span *ngIf="ticket.descripcion === 'Dictaminar' && ticket.cantidad_dicta" class="qty-badge" style="margin-top: 5px; display: block;">
-                        Equipos: {{ ticket.cantidad_dicta }}
-                    </span>
-                    
-                    <span *ngIf="ticket.descripcion === 'Extension/Telefono' && ticket.extension_tel" class="qty-badge" style="margin-top: 5px; display: block;">
-                        Núm: {{ ticket.extension_tel }}
+                    <span class="badge" [ngClass]="'cat-' + ticket.descripcion.toLowerCase().split('/')[0]">
+                        {{ ticket.descripcion }}
                     </span>
 
-                    <span *ngIf="ticket.descripcion === 'Correo' && ticket.correo_tipo" class="qty-badge" style="margin-top: 5px; display: block;">
-                        Dominio: {{ ticket.correo_tipo }}
-                    </span>
+                     <span *ngIf="ticket.descripcion === 'Dictaminar' && ticket.cantidad_dicta" class="qty-badge" style="margin-top: 5px; display: block;">
+                     EQ: {{ ticket.cantidad_dicta }}
+                 </span>
 
-                    <span *ngIf="ticket.descripcion === 'Tecnico' && ticket.soporte_tipo" class="qty-badge" style="margin-top: 5px; display: block; white-space: normal; line-height: 1.2;">
-                        {{ ticket.soporte_tipo }}
-                    </span>
+                 <span *ngIf="ticket.descripcion === 'Correo' && ticket.correo_tipo" class="qty-badge" style="margin-top: 5px; display: block;">
+                     Dom: {{ ticket.correo_tipo }}
+                 </span>
+
+                 <span *ngIf="ticket.descripcion === 'Tecnico' && ticket.soporte_tipo" class="qty-badge" style="margin-top: 5px; display: block; white-space: normal; line-height: 1.2;">
+                     {{ ticket.soporte_tipo }}
+                 </span>
+
                 </td>
                 
                 <td class="text-center">
-                    <button *ngIf="ticket.notas" class="btn-icon-small" (click)="verNotaCompleta(ticket.notas)" title="Leer requerimientos del usuario">
-                        <span class="material-symbols-outlined icon">read_more</span>
-                    </button>
-                    <span *ngIf="!ticket.notas" style="color: #ccc;">-</span>
+                   <span [class]="ticket.estado === 'Incompleto' ? 'badge-incomplete' : 'badge-completed'">
+                     {{ ticket.estado === 'Completo' ? 'Completado' : 'Incumplido' }}
+                   </span>
                 </td>
                 
                 <td class="text-center">
-                   <span *ngIf="ticket.estado === 'Completo' || ticket.estado === 'Completado'" class="badge-completed">Tendido</span>
-                   <span *ngIf="ticket.estado === 'Incompleto'" class="badge-incomplete">Incumplido</span>
-                </td>
-                
-                <td class="text-center">
-                    <div *ngIf="ticket.estado === 'Completo' || ticket.estado === 'Completado'">
-                        <span *ngIf="ticket.fecha_fin && ticket.fecha_limite && ticket.fecha_fin <= ticket.fecha_limite" class="badge-status success">A tiempo</span>
-                        <span *ngIf="ticket.fecha_fin && ticket.fecha_limite && ticket.fecha_fin > ticket.fecha_limite" class="badge-status lateT">Atrasado</span>
+                    <div *ngIf="ticket.estado !== 'Incompleto'">
+                        <span *ngIf="ticket.fecha_fin <= ticket.fecha_limite" class="badge-status success">A Tiempo</span>
+                        <span *ngIf="ticket.fecha_fin > ticket.fecha_limite" class="badge-status lateT">Atrasado</span>
                     </div>
-                    <div *ngIf="ticket.estado === 'Incompleto'">
-                          <span class="badge-status late" style="background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca;"> Caducado</span>
-                    </div>
-                </td>
-                
-                <td class="text-center">
-                    <button *ngIf="ticket.descripcion_resolucion || ticket.evidencia_archivo" 
-                            class="btn-icon-small" 
-                            style="background: #ebd3da; border: 1px solid #ebd3da; color: #56212f; display: inline-flex; align-items: center; padding: 4px 6px;"
-                            (click)="verEvidenciaFinal(ticket)" 
-                            title="Consultar datos de resolución">
-                        <span class="material-symbols-outlined" style="font-size: 1.2rem;">visibility</span>
-                    </button>
-                    <span *ngIf="!ticket.descripcion_resolucion && !ticket.evidencia_archivo" style="color: #ccc;">-</span>
-                </td>
-
-                <td class="text-center">
-                    <button class="btn-text" (click)="cambiarEstado(ticket)" title="Devolver ticket a la bandeja de pendientes">
-                        Reabrir
-                    </button>
+                    <span *ngIf="ticket.estado === 'Incompleto'" class="badge-status late">Caducado</span>
                 </td>
 
               </tr>

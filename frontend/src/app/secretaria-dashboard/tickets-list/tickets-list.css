@@ -1,5 +1,6 @@
 .view-section {
-    max-width: 1200px;
+    max-width: 1600px;
+    width: 96%;
     margin: 0 auto;
     padding-bottom: 50px;
 }
@@ -308,18 +309,30 @@
 
 .simple-table th:nth-child(5),
 .simple-table td:nth-child(5) {
-    width: 120px;
+    width: 110px;
     text-align: center;
+    white-space: nowrap;
+}
+
+.tech-col {
+    font-weight: 600;
+    color: #475569;
 }
 
 .simple-table th:nth-child(6),
 .simple-table td:nth-child(6) {
-    width: 90px;
+    width: 120px;
     text-align: center;
 }
 
 .simple-table th:nth-child(7),
 .simple-table td:nth-child(7) {
+    width: 90px;
+    text-align: center;
+}
+
+.simple-table th:nth-child(8),
+.simple-table td:nth-child(8) {
     width: auto;
     max-width: 250px;
 }

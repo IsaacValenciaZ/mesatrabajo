@@ -195,7 +195,14 @@ export class TicketsListComponent implements OnInit {
 
   lanzarModalGraficas(conjuntoDeTickets: any[], textoTitulo: string) {
     if (conjuntoDeTickets.length === 0) { 
-        Swal.fire('Sin datos suficientes', 'No hay historial para generar reporte.', 'info'); 
+        Swal.fire({
+      title: 'Sin datos suficientes', 
+      text: 'No hay historial para generar reporte.', 
+      icon: 'info', 
+      iconColor: '#56212f',
+      confirmButtonText: 'Cerrar', 
+      confirmButtonColor: '#000000'
+    });
         return; 
     }
     
@@ -264,7 +271,7 @@ export class TicketsListComponent implements OnInit {
                   labels: ['Alta', 'Media', 'Baja'], 
                   datasets: [{ 
                       data: [metricasAnalizadas.alta, metricasAnalizadas.media, metricasAnalizadas.baja], 
-                      backgroundColor: ['#f32828', '#f3f028', '#28f328'], 
+                      backgroundColor: ['#28f328', '#f3f028', '#f32828'], 
                       hoverOffset: 4 
                   }] 
               }, 
@@ -313,8 +320,9 @@ export class TicketsListComponent implements OnInit {
       title: 'Detalle de la Nota', 
       text: textoNotaCompleto, 
       icon: 'info', 
+      iconColor: '#56212f',
       confirmButtonText: 'Cerrar', 
-      confirmButtonColor: '#2c3e50'
+      confirmButtonColor: '#000000'
     });
   }
 }
