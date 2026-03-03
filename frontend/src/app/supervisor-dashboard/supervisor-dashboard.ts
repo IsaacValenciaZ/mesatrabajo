@@ -1,17 +1,13 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
-
 
 import { ViewUserComponent } from './view-user/view-user.component';
 import { EditUserComponent } from './edit-user/edit-user.component';
 import { DeleteUserComponent } from './delete-user/delete-user.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { PerformanceUserComponent } from './performance-user/performance-user.component';
-import { HistorialSupervisorComponent } from './historial-supervisor/historial-supervisor.component';
-
-
 
 @Component({
   selector: 'app-supervisor-dashboard',
@@ -23,34 +19,28 @@ import { HistorialSupervisorComponent } from './historial-supervisor/historial-s
     EditUserComponent,
     DeleteUserComponent,
     CreateUserComponent,
-    PerformanceUserComponent,
-    CommonModule,
-    PerformanceUserComponent,
-    HistorialSupervisorComponent,
-   
-
-  
+    PerformanceUserComponent
   ],
-templateUrl: './supervisor-dashboard.html',
+  templateUrl: './supervisor-dashboard.html',
   styleUrls: ['./supervisor-dashboard.css']
 })
 export class SupervisorDashboardComponent implements OnInit {
+  // estado del sidebar
+  isSidebarOpen: boolean = false;
 
   http = inject(HttpClient);
   router = inject(Router);
   cdr = inject(ChangeDetectorRef);
   apiUrl = 'http://localhost/mesatrabajoBACKEND/backend/get_users.php';
-  usersList: any[] = [];      
-  filteredList: any[] = []; 
-  currentFilter: string = 'all'; 
+  usersList: any[] = [];
+  filteredList: any[] = [];
+  currentFilter: string = 'all';
   filterTitle: string = 'Listado Completo';
   totalUsers: number = 0;
   countPersonal: number = 0;
   countSecretaria: number = 0;
   countSupervisor: number = 0;
-  mostrarHistorial: boolean = false;
 
-  
   showView: boolean = false;
   showEdit: boolean = false;
   showDelete: boolean = false;
@@ -60,27 +50,34 @@ export class SupervisorDashboardComponent implements OnInit {
   isControlPersonalOpen: boolean = false;
   usuarioSeleccionado: any = false;
   mostrarListaPersonal: boolean = false;
-
+  usuarioNombre: any;
+  menuLateralAbierto: boolean = false;
   ngOnInit() {
     this.cargarDatos();
   }
+
+  /* ---------- SIDEBAR / HAMBURGUESA ---------- */
+alternarMenuLateral() {
+  this.menuLateralAbierto = !this.menuLateralAbierto;
+}
+
+  closeSidebar() {
+    this.isSidebarOpen = false;
+  }
+
+
+  /* ---------- MENU CONTROL ---------- */
   toggleControlPersonal() {
     this.isControlPersonalOpen = !this.isControlPersonalOpen;
   }
-verPersonalActivo() {
-  this.mostrarListaPersonal = true;
-  this.isControlPersonalOpen = false;
-}
-regresarAlDashboard() {
-  this.mostrarListaPersonal = false;
-}
 
+  /* ---------- DATOS / FILTROS ---------- */
   cargarDatos() {
     this.http.get<any[]>(this.apiUrl).subscribe({
       next: (data) => {
         console.log("Datos recibidos:", data);
         this.usersList = data;
-        this.applyFilter('all'); 
+        this.applyFilter('all');
         this.calcularEstadisticas();
         this.cdr.detectChanges();
       },
@@ -90,19 +87,19 @@ regresarAlDashboard() {
 
   applyFilter(category: string) {
     this.currentFilter = category;
-    if (!this.usersList) return; 
+    if (!this.usersList) return;
 
     if (category === 'all') {
-      this.filteredList = [...this.usersList]; 
+      this.filteredList = [...this.usersList];
       this.filterTitle = 'Listado Completo';
     } else {
-      this.filteredList = this.usersList.filter(user => 
+      this.filteredList = this.usersList.filter(user =>
         user.rol && user.rol.toLowerCase() === category.toLowerCase()
       );
-  
-      if(category === 'personal') this.filterTitle = 'Listado de Personal';
-      if(category === 'supervisor') this.filterTitle = 'Listado de Supervisores';
-      if(category === 'secretaria') this.filterTitle = 'Listado de Secretarias';
+
+      if (category === 'personal') this.filterTitle = 'Listado de Personal';
+      if (category === 'supervisor') this.filterTitle = 'Listado de Supervisores';
+      if (category === 'secretaria') this.filterTitle = 'Listado de Secretarias';
     }
   }
 
@@ -123,35 +120,20 @@ regresarAlDashboard() {
     ).length;
   }
 
-  
+  /* ---------- MODALES / CRUD ---------- */
+  openViewModal(user: any) { this.selectedUser = { ...user }; this.showView = true; }
+  openEditModal(user: any) { this.selectedUser = { ...user }; this.showEdit = true; }
+  openDeleteModal(user: any) { this.selectedUser = { ...user }; this.showDelete = true; }
+  openCreateModal() { this.showCreate = true; }
 
-  openViewModal(user: any) {
-    this.selectedUser = { ...user }; 
-    this.showView = true;
-  }
-
-  openEditModal(user: any) {
-    this.selectedUser = { ...user }; 
-    this.showEdit = true;
-  }
-
-  openDeleteModal(user: any) {
-    this.selectedUser = { ...user };
-    this.showDelete = true;
-  }
-
-  openCreateModal() {
-    this.showCreate = true;
-  }
-
-
- openPerformanceModal(user: any) {
+  openPerformanceModal(user: any) {
     console.log("Abriendo desempeño para:", user.nombre);
-    this.selectedUser = user;     
-    this.showPerformance = true;  
+    this.selectedUser = user;
+    this.showPerformance = true;
   }
+
   verDesempeno(user: any) {
-this.selectedUser = user;
+    this.selectedUser = user;
     this.showPerformance = true;
   }
 
@@ -167,7 +149,7 @@ this.selectedUser = user;
 
   handleCreateUser(newUser: any) {
     console.log("Creando usuario:", newUser);
-    const tempId = this.usersList.length + 1; 
+    const tempId = this.usersList.length + 1;
     this.usersList.push({ id: tempId, ...newUser });
     this.calcularEstadisticas();
     this.applyFilter(this.currentFilter);
@@ -177,12 +159,5 @@ this.selectedUser = user;
   logout() {
     localStorage.removeItem('usuario_actual');
     this.router.navigate(['/login']);
-    
   }
-verHistorialTickets() {
-  this.mostrarHistorial = true;
-  this.mostrarListaPersonal = false; 
 }
-
-}
-
