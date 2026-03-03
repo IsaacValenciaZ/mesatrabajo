@@ -9,16 +9,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db   = "db-mesatrabajo";
+$host = "db-lab-01.cluster-cthpdfxrdfan.us-east-1.rds.amazonaws.com";//endpoint de la base de datos  db-lab-01.cluster-cthpdfxrdfan.us-east-1.rds.amazonaws.com
+$user = "usutec1"; // usutec1
+$pass = "T3c410&%"; //T3c410&%
+$db   = "tec1mesa"; //tec1mesa
 
 try {
-    $conn = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
+    $conn = new PDO("mysql:host=" . $host . ";dbname=" . $db, $user, $pass);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch(PDOException $e) {
-    echo json_encode(["status" => false, "message" => "Error de conexión: " . $e->getMessage()]);
-    exit();
+} catch(PDOException $exception) {
+    echo "Error de conexión: " . $exception->getMessage();
 }
 ?>

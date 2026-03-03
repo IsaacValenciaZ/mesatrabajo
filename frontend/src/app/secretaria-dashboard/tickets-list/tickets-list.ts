@@ -195,7 +195,14 @@ export class TicketsListComponent implements OnInit {
 
   lanzarModalGraficas(conjuntoDeTickets: any[], textoTitulo: string) {
     if (conjuntoDeTickets.length === 0) { 
-        Swal.fire('Sin datos suficientes', 'No hay historial para generar reporte.', 'info'); 
+        Swal.fire({
+      title: 'Sin datos suficientes', 
+      text: 'No hay historial para generar reporte.', 
+      icon: 'info', 
+      iconColor: '#56212f',
+      confirmButtonText: 'Cerrar', 
+      confirmButtonColor: '#000000'
+    });
         return; 
     }
     
