@@ -41,6 +41,17 @@ export class PersonalHistoryComponent implements OnInit {
 
   toggleCalendario() {
     this.mostrarCalendario = !this.mostrarCalendario;
+       if (this.ticketsTodos.length === 0) { 
+        Swal.fire({
+            title: 'Datos insuficientes', 
+            text: 'No hay historial para generar reporte.', 
+            icon: 'info', 
+            iconColor: '#56212f',
+            confirmButtonText: 'Cerrar', 
+            confirmButtonColor: '#000000'
+          });
+              return; 
+          }
   }
 
   cargarHistorialTickets() {
@@ -593,9 +604,17 @@ abrirImagenCompleta(imagenBase64: string, idTicket: number, ticket: any) {
     const listaAnalisis = this.ticketsFiltrados;
     
     if (listaAnalisis.length === 0) { 
-        Swal.fire('Datos insuficientes', 'No hay historial registrado en este mes.', 'info'); 
-        return; 
-    }
+        Swal.fire({
+            title: 'Datos insuficientes', 
+            text: 'No hay historial para generar reporte.', 
+            icon: 'info', 
+            iconColor: '#56212f',
+            confirmButtonText: 'Cerrar', 
+            confirmButtonColor: '#000000'
+          });
+              return; 
+          }
+
     
     const resultados = this.calcularEstadisticas(listaAnalisis);
     const etiquetaMes = this.obtenerNombreMes(this.mesSeleccionado);
