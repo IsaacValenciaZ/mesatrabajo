@@ -18,7 +18,8 @@ export class CreateUserComponent {
     nombre: '',
     email: '',
     password: '123456',
-    rol: 'personal'
+    rol: 'personal',
+    requiereCambio: true
   };
 
   @Output() close = new EventEmitter<void>();
@@ -28,35 +29,33 @@ export class CreateUserComponent {
     if (this.newUser.nombre && this.newUser.email) {
       this.apiService.register(this.newUser).subscribe({
         next: (res) => {
-         
+          
           if (res && res.status) {
+            this.close.emit(); 
             Swal.fire({
               icon: 'success',
-              title: '¡Usuario Registrado!',
-              text: `El usuario ${this.newUser.nombre} se guardó correctamente.`,
+              title: '¡Usuario Registrado Correctamente!',
+              text: `Se ha enviado un correo a  ${this.newUser.nombre}`,
               confirmButtonText: 'Aceptar',
-              confirmButtonColor: '#56212f' 
+              confirmButtonColor: '#56212f'
             });
 
-           
             this.create.emit(res);
             this.close.emit();
           } else {
-          
             Swal.fire({
               icon: 'error',
-              title: 'No se pudo registrar',
-              text: res.message || 'El correo electrónico ya está en uso.',
+              title: 'Error de Registro',
+              text: 'Este correo electrónico ya está en uso',
               confirmButtonColor: '#56212f'
             });
-           
           }
         },
         error: (err) => {
           Swal.fire({
             icon: 'error',
             title: 'Error de Conexión',
-            text: 'No se pudo comunicar con el servidor.',
+            text: 'No se pudo comunicar con el servidor para enviar el correo',
             confirmButtonColor: '#56212f'
           });
         }
@@ -64,10 +63,10 @@ export class CreateUserComponent {
     } else {
       Swal.fire({
         icon: 'warning',
-        title: 'Campos incompletos',
-        text: 'Por favor, llena el nombre y el correo electrónico.',
-        confirmButtonColor: '#000000'
+        title: 'Campos Incompletos',
+        text: 'Por favor, llena todos los campos solicitados',
+        confirmButtonColor: '#56212f'
       });
     }
   }
-} 
+}
